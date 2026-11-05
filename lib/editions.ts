@@ -15,20 +15,37 @@ export type Edition = {
   /** Short label shown in the edition switcher, e.g. "TR · EN" */
   switcherLabel: string;
   routes: EditionRoutes;
+  segments: EditionSegments;
+  /** Service slugs every title is compared against ("not on …") */
+  coreServices: string[];
 };
 
 export type EditionRoutes = {
   home: string;
   search: string;
-  catalog: string;
   movies: string;
   series: string;
   anime: string;
   kids: string;
+  dubHub: string;
+  subHub: string;
   collections: string;
   newLeaving: string;
+  trailers: string;
+  releases: string;
   myList: string;
   about: string;
+  privacy: string;
+};
+
+/** Localized path segments for entity pages. */
+export type EditionSegments = {
+  movie: string;
+  tv: string;
+  season: string;
+  list: string;
+  franchise: string;
+  person: string;
 };
 
 const tr: Edition = {
@@ -41,16 +58,22 @@ const tr: Edition = {
   routes: {
     home: "/tr",
     search: "/tr/ara",
-    catalog: "/tr/katalog",
-    movies: "/tr/katalog?tip=film",
-    series: "/tr/katalog?tip=dizi",
-    anime: "/tr/katalog?tur=anime",
+    movies: "/tr/filmler",
+    series: "/tr/diziler",
+    anime: "/tr/anime",
     kids: "/tr/cocuk",
-    collections: "/tr/turkce-dublaj",
+    dubHub: "/tr/turkce-dublaj",
+    subHub: "/tr/turkce-altyazi",
+    collections: "/tr/turkce-dublaj#collections",
     newLeaving: "/tr/yeni-ve-ayrilanlar",
+    trailers: "/tr/fragmanlar",
+    releases: "/tr/yakinda-dijitalde",
     myList: "/tr/listem",
     about: "/tr/hakkinda",
+    privacy: "/tr/gizlilik",
   },
+  segments: { movie: "film", tv: "dizi", season: "sezon", list: "turkce-dublaj", franchise: "seri", person: "kisi" },
+  coreServices: ["netflix", "prime-video", "disney-plus", "hbo-max", "tod", "tabii", "exxen", "gain"],
 };
 
 /** Live editions. Only TR in MVP. */
@@ -66,3 +89,13 @@ export function getEdition(code: string): Edition | undefined {
 export function editionCodes(): string[] {
   return Object.keys(EDITIONS);
 }
+
+export const paths = {
+  title: (e: Edition, type: "movie" | "tv", slug: string) => `/${e.code}/${e.segments[type]}/${slug}`,
+  season: (e: Edition, slug: string, n: number) => `/${e.code}/${e.segments.tv}/${slug}/${e.segments.season}-${n}`,
+  list: (e: Edition, slug: string) => `/${e.code}/${e.segments.list}/${slug}`,
+  service: (e: Edition, slug: string) => `/${e.code}/${slug}`,
+  franchise: (e: Edition, slug: string) => `/${e.code}/${e.segments.franchise}/${slug}`,
+  person: (e: Edition, slug: string) => `/${e.code}/${e.segments.person}/${slug}`,
+  search: (e: Edition, q?: string) => (q ? `${e.routes.search}?q=${encodeURIComponent(q)}` : e.routes.search),
+};

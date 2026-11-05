@@ -168,6 +168,18 @@ pnpm ingest:availability    # 04-ingest
 - Images: `lib/images.ts` — `/sample/*` (seed, `public/sample`) or TMDB paths.
 - External APIs: `lib/sources/http.ts#fetchJson` (retry/backoff on 429/5xx + per-host min interval).
 
+## UI build (02–08 UI, 2026-11-05)
+
+- Routes (TR): `/tr` home · `/tr/film|dizi/{slug}` (+ `/sezon-{n}`, noindex) · `/tr/filmler|diziler|anime` (filters = URL params; filtered → noindex) · `/tr/cocuk` · `/tr/turkce-dublaj`, `/tr/turkce-altyazi`, `/tr/turkce-dublaj/{list}` · `/tr/{service}` (8) · `/tr/yeni-ve-ayrilanlar` · `/tr/fragmanlar` · `/tr/yakinda-dijitalde` · `/tr/seri/{slug}` · `/tr/kisi/{slug}` (noindex) · `/tr/ara` (noindex) · `/tr/listem` (noindex, localStorage) · `/tr/hakkinda`, `/tr/gizlilik` · `/admin` (Basic auth via `proxy.ts`) · `/sitemap.xml`, `/robots.txt` · `/og|story/{edition}/{movie|tv}/{slug}`.
+- Short answer: `lib/short-answer.ts` (unit-tested); offers ranked free < ads < subscription (by ServiceCountry.priceFrom) < rent < buy.
+- Quality gate: `lib/quality-gate.ts`; sitemap/inventory `lib/seo/pages.ts` (live) + `pnpm seo:sync-pages` → Page table.
+- Search: `lib/search.ts`, `pnpm search:bench` (50 queries, p95 ≈ 15 ms on seed). Extra trgm indexes: person/franchise/list names, `sofo_alt_names()`.
+- Alerts: `lib/alerts/*`, `pnpm alerts:dispatch [--dry-run|--digest]` (Telegram only with `TELEGRAM_BOT_TOKEN`; email provider not chosen → dry-run). Telegram handle not stored: bot deep link `t.me/<bot>?start=<signed ref>` sets `telegram_id`.
+- KVKK: cookie banner, GA4 loads only after consent. Onboarding modal + "my services" in localStorage (`lib/client/*`).
+- `<html lang="tr">` + English UI: every `uppercase` English label needs `lang="en"` (else "i" → "İ").
+- `app/global-not-found.tsx` (experimental `globalNotFound`) — several root layouts.
+- Seed data is SAMPLE (prisma/seed.ts + seed-extras.ts), incl. YouTube keys — replace via ingest (04).
+
 ## Glossary
 
 - **Availability** — nom × davlat × servis × taklif turi (subscription/free/ads/rent/buy).

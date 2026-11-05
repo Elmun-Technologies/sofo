@@ -12,7 +12,10 @@
     "test": "vitest run",
     "prisma": "dotenv -e .env.local -- prisma",
     "db:seed": "dotenv -e .env.local -- prisma db seed",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "search:bench": "dotenv -e .env.local -- tsx scripts/search-bench.ts",
+    "seo:sync-pages": "dotenv -e .env.local -- tsx scripts/seo/sync-pages.ts",
+    "alerts:dispatch": "dotenv -e .env.local -- tsx scripts/alerts/dispatch.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

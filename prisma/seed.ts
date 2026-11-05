@@ -5,6 +5,7 @@
  */
 import { LangStatus, OfferType, PrismaClient, TitleType } from "@prisma/client";
 import { slugify } from "../lib/slug";
+import { seedExtras } from "./seed-extras";
 
 const db = new PrismaClient();
 
@@ -62,6 +63,13 @@ const TITLES: SeedTitle[] = [
   { tmdbId: 693134, type: "movie", original: "Dune: Part Two", lang: "en", year: 2024, trName: "Dune: Çöl Gezegeni Bölüm İki", genres: ["Sci-Fi", "Adventure"], runtime: 167, score: 8.1, on: ["hbo-max", "tod"] },
   { tmdbId: 920, type: "movie", original: "Cars", lang: "en", year: 2006, trName: "Arabalar", genres: anim, runtime: 117, score: 7.1, kids: true, on: [] },
   { tmdbId: 862, type: "movie", original: "Toy Story", lang: "en", year: 1995, trName: "Oyuncak Hikayesi", genres: anim, runtime: 81, score: 8.0, kids: true, on: [] },
+  // Franchise companions (no poster/offers) — feed watch-order pages.
+  { tmdbId: 150540, type: "movie", original: "Inside Out", lang: "en", year: 2015, trName: "Ters Yüz", overview: "Küçük Riley'nin zihninde Neşe, Üzüntü, Korku, Öfke ve İğrenme birlikte çalışır.", genres: anim, runtime: 95, score: 7.9, kids: true, on: ["disney-plus"] },
+  { tmdbId: 277834, type: "movie", original: "Moana", lang: "en", year: 2016, trName: "Moana", genres: anim, runtime: 107, score: 7.6, kids: true, on: ["disney-plus"] },
+  { tmdbId: 324857, type: "movie", original: "Spider-Man: Into the Spider-Verse", lang: "en", year: 2018, trName: "Örümcek-Adam: Örümcek-Evreninde", genres: [...anim, "Action"], runtime: 117, score: 8.4, on: ["netflix"] },
+  { tmdbId: 438631, type: "movie", original: "Dune", lang: "en", year: 2021, trName: "Dune: Çöl Gezegeni", genres: ["Sci-Fi", "Adventure"], runtime: 155, score: 7.8, on: ["hbo-max"] },
+  { tmdbId: 863, type: "movie", original: "Toy Story 2", lang: "en", year: 1999, trName: "Oyuncak Hikayesi 2", genres: anim, runtime: 92, score: 7.6, kids: true, on: [] },
+  { tmdbId: 49013, type: "movie", original: "Cars 2", lang: "en", year: 2011, trName: "Arabalar 2", genres: anim, runtime: 106, score: 6.0, kids: true, on: [] },
 ];
 
 const SERVICES = [
@@ -80,11 +88,26 @@ const HOUR = 3_600_000;
 
 async function wipe() {
   // Children first; users/lists untouched by design but cleared for a clean local DB.
+  await db.errorReport.deleteMany();
+  await db.alert.deleteMany();
+  await db.watchlistItem.deleteMany();
+  await db.userService.deleteMany();
+  await db.user.deleteMany();
+  await db.listItem.deleteMany();
+  await db.list.deleteMany();
+  await db.franchiseItem.deleteMany();
+  await db.credit.deleteMany();
+  await db.person.deleteMany();
+  await db.video.deleteMany();
+  await db.releaseTrack.deleteMany();
+  await db.searchStat.deleteMany();
+  await db.page.deleteMany();
   await db.availabilityEvent.deleteMany();
   await db.offerLanguage.deleteMany();
   await db.offer.deleteMany();
   await db.titleLocalization.deleteMany();
   await db.title.deleteMany();
+  await db.franchise.deleteMany();
   await db.serviceCountry.deleteMany();
   await db.service.deleteMany();
   await db.country.deleteMany();
@@ -111,6 +134,7 @@ async function main() {
     serviceIds.set(s.slug, row.id);
   }
 
+  const titleIds = new Map<number, number>();
   let offerCount = 0;
   for (const [i, t] of TITLES.entries()) {
     const title = await db.title.create({
@@ -136,6 +160,8 @@ async function main() {
         },
       },
     });
+
+    titleIds.set(t.tmdbId, title.id);
 
     for (const [j, slug] of t.on.entries()) {
       const service = SERVICES.find((s) => s.slug === slug)!;
@@ -186,6 +212,8 @@ async function main() {
       }
     }
   }
+
+  await seedExtras(db, { titleIds, serviceIds, now });
 
   console.log(`Seeded: 1 country, ${SERVICES.length} services, ${TITLES.length} titles, ${offerCount} offers.`);
 }
