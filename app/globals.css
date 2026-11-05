@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Design tokens — source: design/tokens.css (DS2, 2026-11-04). Keep in sync. */
+@theme {
+  --color-orange: #ff5a1f;
+  --color-orange-hover: #ff7a47;
+  --color-orange-press: #e04a12;
+  --color-orange-tint: #ffd5c7;
+  --color-orange-deep: #2a150d;
+
+  --color-ink: #0a0a0d;
+  --color-surface: #15151b;
+  --color-surface-2: #1c1c24;
+  --color-line: #26262f;
+  --color-line-soft: #18181e;
+
+  --color-text: #ffffff;
+  --color-text-2: #a1a1ad;
+  --color-text-3: #6e6e7a;
+
+  --color-dub: #3b82f6;
+  --color-available: #4ade80;
+  --color-leaving: #fbbf24;
+  --color-free: #a78bfa;
+
+  --radius-chip: 999px;
+  --radius-input: 12px;
+  --radius-button: 12px;
+  --radius-poster: 12px;
+  --radius-card: 16px;
+  --radius-panel: 20px;
+  --radius-hero: 24px;
+
+  --font-ui: var(--font-manrope), system-ui, sans-serif;
+  --font-logo: var(--font-nunito), var(--font-manrope), sans-serif;
+
+  --container-site: 1360px;
+
+  /* xs 360 (3 posters) · sm 480 (4) · md 768 (5) · lg 1024 (6) · xl 1280 (6–7) */
+  --breakpoint-xs: 360px;
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-ink font-ui text-text antialiased;
+  }
+  a:hover {
+    color: var(--color-orange-tint);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-orange);
+    outline-offset: 2px;
+  }
+}
