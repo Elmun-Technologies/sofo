@@ -1,0 +1,524 @@
+// Sofo — data model (MVP). Docs: docs/data-model.md
+// Conventions: models PascalCase, tables/columns snake_case (@@map / @map).
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm, unaccent]
+}
+
+// ───────────────────────── Enums ─────────────────────────
+
+enum TitleType {
+  movie
+  tv
+}
+
+enum OfferType {
+  subscription
+  free
+  ads
+  rent
+  buy
+}
+
+enum LangKind {
+  audio
+  subtitle
+}
+
+/// Never guess: unknown is shown as "not confirmed by the service".
+enum LangStatus {
+  confirmed_yes
+  confirmed_no
+  unknown
+}
+
+enum EventType {
+  added
+  removed
+  price_change
+  quality_change
+  audio_added
+  audio_removed
+  subtitle_added
+  subtitle_removed
+  leaving_announced
+}
+
+enum VideoKind {
+  trailer
+  teaser
+  clip
+  featurette
+  episode_preview
+  short
+}
+
+enum ReleaseStage {
+  theatrical
+  digital
+  subscription
+  dub
+}
+
+enum IndexStatus {
+  index
+  noindex
+}
+
+enum ReportKind {
+  not_on_service
+  wrong_language
+  wrong_price
+  broken_link
+  other
+}
+
+enum ReportStatus {
+  open
+  rechecking
+  fixed
+  rejected
+}
+
+enum AlertKind {
+  dub_available
+  new_episode
+  leaving
+  price_drop
+  on_my_services
+  release
+}
+
+enum Channel {
+  telegram
+  email
+  web_push
+}
+
+// ───────────────────────── Catalog ─────────────────────────
+
+model Title {
+  id            Int       @id @default(autoincrement())
+  tmdbId        Int       @map("tmdb_id")
+  type          TitleType
+  originalTitle String    @map("original_title")
+  originalLang  String    @map("original_lang") @db.VarChar(8)
+  year          Int?
+  runtimeMin    Int?      @map("runtime_min")
+  ageRating     String?   @map("age_rating")
+  tmdbScore     Decimal?  @map("tmdb_score") @db.Decimal(3, 1)
+  popularity    Float?
+  posterPath    String?   @map("poster_path")
+  backdropPath  String?   @map("backdrop_path")
+  genres        String[]
+  isAnimation   Boolean   @default(false) @map("is_animation")
+  isKids        Boolean   @default(false) @map("is_kids")
+  franchiseId   Int?      @map("franchise_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  franchise      Franchise?          @relation(fields: [franchiseId], references: [id])
+  localizations  TitleLocalization[]
+  seasons        Season[]
+  credits        Credit[]
+  offers         Offer[]
+  events         AvailabilityEvent[]
+  videos         Video[]
+  releases       ReleaseTrack[]
+  listItems      ListItem[]
+  franchiseItems FranchiseItem[]
+  watchlist      WatchlistItem[]
+  alerts         Alert[]
+  reports        ErrorReport[]
+
+  @@unique([tmdbId, type])
+  @@index([franchiseId])
+  @@map("title")
+}
+
+/// Localized name/overview/slug per UI language (tr, en, fr...). No machine-translated overviews.
+model TitleLocalization {
+  id       Int      @id @default(autoincrement())
+  titleId  Int      @map("title_id")
+  lang     String   @db.VarChar(8)
+  name     String
+  altNames String[] @map("alt_names")
+  overview String?
+  slug     String
+  title    Title    @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([titleId, lang])
+  @@unique([lang, slug])
+  @@map("title_localization")
+}
+
+model Season {
+  id           Int       @id @default(autoincrement())
+  titleId      Int       @map("title_id")
+  number       Int
+  name         String?
+  airDate      DateTime? @map("air_date") @db.Date
+  episodeCount Int?      @map("episode_count")
+  tmdbScore    Decimal?  @map("tmdb_score") @db.Decimal(3, 1)
+  posterPath   String?   @map("poster_path")
+  title        Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  episodes     Episode[]
+  offers       Offer[]
+  videos       Video[]
+
+  @@unique([titleId, number])
+  @@map("season")
+}
+
+model Episode {
+  id         Int       @id @default(autoincrement())
+  seasonId   Int       @map("season_id")
+  number     Int
+  name       String?
+  overview   String?
+  airDate    DateTime? @map("air_date") @db.Date
+  runtimeMin Int?      @map("runtime_min")
+  tmdbScore  Decimal?  @map("tmdb_score") @db.Decimal(3, 1)
+  stillPath  String?   @map("still_path")
+  season     Season    @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  offers     Offer[]
+  videos     Video[]
+
+  @@unique([seasonId, number])
+  @@map("episode")
+}
+
+/// People are shown without photos (initials only) — licensing.
+model Person {
+  id       Int       @id @default(autoincrement())
+  tmdbId   Int       @unique @map("tmdb_id")
+  name     String
+  slug     String    @unique
+  birthday DateTime? @db.Date
+  knownFor String?   @map("known_for")
+  credits  Credit[]
+
+  @@map("person")
+}
+
+model Credit {
+  id        Int     @id @default(autoincrement())
+  titleId   Int     @map("title_id")
+  personId  Int     @map("person_id")
+  job       String // "Director", "Voice", "Actor", "Writer"
+  character String?
+  order     Int     @default(0)
+  title     Title   @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  person    Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@unique([titleId, personId, job, character])
+  @@index([personId])
+  @@map("credit")
+}
+
+model Franchise {
+  id               Int             @id @default(autoincrement())
+  tmdbCollectionId Int?            @unique @map("tmdb_collection_id")
+  name             String
+  slug             String          @unique
+  titles           Title[]
+  items            FranchiseItem[]
+
+  @@map("franchise")
+}
+
+/// Watch order: release order and story order can differ; series and shorts included.
+model FranchiseItem {
+  id           Int       @id @default(autoincrement())
+  franchiseId  Int       @map("franchise_id")
+  titleId      Int       @map("title_id")
+  releaseOrder Int       @map("release_order")
+  storyOrder   Int?      @map("story_order")
+  kind         String    @default("main") // main | series | short
+  franchise    Franchise @relation(fields: [franchiseId], references: [id], onDelete: Cascade)
+  title        Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([franchiseId, titleId])
+  @@map("franchise_item")
+}
+
+// ───────────────────────── Availability ─────────────────────────
+
+model Country {
+  code     String           @id @db.Char(2) // ISO 3166-1 alpha-2
+  name     String
+  uiLangs  String[]         @map("ui_langs")
+  services ServiceCountry[]
+
+  @@map("country")
+}
+
+model Service {
+  id               Int                 @id @default(autoincrement())
+  slug             String              @unique // netflix, prime-video, disney-plus, hbo-max, tod, tabii, exxen, gain
+  name             String
+  logoPath         String?             @map("logo_path")
+  deeplinkTemplate String?             @map("deeplink_template")
+  countries        ServiceCountry[]
+  offers           Offer[]
+  events           AvailabilityEvent[]
+  users            UserService[]
+
+  @@map("service")
+}
+
+model ServiceCountry {
+  serviceId   Int      @map("service_id")
+  countryCode String   @map("country_code") @db.Char(2)
+  priceFrom   Decimal? @map("price_from") @db.Decimal(10, 2)
+  currency    String?  @db.Char(3)
+  hasAdsTier  Boolean  @default(false) @map("has_ads_tier")
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  country     Country  @relation(fields: [countryCode], references: [code])
+
+  @@id([serviceId, countryCode])
+  @@map("service_country")
+}
+
+/// Current availability. One row per title(+season/episode) × country × service × offer type × quality.
+model Offer {
+  id          Int       @id @default(autoincrement())
+  titleId     Int       @map("title_id")
+  seasonId    Int?      @map("season_id")
+  episodeId   Int?      @map("episode_id")
+  countryCode String    @map("country_code") @db.Char(2)
+  serviceId   Int       @map("service_id")
+  type        OfferType
+  quality     String? // sd | hd | uhd
+  price       Decimal?  @db.Decimal(10, 2)
+  currency    String?   @db.Char(3)
+  url         String
+  leavingAt   DateTime? @map("leaving_at") @db.Date
+  source      String // streaming_availability | manual
+  firstSeenAt DateTime  @default(now()) @map("first_seen_at")
+  checkedAt   DateTime  @map("checked_at")
+  isActive    Boolean   @default(true) @map("is_active")
+
+  title     Title           @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  season    Season?         @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  episode   Episode?        @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  service   Service         @relation(fields: [serviceId], references: [id])
+  languages OfferLanguage[]
+  reports   ErrorReport[]
+
+  @@index([titleId, countryCode, isActive])
+  @@index([countryCode, serviceId, isActive])
+  @@index([leavingAt])
+  @@map("offer")
+}
+
+model OfferLanguage {
+  offerId Int        @map("offer_id")
+  lang    String     @db.VarChar(16) // BCP-47: tr, en, es-419, pt-BR
+  kind    LangKind
+  status  LangStatus @default(unknown)
+  offer   Offer      @relation(fields: [offerId], references: [id], onDelete: Cascade)
+
+  @@id([offerId, lang, kind])
+  @@index([lang, kind, status])
+  @@map("offer_language")
+}
+
+/// V3 — history. Written by the ingest diff; never edited by hand.
+model AvailabilityEvent {
+  id          BigInt     @id @default(autoincrement())
+  titleId     Int        @map("title_id")
+  countryCode String     @map("country_code") @db.Char(2)
+  serviceId   Int        @map("service_id")
+  type        EventType
+  offerType   OfferType? @map("offer_type")
+  before      Json?
+  after       Json?
+  occurredAt  DateTime   @default(now()) @map("occurred_at")
+  title       Title      @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  service     Service    @relation(fields: [serviceId], references: [id])
+
+  @@index([titleId, countryCode, occurredAt])
+  @@index([occurredAt])
+  @@map("availability_event")
+}
+
+/// V5 — release tracker. isEstimate=true is shown with "~".
+model ReleaseTrack {
+  id          Int          @id @default(autoincrement())
+  titleId     Int          @map("title_id")
+  countryCode String       @map("country_code") @db.Char(2)
+  stage       ReleaseStage
+  date        DateTime?    @db.Date
+  isEstimate  Boolean      @default(false) @map("is_estimate")
+  serviceId   Int?         @map("service_id")
+  lang        String?      @db.VarChar(16) // for stage = dub
+  source      String
+  title       Title        @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([titleId, countryCode, stage, lang])
+  @@map("release_track")
+}
+
+/// Official videos only (YouTube embed). Never downloaded or re-hosted.
+model Video {
+  id          Int       @id @default(autoincrement())
+  titleId     Int       @map("title_id")
+  seasonId    Int?      @map("season_id")
+  episodeId   Int?      @map("episode_id")
+  site        String    @default("youtube")
+  key         String
+  kind        VideoKind
+  name        String
+  lang        String?   @db.VarChar(16)
+  isOfficial  Boolean   @default(true) @map("is_official")
+  isVertical  Boolean   @default(false) @map("is_vertical")
+  durationSec Int?      @map("duration_sec")
+  publishedAt DateTime? @map("published_at")
+  title       Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  season      Season?   @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  episode     Episode?  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+
+  @@unique([site, key])
+  @@index([titleId, lang])
+  @@map("video")
+}
+
+// ───────────────────────── Editorial & SEO ─────────────────────────
+
+model List {
+  id          Int        @id @default(autoincrement())
+  lang        String     @db.VarChar(8)
+  countryCode String     @map("country_code") @db.Char(2)
+  slug        String
+  name        String
+  intro       String // human-written
+  author      String     @default("sofo editors")
+  isPublished Boolean    @default(false) @map("is_published")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  items       ListItem[]
+
+  @@unique([lang, slug])
+  @@map("list")
+}
+
+model ListItem {
+  listId   Int     @map("list_id")
+  titleId  Int     @map("title_id")
+  position Int
+  blurb    String? // human-written, short
+  list     List    @relation(fields: [listId], references: [id], onDelete: Cascade)
+  title    Title   @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@id([listId, titleId])
+  @@map("list_item")
+}
+
+/// One row per public URL — drives sitemap, hreflang and the quality gate.
+model Page {
+  id          Int         @id @default(autoincrement())
+  path        String      @unique
+  type        String // home | title | season | catalog | lang_hub | list | service | new_leaving | trailers | person | kids | franchise | releases | static
+  lang        String      @db.VarChar(8)
+  countryCode String      @map("country_code") @db.Char(2)
+  entityId    Int?        @map("entity_id")
+  indexStatus IndexStatus @default(noindex) @map("index_status")
+  qualityNote String?     @map("quality_note")
+  hreflangKey String?     @map("hreflang_key") // same key across editions
+  lastBuiltAt DateTime?   @map("last_built_at")
+
+  @@index([indexStatus, type])
+  @@index([hreflangKey])
+  @@map("page")
+}
+
+// ───────────────────────── Users & retention ─────────────────────────
+
+model User {
+  id          String          @id @default(cuid())
+  email       String?         @unique
+  telegramId  BigInt?         @unique @map("telegram_id")
+  googleSub   String?         @unique @map("google_sub")
+  countryCode String          @default("TR") @map("country_code") @db.Char(2)
+  uiLang      String          @default("en") @map("ui_lang") @db.VarChar(8)
+  audioPref   String?         @map("audio_pref") @db.VarChar(16) // "tr" dub, "tr-sub", "original"
+  createdAt   DateTime        @default(now()) @map("created_at")
+  services    UserService[]
+  watchlist   WatchlistItem[]
+  alerts      Alert[]
+
+  @@map("app_user")
+}
+
+model UserService {
+  userId    String  @map("user_id")
+  serviceId Int     @map("service_id")
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@id([userId, serviceId])
+  @@map("user_service")
+}
+
+model WatchlistItem {
+  userId  String   @map("user_id")
+  titleId Int      @map("title_id")
+  addedAt DateTime @default(now()) @map("added_at")
+  watched Boolean  @default(false)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title   Title    @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, titleId])
+  @@map("watchlist_item")
+}
+
+model Alert {
+  id         Int         @id @default(autoincrement())
+  userId     String      @map("user_id")
+  titleId    Int         @map("title_id")
+  kinds      AlertKind[]
+  channel    Channel     @default(telegram)
+  lastSentAt DateTime?   @map("last_sent_at")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      Title       @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, titleId])
+  @@map("alert")
+}
+
+/// V12 — "Something wrong?" reports. Re-check within 24h.
+model ErrorReport {
+  id         Int          @id @default(autoincrement())
+  titleId    Int          @map("title_id")
+  offerId    Int?         @map("offer_id")
+  kind       ReportKind
+  note       String?
+  status     ReportStatus @default(open)
+  createdAt  DateTime     @default(now()) @map("created_at")
+  resolvedAt DateTime?    @map("resolved_at")
+  title      Title        @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  offer      Offer?       @relation(fields: [offerId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@map("error_report")
+}
+
+/// Aggregated per day — powers "trending searches" and "Request a title". No personal data.
+model SearchStat {
+  day         DateTime @db.Date
+  countryCode String   @map("country_code") @db.Char(2)
+  query       String
+  count       Int      @default(0)
+  zeroResults Boolean  @default(false) @map("zero_results")
+
+  @@id([day, countryCode, query])
+  @@map("search_stat")
+}
