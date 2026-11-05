@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home — final style</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Nunito:wght@900&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0D}
+a{color:#FFFFFF;text-decoration:none}a:hover{color:#FFD5C7}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0A0A0D; color: #FFFFFF; font-family: 'Manrope', system-ui, sans-serif; overflow: hidden">
+
+<header style="position: relative; z-index: 5; background: rgba(10,10,13,0.92); border-bottom: 1px solid #18181E">
+<div style="max-width: 1360px; margin: 0 auto; padding: 14px 28px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px">
+<a href="#" style="font-size: 26px; font-weight: 800; letter-spacing: -0.04em"><span style="display: inline-flex; align-items: center; gap: 0.22em; font-family: Nunito, Manrope, sans-serif; font-weight: 900; letter-spacing: -0.03em"><span style="width: 1.12em; height: 1.12em; border-radius: 0.3em; background: #FF5A1F; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; line-height: 1; padding-bottom: 0.08em; box-sizing: border-box">s</span>sofo</span></a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 2px; flex-grow: 1; font-size: 15px; font-weight: 700; color: #A1A1AD">
+<a href="#" style="padding: 12px 8px; color: #FFFFFF">Home</a><a href="#" style="padding: 12px 8px; color: #A1A1AD">Movies</a><a href="#" style="padding: 12px 8px; color: #A1A1AD">Series</a><a href="#" style="padding: 12px 8px; color: #A1A1AD">Anime</a><a href="#" style="padding: 12px 8px; color: #A1A1AD">Kids</a><a href="#" style="padding: 12px 8px; color: #A1A1AD">Collections</a>
+</nav>
+<a href="SearchPage.dc.html" style="height: 44px; padding: 0 14px; display: inline-flex; align-items: center; gap: 10px; border-radius: 12px; background: #15151B; border: 1px solid #26262F; font-size: 14px; font-weight: 600; color: #A1A1AD"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#A1A1AD" stroke-width="2"></circle><path d="m20 20-3.5-3.5" stroke="#A1A1AD" stroke-width="2" stroke-linecap="round"></path></svg>Search<span style="font-size: 12px; padding: 2px 6px; border-radius: 5px; background: #26262F">/</span></a>
+<button type="button" style="height: 44px; padding: 0 12px; border-radius: 12px; border: 0; background: #15151B; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700">Türkiye · EN</button>
+<a href="#" style="height: 44px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; background: #15151B; font-size: 14px; font-weight: 700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 4h12v17l-6-4-6 4V4Z" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path></svg>My list</a>
+</div>
+</header>
+
+<section style="position: relative; min-height: 640px; overflow: hidden; display: flex">
+<div aria-hidden="true" style="position: absolute; left: -60px; right: -60px; top: -120px; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 10px; transform: rotate(-6deg)">
+<sc-for list="{{wall}}" as="w" hint-placeholder-count="40"><img src="{{w}}" alt="" style="width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 10px"></sc-for>
+</div>
+<div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(10,10,13,0.62) 0%, rgba(10,10,13,0.93) 58%, #0A0A0D 100%)"></div>
+<div style="position: relative; flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 56px 24px 64px; text-align: center">
+<h1 style="margin: 0; font-size: 72px; line-height: 0.98; font-weight: 800; letter-spacing: -0.045em; max-width: 1000px">Every movie. Every service.<br><span style="color: #FF5A1F">Your language.</span></h1>
+<p style="margin: 0; font-size: 18px; color: #D4D4DC; max-width: 640px">Search once — we check Netflix, Disney+, Prime Video and 40+ legal services to find the version you can actually understand.</p>
+<div style="position: relative; width: 100%; max-width: 820px; text-align: left">
+<div style="{{boxStyle}}">
+<div style="display: flex; align-items: center; height: 68px; padding: 0 8px 0 22px; gap: 12px">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#FF5A1F" stroke-width="2"></circle><path d="m20 20-3.5-3.5" stroke="#FF5A1F" stroke-width="2" stroke-linecap="round"></path></svg>
+<label for="hq" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search</label>
+<input id="hq" type="search" placeholder="Search movies, series, anime, people…" onClick="{{open}}" style="flex-grow: 1; min-width: 0; height: 60px; border: 0; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 19px">
+<button type="button" style="height: 52px; padding: 0 16px; border-radius: 14px; border: 0; background: #1C1C24; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700">Audio: Türkçe ▾</button>
+<button type="submit" style="height: 52px; padding: 0 22px; border-radius: 14px; border: 0; background: #FF5A1F; color: #0A0A0D; font-family: inherit; font-size: 16px; font-weight: 800">Search</button>
+</div>
+<sc-if value="{{isOpen}}" hint-placeholder-val="{{false}}">
+<div style="border-top: 1px solid #26262F; padding: 8px; display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 8px 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #6E6E7A">Trending searches in Türkiye</span>
+<sc-for list="{{sugg}}" as="s" hint-placeholder-count="4">
+<a href="SearchPage.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 12px">
+<img src="{{s.img}}" alt="" style="width: 34px; height: 51px; object-fit: cover; border-radius: 6px">
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{s.q}}</span><span style="font-size: 13px; color: #A1A1AD">{{s.m}}</span></span>
+<span style="font-size: 12px; font-weight: 800; color: #4ADE80">{{s.d}}</span>
+</a>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="6"><a href="SearchPage.dc.html" style="height: 38px; padding: 0 14px; display: inline-flex; align-items: center; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.16); font-size: 14px; font-weight: 600; color: #E4E4EA">{{c}}</a></sc-for>
+</div>
+</div>
+</section>
+
+<main style="max-width: 1360px; margin: 0 auto; padding: 8px 28px 64px; box-sizing: border-box; display: flex; flex-direction: column; gap: 44px">
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<a href="#" style="align-self: flex-start; font-size: 24px; font-weight: 800">Top 10 in Türkiye this week <span style="color: #A1A1AD">›</span></a>
+<div style="display: flex; gap: 6px; overflow-x: auto">
+<sc-for list="{{top}}" as="t" hint-placeholder-count="7">
+<a href="#" style="flex: 0 0 auto; display: flex; align-items: flex-end">
+<span style="font-size: 116px; line-height: 0.8; font-weight: 800; color: #0A0A0D; -webkit-text-stroke: 2px #3A3A46; margin-right: -12px">{{t.n}}</span>
+<img src="{{t.img}}" alt="{{t.t}}" style="position: relative; width: 140px; height: 210px; object-fit: cover; border-radius: 14px">
+</a>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 style="margin: 0; font-size: 24px; font-weight: 800">Watch in your language</h2>
+<span style="font-size: 14px; color: #6E6E7A">Dubbed and subtitled, on legal services in Türkiye</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px">
+<sc-for list="{{langs}}" as="l" hint-placeholder-count="8">
+<a href="#" style="{{l.box}}">
+<span style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 24px; font-weight: 800">{{l.n}}</span><span style="{{l.ss}}">{{l.s}}</span></span>
+<span style="position: absolute; right: 10px; bottom: -22px; display: flex"><sc-for list="{{l.imgs}}" as="m" hint-placeholder-count="3"><img src="{{m.src}}" alt="" style="{{m.style}}"></sc-for></span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="2">
+<section style="display: flex; flex-direction: column; gap: 14px">
+<a href="#" style="align-self: flex-start; font-size: 24px; font-weight: 800">{{r.h}} <span style="color: #A1A1AD">›</span></a>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; align-items: start">
+<sc-for list="{{r.items}}" as="c" hint-placeholder-count="7">
+<a href="#" style="position: relative; display: block">
+<img src="{{c.img}}" alt="{{c.t}}" style="display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 14px">
+<sc-if value="{{c.hasBadge}}" hint-placeholder-val="{{true}}"><span style="{{c.bs}}">{{c.b}}</span></sc-if>
+<span style="position: absolute; left: 8px; bottom: 8px; display: flex; gap: 4px"><sc-for list="{{c.logos}}" as="l" hint-placeholder-count="2"><img src="{{l}}" alt="" style="width: 22px; height: 22px; border-radius: 6px"></sc-for></span>
+<span style="position: absolute; right: 8px; bottom: 8px; font-size: 11px; font-weight: 800; padding: 3px 7px; border-radius: 6px; background: rgba(10,10,13,0.8)">{{c.score}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+</sc-for>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 24px; font-weight: 800">Collections</h2>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px">
+<sc-for list="{{cols}}" as="c" hint-placeholder-count="4">
+<a href="#" style="position: relative; height: 220px; border-radius: 22px; overflow: hidden; display: block">
+<img src="{{c.img}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover">
+<span style="position: absolute; inset: 0; background: linear-gradient(0deg, rgba(10,10,13,0.92), rgba(10,10,13,0.05) 70%)"></span>
+<span style="position: absolute; left: 16px; right: 16px; bottom: 16px; display: flex; flex-direction: column; gap: 4px; text-align: center"><span style="font-size: 21px; font-weight: 800">{{c.t}}</span><span style="font-size: 13px; color: #D4D4DC">{{c.m}}</span></span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px; padding: 26px 28px; border-radius: 22px; background: linear-gradient(120deg, #2E170E, #15151B 65%); border: 1px solid #4A2416">
+<div style="flex: 999 1 420px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 22px; font-weight: 800">Never miss a dub.</span>
+<span style="font-size: 15px; color: #D4D4DC">Get a weekly list of new Turkish dubs and what's leaving your services — by email or Telegram.</span>
+</div>
+<div style="flex: 1 1 380px; display: flex; gap: 8px"><label for="em" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Email</label><input id="em" type="email" placeholder="Email or @telegram" style="flex-grow: 1; min-width: 0; height: 50px; box-sizing: border-box; padding: 0 16px; border-radius: 12px; border: 1px solid #26262F; background: #0A0A0D; color: #FFFFFF; font-family: inherit; font-size: 15px"><button type="button" style="height: 50px; padding: 0 20px; border: 0; border-radius: 12px; background: #FF5A1F; color: #0A0A0D; font-family: inherit; font-size: 15px; font-weight: 800">Subscribe</button></div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 8px; max-width: 920px">
+<h2 style="margin: 0; font-size: 20px; font-weight: 800">Türkçe dublaj filmler ve diziler — hangi platformda?</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A1A1AD">sofo checks Netflix, Disney+, Prime Video, HBO Max, TOD, tabii and every other legal service in Türkiye daily and shows which titles have Turkish dubbing or subtitles…</p>
+<a href="#" style="font-size: 14px; font-weight: 700; color: #A1A1AD; padding: 6px 0">Read more</a>
+</section>
+</main>
+
+<footer style="border-top: 1px solid #18181E">
+<div style="max-width: 1360px; margin: 0 auto; padding: 32px 28px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 28px 64px; font-size: 14px; color: #A1A1AD">
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-weight: 800; color: #FFFFFF">sofo</span><a href="#" style="color: #A1A1AD">How we verify</a><a href="#" style="color: #A1A1AD">For streaming services</a><a href="#" style="color: #A1A1AD">Contact</a></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-weight: 800; color: #FFFFFF">Browse</span><a href="#" style="color: #A1A1AD">New dubs</a><a href="#" style="color: #A1A1AD">Leaving soon</a><a href="#" style="color: #A1A1AD">Free with ads</a></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span style="font-weight: 800; color: #FFFFFF">Editions</span><span style="display: flex; flex-wrap: wrap; gap: 6px 14px; max-width: 380px"><a href="#" style="color: #A1A1AD">Türkiye</a><a href="#" style="color: #A1A1AD">United States</a><a href="#" style="color: #A1A1AD">Deutschland</a><a href="#" style="color: #A1A1AD">France</a><a href="#" style="color: #A1A1AD">España</a><a href="#" style="color: #A1A1AD">Brasil</a></span></div>
+<span style="flex-grow: 1; align-self: flex-end; text-align: right">We never host video. Data &amp; images: TMDB.</span>
+</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2900}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { open: true }; }
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const L = { N: b('d2df8e6b31dc8a17d738cdcbe082abae'), P: b('996ff9952cc48dec9ccd2e076c38e147'), D: b('73cc46ffcd16b9ca2ab5420acf984a61') };
+const T = { robot: ['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', 'NP', '8.3'], arc: ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b', 'N', '8.7'], io: ['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'D', '7.6'], ds: ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', 'N', '8.5'], moana: ['Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'D', '7.0'], kfp: ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'NP', '7.1'], coco: ['Coco', '5ded58698603822d03ccd70fd08231b5', 'D', '8.2'], jjk: ['Jujutsu Kaisen', 'e622889c112ac94528cebedd9f389f09', 'N', '8.6'], sa: ['Spirited Away', 'c7d07cd502e08e290cd41761b2472cef', 'N', '8.5'], enc: ['Encanto', '2e0943299c347febf750aa19360d1513', 'D', '7.6'], aot: ['Attack on Titan', '93cf3e1c3aaff5d0d4a1608218ae34b7', 'N', '8.7'], mario: ['Super Mario Bros.', '47f8a7c4cd8d8c24bf5128dfbdba945e', 'N', '7.6'], sv: ['Spider-Verse', '03b2f15bf88d978897f8069cf919e46b', 'NP', '8.3'], el: ['Elemental', 'd72425766e887bab76cad923ba40aba6', 'D', '7.6'], soul: ['Soul', '33e8d6e312d2c2a28eb7e6c8b92bd882', 'D', '8.0'], luca: ['Luca', '8a0c424f5b0aaaf2e47ebfabe38e12cd', 'D', '7.8'], op: ['One Piece', 'b696d2769e7c1c80631606bc89386aec', 'N', '8.7'], rick: ['Rick and Morty', '39beccc02edc0ee830f583d6e867930b', 'P', '8.7'], simp: ['The Simpsons', 'fa46bb4c0cfc8f046cc08899da9bc5aa', 'D', '8.0'] };
+const ids = Object.keys(T).map((k) => T[k][1]);
+const wall = []; for (let i = 0; i < 50; i++) wall.push(b(ids[(i * 7) % ids.length]));
+const BS = 'position: absolute; left: 8px; top: 8px; font-size: 11px; font-weight: 800; padding: 4px 9px; border-radius: 999px; ';
+const BG = { dub: ['türkçe dublaj', '#3B82F6', '#FFFFFF'], sub: ['türkçe altyazı', '#E5E7EB', '#0A0A0D'], nd: ['new dub', '#FF5A1F', '#0A0A0D'], lv: ['leaving soon', '#FBBF24', '#0A0A0D'] };
+const card = (k) => { const p = k.split(':'); const t = T[p[0]]; const bd = p[1] ? BG[p[1]] : null; return { t: t[0], img: b(t[1]), logos: t[2].split('').map((x) => L[x]), score: t[3], hasBadge: !!bd, b: bd ? bd[0] : '', bs: bd ? BS + 'background: ' + bd[1] + '; color: ' + bd[2] : '' }; };
+const fan = (keys) => keys.map((k, i) => ({ src: b(T[k][1]), style: 'width: 60px; height: 90px; object-fit: cover; border-radius: 9px; box-shadow: 0 8px 18px rgba(0,0,0,0.4); transform: rotate(' + ((i - 1) * 8) + 'deg); ' + (i ? 'margin-left: -20px' : '') }));
+const lbox = (on) => 'position: relative; height: 140px; border-radius: 22px; overflow: hidden; display: block; box-sizing: border-box; padding: 18px; ' + (on ? 'background: #FF5A1F; color: #0A0A0D' : 'background: #15151B; border: 1px solid #22222A');
+const open = this.state.open;
+return {
+wall,
+isOpen: open,
+open: () => this.setState({ open: true }),
+boxStyle: 'border-radius: 22px; background: rgba(21,21,27,0.96); border: ' + (open ? '1px solid #FF5A1F' : '1px solid #2E2E38') + '; box-shadow: 0 30px 80px rgba(0,0,0,0.6); overflow: hidden',
+sugg: [['inside out 2 türkçe dublaj', 'Disney+ · Turkish audio', 'io', '+240%'], ['arcane 2. sezon', 'Netflix · Turkish audio', 'arc', '+64%'], ['demon slayer türkçe', 'Netflix · subtitles', 'ds', '+51%'], ['vahşi robot izle', 'Netflix · Prime Video', 'robot', '+38%']].map((s) => ({ q: s[0], m: s[1], img: b(T[s[2]][1]), d: s[3] })),
+chips: ['Anime in Türkçe', 'New dubs this week', 'Free & legal', 'Leaving Netflix', 'Pixar dubbed', 'Kids 4–6'],
+top: ['robot', 'arc', 'io', 'ds', 'moana', 'kfp', 'coco'].map((k, i) => ({ n: String(i + 1), t: T[k][0], img: b(T[k][1]) })),
+langs: [['Türkçe', 'Turkish dub & subtitles', ['io', 'coco', 'kfp'], 1], ['English', 'Original & dubs', ['robot', 'arc', 'sa'], 0], ['Español', 'Spanish (ES & LATAM)', ['ds', 'enc', 'moana'], 0], ['Deutsch', 'German dub', ['mario', 'soul', 'luca'], 0], ['Français', 'VF & VOSTFR', ['el', 'moana', 'sv'], 0], ['Português', 'Brazil & Portugal', ['enc', 'aot', 'robot'], 0], ['Русский', 'Russian dub', ['sv', 'op', 'jjk'], 0], ['العربية', 'Arabic dub', ['soul', 'coco', 'io'], 0]].map((l) => ({ n: l[0], s: l[1], imgs: fan(l[2]), box: lbox(l[3]), ss: 'font-size: 13px; font-weight: 700; ' + (l[3] ? 'color: #3B1306' : 'color: #A1A1AD') })),
+rows: [
+{ h: 'Just dubbed into Turkish', items: ['io:nd', 'kfp:nd', 'moana:nd', 'el:nd', 'sv:nd', 'mario:nd', 'robot:nd'].map(card) },
+{ h: 'Anime — sub or dub', items: ['ds:dub', 'jjk:sub', 'aot:dub', 'op:sub', 'sa:dub', 'arc:dub', 'rick:sub'].map(card) },
+{ h: 'Leaving your services soon', items: ['sa:lv', 'soul:lv', 'luca:lv', 'enc:lv', 'mario:lv', 'el:lv', 'simp:lv'].map(card) }
+],
+cols: [['Pixar, dubbed', '24 movies · 40+ languages', '639102cbae922345a6f75cfad5711f2f'], ['Ghibli: original + subtitles', '12 movies', '2773e2d8f4575e5e9ed94235960a3900'], ['Anime with a Turkish dub', '86 series', 'c49a556dcc34438b5a142c8f6c07aa21'], ['Family night', 'Under 100 minutes', '1179309321f9ffa02b539f4c31ff5bd0']].map((c) => ({ t: c[0], m: c[1], img: b(c[2]) }))
+};
+}
+}
+</script>
+</body>
+</html>

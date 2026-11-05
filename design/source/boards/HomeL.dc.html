@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home L — Wall</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#050505}
+a{color:#FFFFFF;text-decoration:none}a:hover{color:#E5E5E5}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #050505; color: #FFFFFF; font-family: 'Inter Tight', system-ui, sans-serif">
+<section style="position: relative; min-height: 1000px; overflow: hidden; display: flex; flex-direction: column">
+<div aria-hidden="true" style="position: absolute; left: -60px; right: -60px; top: -80px; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 10px; transform: rotate(-6deg)">
+<sc-for list="{{wall}}" as="w" hint-placeholder-count="40"><img src="{{w}}" alt="" style="width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 10px"></sc-for>
+</div>
+<div style="position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(5,5,5,0.55) 0%, rgba(5,5,5,0.92) 60%, #050505 100%)"></div>
+
+<header style="position: relative; max-width: 1360px; width: 100%; margin: 0 auto; padding: 20px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="#" style="font-size: 22px; font-weight: 800">[BRAND]</a>
+<span style="flex-grow: 1"></span>
+<a href="#" style="padding: 12px 8px; font-size: 15px; color: #D4D4D4">Browse</a>
+<a href="#" style="padding: 12px 8px; font-size: 15px; color: #D4D4D4">Services</a>
+<button type="button" style="height: 42px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.08); color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600">English ▾</button>
+</header>
+
+<div style="position: relative; flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 40px 24px 120px; text-align: center">
+<h1 style="margin: 0; font-size: 76px; line-height: 0.98; font-weight: 800; letter-spacing: -0.04em; max-width: 1000px">Every movie. Every service.<br>Your language.</h1>
+<p style="margin: 0; font-size: 19px; color: #D4D4D4; max-width: 620px">Search once — we check Netflix, Disney+, Prime Video and 40+ more to find the version you can actually understand.</p>
+<form role="search" style="width: 100%; max-width: 760px; box-sizing: border-box; display: flex; gap: 8px; padding: 8px; border-radius: 999px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(14px)">
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search</label>
+<input id="q" type="search" placeholder="Search a movie or show…" style="flex-grow: 1; min-width: 0; height: 60px; box-sizing: border-box; padding: 0 24px; border: 0; border-radius: 999px; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 19px">
+<button type="button" style="height: 60px; padding: 0 18px; border: 0; border-radius: 999px; background: rgba(255,255,255,0.14); color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 600">Audio: Türkçe ▾</button>
+<button type="submit" style="height: 60px; padding: 0 28px; border: 0; border-radius: 999px; background: #FFFFFF; color: #050505; font-family: inherit; font-size: 16px; font-weight: 800">Search</button>
+</form>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px">
+<sc-for list="{{langs}}" as="l" hint-placeholder-count="8"><a href="#" style="padding: 10px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.22); font-size: 14px; font-weight: 600; color: #E5E5E5">{{l}}</a></sc-for>
+</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() {
+const ids = ['cb4f087928b468549d841e1ee3e42661', '08d298c5c43e27d20a009e1485cb9b3b', '79f8fee8ed49eaf30382120f6b21d16f', '8e2de4d5af09254f1969c0aac5f7ff72', '1e670cb28388c895319bac5d4cfbc2c3', 'adb806acfa10e9988ff559ed874dc96e', '5ded58698603822d03ccd70fd08231b5', 'e622889c112ac94528cebedd9f389f09', '93cf3e1c3aaff5d0d4a1608218ae34b7', 'b696d2769e7c1c80631606bc89386aec', 'c7d07cd502e08e290cd41761b2472cef', '39beccc02edc0ee830f583d6e867930b', '47f8a7c4cd8d8c24bf5128dfbdba945e', '33e8d6e312d2c2a28eb7e6c8b92bd882', '8a0c424f5b0aaaf2e47ebfabe38e12cd', '2e0943299c347febf750aa19360d1513', 'd72425766e887bab76cad923ba40aba6', '03b2f15bf88d978897f8069cf919e46b', 'fa46bb4c0cfc8f046cc08899da9bc5aa'];
+const wall = [];
+for (let i = 0; i < 50; i++) wall.push('/_blob/' + ids[(i * 7) % ids.length]);
+return { wall, langs: ['English', 'Türkçe', 'Español', 'Deutsch', 'Français', 'Português', 'Русский', 'العربية'] };
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home M — Matrix</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#0F172A;text-decoration:none}a:hover{color:#4F46E5}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #FFFFFF; color: #0F172A; font-family: 'Inter', system-ui, sans-serif">
+<header style="border-bottom: 1px solid #E2E8F0">
+<div style="max-width: 1360px; margin: 0 auto; padding: 14px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+<a href="#" style="font-size: 20px; font-weight: 800">[BRAND]</a>
+<form role="search" style="flex: 999 1 320px; min-width: 0; display: flex"><label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search</label><input id="q" type="search" placeholder="Search a title…" style="width: 100%; height: 42px; box-sizing: border-box; padding: 0 14px; border-radius: 10px; border: 1px solid #CBD5E1; font-family: inherit; font-size: 15px"></form>
+<button type="button" style="height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; color: #0F172A">Türkiye ▾</button>
+<button type="button" style="height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid #CBD5E1; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; color: #0F172A">English ▾</button>
+</div>
+</header>
+
+<main style="max-width: 1360px; margin: 0 auto; padding: 40px 32px 72px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px">
+<section style="display: flex; flex-direction: column; gap: 10px; max-width: 860px">
+<h1 style="margin: 0; font-size: 48px; line-height: 1.08; font-weight: 800; letter-spacing: -0.03em">See which service speaks your language — before you subscribe.</h1>
+<p style="margin: 0; font-size: 18px; color: #475569">This week's most-searched titles in Türkiye, by audio language and service.</p>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px">
+<sc-for list="{{best}}" as="c" hint-placeholder-count="3">
+<div style="display: flex; gap: 14px; align-items: center; padding: 18px; border-radius: 16px; border: 1px solid #E2E8F0">
+<img src="{{c.logo}}" alt="" style="width: 44px; height: 44px; border-radius: 10px">
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 28px; font-weight: 800">{{c.pct}}</span><span style="font-size: 13px; color: #475569">{{c.d}}</span></span>
+</div>
+</sc-for>
+</section>
+
+<section style="border: 1px solid #E2E8F0; border-radius: 16px; overflow-x: auto">
+<table style="width: 100%; min-width: 980px; border-collapse: collapse; font-size: 14px">
+<thead>
+<tr style="background: #F8FAFC; text-align: left">
+<th style="padding: 14px 16px; font-weight: 700">Title</th>
+<sc-for list="{{langs}}" as="l" hint-placeholder-count="8"><th style="padding: 14px 10px; font-weight: 700; text-align: center">{{l}}</th></sc-for>
+</tr>
+</thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+<tr style="border-top: 1px solid #E2E8F0">
+<td style="padding: 10px 16px"><span style="display: flex; align-items: center; gap: 12px"><img src="{{r.img}}" alt="" style="width: 30px; height: 45px; object-fit: cover; border-radius: 5px"><span style="font-weight: 600">{{r.t}}</span></span></td>
+<sc-for list="{{r.cells}}" as="c" hint-placeholder-count="8"><td style="padding: 10px; text-align: center"><span style="{{c.s}}">{{c.t}}</span></td></sc-for>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</section>
+<div style="display: flex; flex-wrap: wrap; gap: 18px; font-size: 13px; color: #475569">
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 22px; height: 22px; border-radius: 6px; background: #FEE2E2; color: #991B1B; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center">N</span>Netflix</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 22px; height: 22px; border-radius: 6px; background: #DBEAFE; color: #1E3A8A; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center">D</span>Disney+</span>
+<span style="display: flex; align-items: center; gap: 6px"><span style="width: 22px; height: 22px; border-radius: 6px; background: #E0F2FE; color: #075985; font-weight: 800; font-size: 11px; display: flex; align-items: center; justify-content: center">P</span>Prime Video</span>
+<span>· = subtitles only · — = not available</span>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const S = { N: 'background: #FEE2E2; color: #991B1B', D: 'background: #DBEAFE; color: #1E3A8A', P: 'background: #E0F2FE; color: #075985' };
+const cell = (v) => v === '-' ? { t: '—', s: 'color: #CBD5E1' } : v === '.' ? { t: '·', s: 'font-size: 20px; color: #94A3B8' } : { t: v, s: 'display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; padding: 0 4px; border-radius: 6px; font-size: 12px; font-weight: 800; ' + S[v[0]] };
+const rows = [['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', 'NP N N N N N . -'], ['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'D D D D D D - D'], ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b', 'N N N N N N N N'], ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', 'N . N N . N N .'], ['Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'D D D D D D - D'], ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'NP N N . N - N -'], ['Spirited Away', 'c7d07cd502e08e290cd41761b2472cef', 'N N N N N N N N'], ['Jujutsu Kaisen', 'e622889c112ac94528cebedd9f389f09', 'N . N N . N N .']];
+return {
+best: [
+{ logo: b('d2df8e6b31dc8a17d738cdcbe082abae'), pct: '68%', d: 'of top titles in Türkçe audio are on Netflix' },
+{ logo: b('73cc46ffcd16b9ca2ab5420acf984a61'), pct: '41%', d: 'are on Disney+' },
+{ logo: b('996ff9952cc48dec9ccd2e076c38e147'), pct: '18%', d: 'are on Prime Video' }
+],
+langs: ['EN', 'TR', 'ES', 'DE', 'FR', 'PT', 'RU', 'AR'],
+rows: rows.map((r) => ({ t: r[0], img: b(r[1]), cells: r[2].split(' ').map(cell) }))
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Model 1 — Glotvi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#09090C}
+a{color:#FFFFFF;text-decoration:none}a:hover{color:#C7F9EA}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #09090C; color: #FFFFFF; font-family: 'Manrope', system-ui, sans-serif; overflow: hidden">
+
+<header style="border-bottom: 1px solid #18181E">
+<div style="max-width: 1360px; margin: 0 auto; padding: 14px 28px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px">
+<a href="#" style="display: flex; align-items: baseline; gap: 2px; font-size: 26px; font-weight: 800; letter-spacing: -0.04em">glot<span style="color: #1FD1A5">vi</span></a>
+<nav aria-label="Main" style="display: flex; gap: 2px; font-size: 15px; font-weight: 700; color: #9C9CA8">
+<a href="#" style="padding: 12px 8px; color: #FFFFFF">Home</a><a href="#" style="padding: 12px 8px; color: #9C9CA8">Movies</a><a href="#" style="padding: 12px 8px; color: #9C9CA8">Series</a><a href="#" style="padding: 12px 8px; color: #9C9CA8">Anime</a><a href="#" style="padding: 12px 8px; color: #9C9CA8">glotvi kids</a>
+</nav>
+<form role="search" style="flex: 999 1 380px; min-width: 0; display: flex; align-items: center; gap: 0; height: 52px; border-radius: 16px; background: #15151B; border: 1px solid #26262F; overflow: hidden">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="margin: 0 12px 0 16px; flex-shrink: 0"><circle cx="11" cy="11" r="7" stroke="#9C9CA8" stroke-width="2"></circle><path d="m20 20-3.5-3.5" stroke="#9C9CA8" stroke-width="2" stroke-linecap="round"></path></svg>
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search</label>
+<input id="q" type="search" placeholder="Search 450,000 movies & series on every service" style="flex-grow: 1; min-width: 0; height: 50px; border: 0; background: transparent; color: #FFFFFF; font-family: inherit; font-size: 16px">
+<button type="button" style="height: 36px; margin-right: 8px; padding: 0 12px; border-radius: 10px; border: 0; background: #1FD1A5; color: #09090C; font-family: inherit; font-size: 13px; font-weight: 800; flex-shrink: 0">Audio: Türkçe ▾</button>
+</form>
+<button type="button" style="height: 44px; padding: 0 12px; border-radius: 12px; border: 0; background: #15151B; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700">TR · EN</button>
+</div>
+</header>
+
+<section style="max-width: 1360px; margin: 0 auto; padding: 14px 28px 0; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+<span style="font-size: 13px; font-weight: 700; color: #6E6E7A; margin-right: 4px">People are searching:</span>
+<sc-for list="{{trends}}" as="t" hint-placeholder-count="6"><a href="#" style="height: 36px; padding: 0 12px; display: inline-flex; align-items: center; border-radius: 999px; background: #15151B; font-size: 13px; font-weight: 700; color: #D2D2DA">{{t}}</a></sc-for>
+</section>
+
+<section aria-label="Featured" style="padding-top: 18px">
+<div style="display: flex; justify-content: center; align-items: center; gap: 22px">
+<div style="flex: 0 0 15%; height: 360px; border-radius: 22px; overflow: hidden; opacity: 0.45"><img src="/_blob/639102cbae922345a6f75cfad5711f2f" alt="" style="width: 100%; height: 100%; object-fit: cover; object-position: right center"></div>
+<div style="position: relative; flex: 0 0 66%; max-width: 940px; height: 360px; border-radius: 22px; overflow: hidden">
+<img src="/_blob/f1bae5f68de0a4210ef79a94e898eb6b" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 60% 40%">
+<div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(9,9,12,0.94) 0%, rgba(9,9,12,0.55) 45%, rgba(9,9,12,0) 75%)"></div>
+<span style="position: absolute; left: 32px; top: 0; font-size: 12px; font-weight: 800; padding: 5px 12px; border-radius: 0 0 10px 10px; background: #3B82F6">türkçe dublaj · yeni</span>
+<div style="position: absolute; left: 32px; bottom: 30px; max-width: 430px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 48px; line-height: 0.95; font-weight: 800; letter-spacing: -0.03em">The Wild Robot</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #D2D2DA"><img src="/_blob/d2df8e6b31dc8a17d738cdcbe082abae" alt="" style="width: 22px; height: 22px; border-radius: 5px"><img src="/_blob/996ff9952cc48dec9ccd2e076c38e147" alt="" style="width: 22px; height: 22px; border-radius: 5px">Netflix (subscription) · Prime Video (rent ₺79)</span>
+<span style="display: flex; gap: 10px">
+<a href="#" style="height: 46px; padding: 0 20px; display: inline-flex; align-items: center; border-radius: 12px; background: #1FD1A5; color: #09090C; font-size: 15px; font-weight: 800">Where to watch</a>
+<a href="#" style="height: 46px; padding: 0 16px; display: inline-flex; align-items: center; border-radius: 12px; background: rgba(255,255,255,0.14); font-size: 15px; font-weight: 700">Trailer</a>
+</span>
+</div>
+</div>
+<div style="flex: 0 0 15%; height: 360px; border-radius: 22px; overflow: hidden; opacity: 0.45"><img src="/_blob/4ca3d3239df179d68432e3dd05cd8583" alt="" style="width: 100%; height: 100%; object-fit: cover; object-position: left center"></div>
+</div>
+</section>
+
+<section style="max-width: 1360px; margin: 18px auto 0; padding: 0 28px; box-sizing: border-box">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 16px; background: linear-gradient(90deg, #12251F, #15151B)">
+<span style="font-size: 15px; font-weight: 800">Which services do you have?</span>
+<span style="font-size: 14px; color: #9C9CA8">We'll show only what you can watch tonight.</span>
+<span style="flex-grow: 1"></span>
+<img src="/_blob/d2df8e6b31dc8a17d738cdcbe082abae" alt="Netflix" style="width: 34px; height: 34px; border-radius: 8px">
+<img src="/_blob/73cc46ffcd16b9ca2ab5420acf984a61" alt="Disney+" style="width: 34px; height: 34px; border-radius: 8px">
+<img src="/_blob/996ff9952cc48dec9ccd2e076c38e147" alt="Prime Video" style="width: 34px; height: 34px; border-radius: 8px">
+<span style="height: 34px; padding: 0 10px; display: inline-flex; align-items: center; border-radius: 8px; background: #26262F; font-size: 12px; font-weight: 800">+12</span>
+<a href="#" style="height: 40px; padding: 0 16px; display: inline-flex; align-items: center; border-radius: 10px; background: #FFFFFF; color: #09090C; font-size: 14px; font-weight: 800">Choose</a>
+</div>
+</section>
+
+<main style="max-width: 1360px; margin: 0 auto; padding: 32px 28px 64px; box-sizing: border-box; display: flex; flex-direction: column; gap: 36px">
+<section style="display: flex; flex-direction: column; gap: 14px">
+<a href="#" style="align-self: flex-start; font-size: 23px; font-weight: 800">Top 10 in Türkiye this week <span style="color: #9C9CA8">›</span></a>
+<div style="display: flex; gap: 6px; overflow-x: auto">
+<sc-for list="{{top}}" as="t" hint-placeholder-count="7">
+<a href="#" style="flex: 0 0 auto; display: flex; align-items: flex-end">
+<span style="font-size: 110px; line-height: 0.8; font-weight: 800; color: #09090C; -webkit-text-stroke: 2px #3A3A46; margin-right: -12px">{{t.n}}</span>
+<img src="{{t.img}}" alt="{{t.t}}" style="position: relative; width: 138px; height: 207px; object-fit: cover; border-radius: 12px">
+</a>
+</sc-for>
+</div>
+</section>
+
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+<section style="display: flex; flex-direction: column; gap: 14px">
+<a href="#" style="align-self: flex-start; font-size: 23px; font-weight: 800">{{r.h}} <span style="color: #9C9CA8">›</span></a>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px">
+<sc-for list="{{r.items}}" as="c" hint-placeholder-count="7">
+<a href="#" style="position: relative; display: block">
+<img src="{{c.img}}" alt="{{c.t}}" style="display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 12px">
+<sc-if value="{{c.hasBadge}}" hint-placeholder-val="{{true}}"><span style="{{c.badgeStyle}}">{{c.badge}}</span></sc-if>
+<span style="position: absolute; left: 8px; bottom: 8px; display: flex; gap: 3px"><sc-for list="{{c.logos}}" as="l" hint-placeholder-count="2"><img src="{{l}}" alt="" style="width: 22px; height: 22px; border-radius: 6px"></sc-for></span>
+</a>
+</sc-for>
+</div>
+</section>
+</sc-for>
+
+<section style="display: flex; flex-direction: column; gap: 8px; max-width: 920px">
+<h2 style="margin: 0; font-size: 20px; font-weight: 800">Türkçe dublaj filmler ve diziler — hangi platformda?</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #9C9CA8">glotvi checks Netflix, Disney+, Prime Video, HBO Max, TOD, tabii and every other legal service in Türkiye daily, and shows which titles have Turkish dubbing or subtitles…</p>
+<a href="#" style="font-size: 14px; font-weight: 700; color: #9C9CA8; padding: 6px 0">Read more</a>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2200}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const L = { N: b('d2df8e6b31dc8a17d738cdcbe082abae'), P: b('996ff9952cc48dec9ccd2e076c38e147'), D: b('73cc46ffcd16b9ca2ab5420acf984a61') };
+const T = { robot: ['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', 'NP'], arc: ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b', 'N'], io: ['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'D'], ds: ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', 'N'], moana: ['Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'D'], kfp: ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'NP'], coco: ['Coco', '5ded58698603822d03ccd70fd08231b5', 'D'], jjk: ['Jujutsu Kaisen', 'e622889c112ac94528cebedd9f389f09', 'N'], sa: ['Spirited Away', 'c7d07cd502e08e290cd41761b2472cef', 'N'], enc: ['Encanto', '2e0943299c347febf750aa19360d1513', 'D'], aot: ['Attack on Titan', '93cf3e1c3aaff5d0d4a1608218ae34b7', 'N'], mario: ['Super Mario Bros.', '47f8a7c4cd8d8c24bf5128dfbdba945e', 'N'], sv: ['Spider-Verse', '03b2f15bf88d978897f8069cf919e46b', 'NP'], el: ['Elemental', 'd72425766e887bab76cad923ba40aba6', 'D'], soul: ['Soul', '33e8d6e312d2c2a28eb7e6c8b92bd882', 'D'], luca: ['Luca', '8a0c424f5b0aaaf2e47ebfabe38e12cd', 'D'], op: ['One Piece', 'b696d2769e7c1c80631606bc89386aec', 'N'], rick: ['Rick and Morty', '39beccc02edc0ee830f583d6e867930b', 'P'] };
+const BS = 'position: absolute; left: 8px; top: 8px; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; ';
+const BG = { dub: ['türkçe dublaj', 'background: #3B82F6; color: #FFFFFF'], sub: ['türkçe altyazı', 'background: #E5E7EB; color: #09090C'], newdub: ['yeni dublaj', 'background: #1FD1A5; color: #09090C'], leave: ['leaving in 9 days', 'background: #F59E0B; color: #09090C'], free: ['free with ads', 'background: #A78BFA; color: #09090C'] };
+const row = (h, keys) => ({ h, items: keys.map((k) => { const p = k.split(':'); const t = T[p[0]]; const bd = p[1] ? BG[p[1]] : null; return { t: t[0], img: b(t[1]), logos: t[2].split('').map((x) => L[x]), hasBadge: !!bd, badge: bd ? bd[0] : '', badgeStyle: bd ? BS + bd[1] : '' }; }) });
+return {
+trends: ['inside out 2 türkçe dublaj', 'arcane 2. sezon', 'demon slayer türkçe', 'vahşi robot izle', 'moana 2 netflix mi', 'anime türkçe dublaj'],
+top: [['robot', 1], ['arc', 2], ['io', 3], ['ds', 4], ['moana', 5], ['kfp', 6], ['coco', 7]].map((x) => ({ n: String(x[1]), t: T[x[0]][0], img: b(T[x[0]][1]) })),
+rows: [
+row('Just dubbed into Turkish', ['io:newdub', 'kfp:newdub', 'moana:newdub', 'el:newdub', 'sv:newdub', 'mario:newdub', 'robot:newdub']),
+row('Anime in Türkçe', ['ds:dub', 'jjk:sub', 'aot:dub', 'op:sub', 'sa:dub', 'arc:dub', 'rick:sub']),
+row('Family night — dubbed', ['coco:dub', 'enc:dub', 'luca:dub', 'soul:dub', 'io:dub', 'moana:dub', 'robot:dub']),
+row('Leaving your services soon', ['sa:leave', 'soul:leave', 'luca:leave', 'enc:leave', 'mario:leave', 'el:leave', 'rick:leave'])
+]
+};
+}
+}
+</script>
+</body>
+</html>

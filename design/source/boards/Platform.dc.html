@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Service page — Netflix</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0C10}
+a{color:#FFFFFF;text-decoration:none}a:hover{color:#D4D6DC}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0B0C10; color: #FFFFFF; font-family: 'Inter', system-ui, sans-serif">
+
+<header style="border-bottom: 1px solid #1C1E25">
+<div style="max-width: 1400px; margin: 0 auto; padding: 14px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="Home.dc.html" style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">[BRAND]</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 2px; font-size: 15px; font-weight: 500; color: #C9CBD2">
+<a href="Home.dc.html" style="padding: 12px 10px">Home</a>
+<a href="#" style="padding: 12px 10px">Movies</a>
+<a href="#" style="padding: 12px 10px">TV Shows</a>
+<a href="#" style="padding: 12px 10px">Anime</a>
+<a href="#" style="padding: 12px 10px; color: #FFFFFF; font-weight: 700">Services</a>
+<a href="List.dc.html" style="padding: 12px 10px">Lists</a>
+</nav>
+<form role="search" style="flex: 999 1 300px; min-width: 0; display: flex">
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search on Netflix</label>
+<input id="q" type="search" placeholder="Search what's on Netflix in Türkiye…" style="width: 100%; height: 44px; box-sizing: border-box; padding: 0 16px; font-size: 15px; font-family: inherit; color: #FFFFFF; background: #16181F; border: 1px solid #262932; border-radius: 22px">
+</form>
+<button type="button" style="height: 44px; padding: 0 14px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; background: #16181F; border: 1px solid #262932; border-radius: 22px">Türkiye</button>
+<button type="button" style="height: 44px; padding: 0 14px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; background: #16181F; border: 1px solid #262932; border-radius: 22px">English ▾</button>
+</div>
+</header>
+
+<main style="max-width: 1400px; margin: 0 auto; padding: 28px 32px 72px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px">
+<section style="position: relative; border-radius: 24px; overflow: hidden; background: #13151B; min-height: 300px; display: flex">
+<div aria-hidden="true" style="position: absolute; right: -40px; top: -60px; display: grid; grid-template-columns: repeat(5, 130px); gap: 10px; transform: rotate(-8deg); opacity: 0.55">
+<sc-for list="{{wall}}" as="w" hint-placeholder-count="10"><img src="{{w}}" alt="" style="width: 130px; height: 195px; object-fit: cover; border-radius: 10px"></sc-for>
+</div>
+<div style="position: absolute; inset: 0; background: linear-gradient(90deg, #13151B 40%, rgba(19,21,27,0.3) 80%)"></div>
+<div style="position: relative; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; gap: 16px; max-width: 720px">
+<nav aria-label="Breadcrumb" style="display: flex; gap: 8px; font-size: 14px; color: #8B8E98"><a href="Home.dc.html" style="color: #8B8E98">Home</a><span>›</span><a href="#" style="color: #8B8E98">Services</a></nav>
+<div style="display: flex; align-items: center; gap: 16px">
+<img src="/_blob/d2df8e6b31dc8a17d738cdcbe082abae" alt="Netflix" style="width: 64px; height: 64px; border-radius: 14px">
+<h1 style="margin: 0; font-size: 44px; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em">What's on Netflix in {{langEn}}</h1>
+</div>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #C9CBD2">Movies and shows on Netflix Türkiye with {{langEn}} audio or subtitles. New arrivals, top titles and what's leaving soon — checked daily.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{langChips}}" as="l" hint-placeholder-count="8">
+<button type="button" onClick="{{l.pick}}" style="{{l.style}}">{{l.label}}</button>
+</sc-for>
+</div>
+</div>
+</section>
+
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+<section style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 style="margin: 0; font-size: 24px; font-weight: 700">{{r.h}}</h2>
+<a href="List.dc.html" style="font-size: 14px; font-weight: 600; color: #A9ACB5; padding: 10px 0">See all</a>
+</div>
+<div style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 6px">
+<sc-for list="{{r.items}}" as="c" hint-placeholder-count="7">
+<a href="Title.dc.html" style="flex: 0 0 184px; display: flex; flex-direction: column; gap: 10px">
+<span style="position: relative; display: block">
+<img src="{{c.img}}" alt="{{c.name}}" style="display: block; width: 184px; height: 276px; object-fit: cover; border-radius: 12px">
+<span style="{{c.badgeStyle}}">{{c.badge}}</span>
+</span>
+<span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 600">{{c.name}}</span><span style="{{c.metaStyle}}">{{c.meta}}</span></span>
+</a>
+</sc-for>
+</div>
+</section>
+</sc-for>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<div style="box-sizing: border-box; padding: 22px; border-radius: 18px; background: #13151B; border: 1px solid #23262E; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 18px; font-weight: 700">Netflix plans in Türkiye</span>
+<span style="font-size: 14px; line-height: 1.6; color: #A9ACB5">[Plan · price · checked date] — pulled from Netflix. All plans include every audio language a title offers.</span>
+<a href="#" style="align-self: flex-start; height: 46px; padding: 0 18px; display: inline-flex; align-items: center; border-radius: 12px; background: #FFFFFF; color: #0B0C10; font-size: 14px; font-weight: 700">Go to Netflix ↗</a>
+</div>
+<div style="box-sizing: border-box; padding: 22px; border-radius: 18px; background: #13151B; border: 1px solid #23262E; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 18px; font-weight: 700">Compare with other services</span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{others}}" as="o" hint-placeholder-count="5"><a href="#" style="height: 44px; padding: 0 14px; display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; background: #16181F; border: 1px solid #262932; font-size: 14px; font-weight: 600">{{o}}</a></sc-for>
+</div>
+</div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1800}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { lang: 'tr' }; }
+renderVals() {
+const P = { robot: '/_blob/cb4f087928b468549d841e1ee3e42661', arcane: '/_blob/08d298c5c43e27d20a009e1485cb9b3b', panda: '/_blob/adb806acfa10e9988ff559ed874dc96e', spirited: '/_blob/c7d07cd502e08e290cd41761b2472cef', mario: '/_blob/47f8a7c4cd8d8c24bf5128dfbdba945e', demon: '/_blob/8e2de4d5af09254f1969c0aac5f7ff72', jjk: '/_blob/e622889c112ac94528cebedd9f389f09', aot: '/_blob/93cf3e1c3aaff5d0d4a1608218ae34b7', onepiece: '/_blob/b696d2769e7c1c80631606bc89386aec', spider: '/_blob/03b2f15bf88d978897f8069cf919e46b', rick: '/_blob/39beccc02edc0ee830f583d6e867930b' };
+const LN = { tr: ['Türkçe', 'Turkish', 'TR'], es: ['Español', 'Spanish', 'ES'], de: ['Deutsch', 'German', 'DE'], fr: ['Français', 'French', 'FR'], pt: ['Português', 'Portuguese', 'PT'], ru: ['Русский', 'Russian', 'RU'], ar: ['العربية', 'Arabic', 'AR'], en: ['English', 'English', 'EN'] };
+const lang = this.state.lang, code = LN[lang][2];
+const chip = 'height: 40px; padding: 0 14px; border-radius: 20px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; ';
+const bs = 'position: absolute; left: 8px; top: 8px; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; ';
+const mk = (keys, badge, meta, warn) => keys.map((k, i) => ({ name: k[0], img: P[k[1]], badge: badge === 'audio' ? code + ' AUDIO' : badge === 'new' ? 'NEW · ' + code : code + ' SUBS', badgeStyle: bs + (badge === 'subs' ? 'background: rgba(11,12,16,0.85); color: #FFFFFF' : 'background: #FFFFFF; color: #0B0C10'), meta: meta(i), metaStyle: warn ? 'font-size: 13px; font-weight: 700; color: #FBBF24' : 'font-size: 13px; color: #8B8E98' }));
+return {
+langEn: LN[lang][1],
+wall: [P.robot, P.arcane, P.panda, P.spirited, P.mario, P.demon, P.jjk, P.aot, P.onepiece, P.spider],
+langChips: Object.keys(LN).map((k) => ({ label: LN[k][0], style: chip + (k === lang ? 'background: #FFFFFF; color: #0B0C10; border: 1px solid #FFFFFF' : 'background: rgba(255,255,255,0.04); color: #FFFFFF; border: 1px solid #2C2F39'), pick: () => this.setState({ lang: k }) })),
+rows: [
+{ h: 'New on Netflix with ' + LN[lang][1] + ' audio', items: mk([['The Wild Robot', 'robot'], ['Kung Fu Panda 4', 'panda'], ['Spider-Verse', 'spider'], ['The Super Mario Bros.', 'mario'], ['Arcane', 'arcane'], ['Demon Slayer', 'demon'], ['One Piece', 'onepiece']], 'new', (i) => 'Added ' + (i + 1) + ' days ago') },
+{ h: 'Top 10 on Netflix Türkiye this week', items: mk([['Arcane', 'arcane'], ['Jujutsu Kaisen', 'jjk'], ['The Wild Robot', 'robot'], ['Attack on Titan', 'aot'], ['Spirited Away', 'spirited'], ['Rick and Morty', 'rick'], ['Kung Fu Panda 4', 'panda']], 'audio', (i) => '#' + (i + 1) + ' this week') },
+{ h: 'Leaving Netflix soon', items: mk([['Spirited Away', 'spirited'], ['The Super Mario Bros.', 'mario'], ['Attack on Titan', 'aot'], ['Rick and Morty', 'rick'], ['Spider-Verse', 'spider'], ['One Piece', 'onepiece'], ['Jujutsu Kaisen', 'jjk']], 'subs', (i) => 'Leaves in ' + (i * 3 + 2) + ' days', true) }
+],
+others: ['Disney+', 'Prime Video', 'Max', 'Apple TV+', 'Crunchyroll']
+};
+}
+}
+</script>
+</body>
+</html>

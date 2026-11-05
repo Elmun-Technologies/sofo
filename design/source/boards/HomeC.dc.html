@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home C — Journal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&amp;family=Inter:wght@400;500;600;700&amp;display=swap">
+<style>
+body{margin:0;background:#F2EEE6}
+a{color:#1A1714;text-decoration:none}a:hover{color:#9E2A2B}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #F2EEE6; color: #1A1714; font-family: 'Inter', system-ui, sans-serif">
+<div style="max-width: 1280px; margin: 0 auto; padding: 0 40px; box-sizing: border-box">
+
+<header style="padding: 22px 0 0; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: #5C554B">
+<span>Monday, 2 November 2026</span>
+<span style="display: flex; gap: 8px">
+<button type="button" style="height: 40px; padding: 0 12px; border: 1px solid #1A1714; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: #1A1714">Edition: Türkiye</button>
+<button type="button" style="height: 40px; padding: 0 12px; border: 1px solid #1A1714; background: transparent; font-family: inherit; font-size: 13px; font-weight: 600; color: #1A1714">English ▾</button>
+</span>
+</div>
+<a href="#" style="text-align: center; font-family: 'Fraunces', serif; font-size: 84px; line-height: 1; font-weight: 800; letter-spacing: -0.03em">[BRAND]</a>
+<p style="margin: 0; text-align: center; font-family: 'Fraunces', serif; font-style: italic; font-size: 18px; color: #5C554B">The guide to watching anything, legally, in your language.</p>
+<nav aria-label="Sections" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 22px; padding: 10px 0; border-top: 2px solid #1A1714; border-bottom: 1px solid #1A1714; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase">
+<a href="#" style="padding: 8px 0">Movies</a><a href="#" style="padding: 8px 0">Series</a><a href="#" style="padding: 8px 0">Anime</a><a href="#" style="padding: 8px 0">By language</a><a href="#" style="padding: 8px 0">New dubs</a><a href="#" style="padding: 8px 0">Leaving soon</a><a href="#" style="padding: 8px 0">Services</a>
+<a href="#" aria-label="Search" style="padding: 8px 0">Search</a>
+</nav>
+</header>
+
+<main style="padding: 36px 0 72px; display: flex; flex-direction: column; gap: 56px">
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 36px">
+<a href="#" style="grid-column: span 2; display: flex; flex-direction: column; gap: 14px">
+<img src="/_blob/4ca3d3239df179d68432e3dd05cd8583" alt="" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover">
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9E2A2B">Language guide</span>
+<h1 style="margin: 0; font-family: 'Fraunces', serif; font-size: 48px; line-height: 1.05; font-weight: 800; letter-spacing: -0.02em">Every Pixar film you can stream with a Turkish dub right now</h1>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #3E3831">24 films, three services, one surprise: the dub you grew up with isn't always the one you'll hear. We checked each title this morning.</p>
+</a>
+<div style="display: flex; flex-direction: column; gap: 22px">
+<sc-for list="{{side}}" as="s" hint-placeholder-count="3">
+<a href="#" style="display: flex; flex-direction: column; gap: 8px; padding-bottom: 20px; border-bottom: 1px solid #CFC7B8">
+<img src="{{s.img}}" alt="" style="width: 100%; aspect-ratio: 16 / 8; object-fit: cover">
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9E2A2B">{{s.k}}</span>
+<span style="font-family: 'Fraunces', serif; font-size: 22px; line-height: 1.2; font-weight: 700">{{s.t}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #1A1714; padding-bottom: 10px">
+<h2 style="margin: 0; font-family: 'Fraunces', serif; font-size: 34px; font-weight: 800">The Weekly Ten</h2>
+<span style="font-size: 13px; color: #5C554B">Most-searched titles in Türkiye · with Turkish audio</span>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); column-gap: 48px">
+<sc-for list="{{ten}}" as="t" hint-placeholder-count="10">
+<li style="display: flex; align-items: center; gap: 18px; padding: 14px 0; border-bottom: 1px solid #CFC7B8">
+<span style="width: 40px; font-family: 'Fraunces', serif; font-size: 34px; font-weight: 800; color: #9E2A2B">{{t.n}}</span>
+<img src="{{t.img}}" alt="" style="width: 46px; height: 69px; object-fit: cover">
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px"><a href="#" style="font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700">{{t.name}}</a><span style="font-size: 13px; color: #5C554B">{{t.m}}</span></span>
+</li>
+</sc-for>
+</ol>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 36px; padding: 32px 0; border-top: 1px solid #1A1714; border-bottom: 1px solid #1A1714">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: 'Fraunces', serif; font-size: 30px; font-weight: 800">Watch in your language</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #3E3831">Pick a language. We'll show only what you can actually hear in it — on the services available where you live.</p>
+</div>
+<div style="grid-column: span 2; display: flex; flex-wrap: wrap; gap: 10px 28px; align-content: center">
+<sc-for list="{{langs}}" as="l" hint-placeholder-count="10"><a href="#" style="font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; padding: 6px 0; border-bottom: 2px solid #9E2A2B">{{l}}</a></sc-for>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px">
+<sc-for list="{{notes}}" as="n" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9E2A2B">{{n.k}}</span>
+<span style="font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700">{{n.t}}</span>
+<span style="font-size: 15px; line-height: 1.6; color: #3E3831">{{n.d}}</span>
+</div>
+</sc-for>
+</section>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+return {
+side: [
+{ k: 'New dubs', t: 'Demon Slayer gets three new dubs this week — here is where to hear them', img: b('c49a556dcc34438b5a142c8f6c07aa21') },
+{ k: 'Leaving soon', t: 'Spirited Away leaves Netflix in 9 countries on 30 November', img: b('2773e2d8f4575e5e9ed94235960a3900') },
+{ k: 'Explainer', t: 'Why the same film has a different dub on Netflix and Disney+', img: b('639102cbae922345a6f75cfad5711f2f') }
+],
+ten: [['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', 'Netflix, Prime Video'], ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b', 'Netflix'], ['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'Disney+'], ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', 'Netflix'], ['Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'Disney+'], ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'Netflix, Prime Video'], ['Coco', '5ded58698603822d03ccd70fd08231b5', 'Disney+'], ['Jujutsu Kaisen', 'e622889c112ac94528cebedd9f389f09', 'Netflix · subtitles only'], ['Encanto', '2e0943299c347febf750aa19360d1513', 'Disney+'], ['Spirited Away', 'c7d07cd502e08e290cd41761b2472cef', 'Netflix']].map((t, i) => ({ n: String(i + 1), name: t[0], img: b(t[1]), m: t[2] })),
+langs: ['English', 'Türkçe', 'Español', 'Deutsch', 'Français', 'Português', 'Русский', 'العربية', 'Italiano', 'Polski'],
+notes: [
+{ k: 'How we check', t: 'Every service, every day', d: 'Audio and subtitle languages come from each service\'s own title page. If they don\'t confirm it, we write "unknown".' },
+{ k: 'Our promise', t: 'Only legal services', d: 'We never host video and never link to pirate sites. Every button takes you to the service itself.' },
+{ k: 'Coverage', t: 'Your country, your services', d: 'Catalogs differ by country. Switch your edition at the top to see what is on where you live.' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

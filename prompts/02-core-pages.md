@@ -1,0 +1,3 @@
+# 02 · Asosiy sahifalar (seed ma'lumot bilan)
+Bosh (/tr), Film/Serial sahifasi (qisqa javob data-model.md §4 bo'yicha, deterministik, LLM yo'q), Katalog (filtrlar URL-param), Til hubi, To'plam, Servis. Dizayn: HomeFinal, Movie, MovieAnswer, Browse, LangHub, Collection, Service (+ mobil). ISR, schema.org Movie/TVSeries + WatchAction, canonical, hreflang, sifat darvozasi (§5) → noindex/sitemap. Kompozit qismlar komponent sifatida (Poster, Chip, ServiceBadge, OfferRow, AudioBadge, ShortAnswer, CheckedAt).
+Qabul: har sahifa desktop + 390px da dizaynga mos; Lighthouse SEO ≥ 95; sitemap.xml faqat indeks sahifalar.

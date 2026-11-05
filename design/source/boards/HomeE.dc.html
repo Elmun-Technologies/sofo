@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home E — Babel</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&amp;family=Inter:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#1C1A5E}
+a{color:#FFFFFF;text-decoration:none}a:hover{color:#FFD23F}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #1C1A5E; color: #FFFFFF; font-family: 'Inter', system-ui, sans-serif">
+
+<header>
+<div style="max-width: 1360px; margin: 0 auto; padding: 18px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="#" style="font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 800">[BRAND]</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 2px; flex-grow: 1; font-size: 15px; font-weight: 600; color: #C9C7F2">
+<a href="#" style="padding: 12px 10px; color: #C9C7F2">Movies</a><a href="#" style="padding: 12px 10px; color: #C9C7F2">Series</a><a href="#" style="padding: 12px 10px; color: #C9C7F2">Anime</a><a href="#" style="padding: 12px 10px; color: #C9C7F2">Services</a>
+</nav>
+<a href="#" aria-label="Search" style="height: 44px; padding: 0 16px; border-radius: 22px; background: rgba(255,255,255,0.12); display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#FFFFFF" stroke-width="2"></circle><path d="m20 20-3.5-3.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></path></svg>Search</a>
+<button type="button" style="height: 44px; padding: 0 16px; border-radius: 22px; border: 0; background: #FFD23F; color: #1C1A5E; font-family: inherit; font-size: 14px; font-weight: 800">English ▾</button>
+</div>
+</header>
+
+<section style="max-width: 1360px; margin: 0 auto; padding: 40px 32px 56px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px">
+<div style="position: relative; display: flex; flex-direction: column; gap: 4px">
+<span aria-hidden="true" style="font-family: 'Unbounded', sans-serif; font-size: 40px; font-weight: 700; color: rgba(255,255,255,0.14)">Míralo en español. Auf Deutsch.</span>
+<h1 style="margin: 0; font-family: 'Unbounded', sans-serif; font-size: 84px; line-height: 1; font-weight: 800; letter-spacing: -0.03em">Watch it in <span style="color: #FFD23F">Türkçe.</span></h1>
+<span aria-hidden="true" style="font-family: 'Unbounded', sans-serif; font-size: 40px; font-weight: 700; color: rgba(255,255,255,0.14)">По-русски. بالعربية. Em português.</span>
+</div>
+<p style="margin: 0; font-size: 19px; line-height: 1.6; color: #DCDAF7; max-width: 680px">Choose the language you want to hear. We show every movie and show you can stream legally in it — and exactly which service has that version.</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px">
+<sc-for list="{{langs}}" as="l" hint-placeholder-count="8">
+<a href="#" style="{{l.box}}">
+<span style="display: flex; flex-direction: column; gap: 4px; position: relative; z-index: 1">
+<span style="font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 700">{{l.native}}</span>
+<span style="{{l.subStyle}}">{{l.sub}}</span>
+</span>
+<span style="position: absolute; right: 12px; bottom: -18px; display: flex">
+<sc-for list="{{l.imgs}}" as="m" hint-placeholder-count="3"><img src="{{m.src}}" alt="" style="{{m.style}}"></sc-for>
+</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<div style="background: #FFF8E7; color: #1C1A5E">
+<section style="max-width: 1360px; margin: 0 auto; padding: 56px 32px 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-size: 30px; font-weight: 800">Popular in Türkçe right now</h2>
+<a href="#" style="font-size: 15px; font-weight: 700; color: #1C1A5E; padding: 10px 0">See all →</a>
+</div>
+<div style="display: flex; gap: 18px; overflow-x: auto; padding-bottom: 6px">
+<sc-for list="{{pop}}" as="p" hint-placeholder-count="7">
+<a href="#" style="flex: 0 0 180px; display: flex; flex-direction: column; gap: 10px; color: #1C1A5E">
+<span style="position: relative; display: block"><img src="{{p.img}}" alt="{{p.name}}" style="display: block; width: 180px; height: 270px; object-fit: cover; border-radius: 18px"><span style="position: absolute; left: 10px; bottom: 10px; font-size: 11px; font-weight: 800; padding: 5px 9px; border-radius: 999px; background: #FFD23F; color: #1C1A5E">TR AUDIO</span></span>
+<span style="font-size: 15px; font-weight: 700">{{p.name}}</span>
+<span style="font-size: 13px; color: #4B4890">{{p.svc}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<section style="max-width: 1360px; margin: 0 auto; padding: 32px 32px 72px; box-sizing: border-box">
+<div style="border-radius: 30px; overflow: hidden; background: #1C1A5E; color: #FFFFFF; display: flex; flex-wrap: wrap">
+<img src="/_blob/4ca3d3239df179d68432e3dd05cd8583" alt="" style="flex: 1 1 480px; min-height: 380px; width: 0; object-fit: cover">
+<div style="flex: 1 1 420px; box-sizing: border-box; padding: 40px; display: flex; flex-direction: column; gap: 16px">
+<span style="font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #FFD23F">Same movie, many voices</span>
+<h2 style="margin: 0; font-family: 'Unbounded', sans-serif; font-size: 34px; line-height: 1.1; font-weight: 800">Coco is dubbed in 40+ languages. Here's where to hear yours.</h2>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<sc-for list="{{voices}}" as="v" hint-placeholder-count="5">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.08)">
+<span style="font-size: 15px; font-weight: 700">{{v.l}}</span><span style="font-size: 14px; color: #DCDAF7">{{v.s}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const fan = (ids) => ids.map((id, i) => ({ src: b(id), style: 'width: 64px; height: 96px; object-fit: cover; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.35); transform: rotate(' + ((i - 1) * 8) + 'deg); ' + (i ? 'margin-left: -22px' : '') }));
+const L = [['English', 'Original & dubs', 'cb4f087928b468549d841e1ee3e42661', '08d298c5c43e27d20a009e1485cb9b3b', 'c7d07cd502e08e290cd41761b2472cef'], ['Türkçe', 'Turkish dub & subtitles', '79f8fee8ed49eaf30382120f6b21d16f', '5ded58698603822d03ccd70fd08231b5', 'adb806acfa10e9988ff559ed874dc96e'], ['Español', 'Spanish (Spain & Latin America)', '8e2de4d5af09254f1969c0aac5f7ff72', '2e0943299c347febf750aa19360d1513', '1e670cb28388c895319bac5d4cfbc2c3'], ['Deutsch', 'German dub', '47f8a7c4cd8d8c24bf5128dfbdba945e', '33e8d6e312d2c2a28eb7e6c8b92bd882', '8a0c424f5b0aaaf2e47ebfabe38e12cd'], ['Français', 'French dub', 'd72425766e887bab76cad923ba40aba6', '1e670cb28388c895319bac5d4cfbc2c3', '03b2f15bf88d978897f8069cf919e46b'], ['Português', 'Brazil & Portugal', '2e0943299c347febf750aa19360d1513', '93cf3e1c3aaff5d0d4a1608218ae34b7', 'cb4f087928b468549d841e1ee3e42661'], ['Русский', 'Russian dub', '03b2f15bf88d978897f8069cf919e46b', 'b696d2769e7c1c80631606bc89386aec', 'e622889c112ac94528cebedd9f389f09'], ['العربية', 'Arabic dub', '33e8d6e312d2c2a28eb7e6c8b92bd882', '5ded58698603822d03ccd70fd08231b5', '79f8fee8ed49eaf30382120f6b21d16f']];
+return {
+langs: L.map((l, i) => ({ native: l[0], sub: l[1], imgs: fan([l[2], l[3], l[4]]), subStyle: 'font-size: 13px; ' + (i === 1 ? 'color: #3A3780' : 'color: #C9C7F2'), box: 'position: relative; height: 150px; box-sizing: border-box; padding: 18px; border-radius: 22px; overflow: hidden; display: block; ' + (i === 1 ? 'background: #FFD23F; color: #1C1A5E' : 'background: rgba(255,255,255,0.08); color: #FFFFFF') })),
+pop: [['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'Disney+'], ['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', 'Netflix · Prime Video'], ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b', 'Netflix'], ['Coco', '5ded58698603822d03ccd70fd08231b5', 'Disney+'], ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'Netflix'], ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', 'Netflix'], ['Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'Disney+']].map((p) => ({ name: p[0], img: b(p[1]), svc: p[2] })),
+voices: [{ l: 'Türkçe', s: 'Disney+ · Türkiye' }, { l: 'Español (Latinoamérica)', s: 'Disney+ · Mexico, Argentina' }, { l: 'Deutsch', s: 'Disney+ · Germany, Austria' }, { l: 'العربية', s: 'Disney+ · UAE, Saudi Arabia' }, { l: 'Русский', s: 'Disney+ · Kazakhstan' }]
+};
+}
+}
+</script>
+</body>
+</html>

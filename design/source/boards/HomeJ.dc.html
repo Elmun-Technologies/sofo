@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home J — Board</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&amp;family=Inter:wght@500;700&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0A}
+a{color:#FFB000;text-decoration:none}a:hover{color:#FFD166}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0A0A0A; color: #F5F5F5; font-family: 'JetBrains Mono', monospace">
+<header style="max-width: 1360px; margin: 0 auto; padding: 18px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; border-bottom: 1px solid #262626">
+<a href="#" style="font-size: 20px; font-weight: 800; letter-spacing: 0.04em">[BRAND]</a>
+<span style="flex-grow: 1; font-size: 13px; color: #737373">LIVE · UPDATED 09:40 · TÜRKİYE</span>
+<button type="button" style="height: 40px; padding: 0 12px; border: 1px solid #404040; background: #171717; color: #F5F5F5; font-family: inherit; font-size: 13px">LANG: EN ▾</button>
+</header>
+
+<main style="max-width: 1360px; margin: 0 auto; padding: 36px 32px 72px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px">
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h1 style="margin: 0; font-family: 'Inter', sans-serif; font-size: 52px; line-height: 1.05; font-weight: 700; letter-spacing: -0.03em">Arrivals, departures,<br>and every language in between.</h1>
+<form role="search" style="display: flex; flex-wrap: wrap; gap: 10px">
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search</label>
+<input id="q" type="search" placeholder="DESTINATION: any movie or show" style="flex: 999 1 360px; min-width: 0; height: 60px; box-sizing: border-box; padding: 0 18px; border: 2px solid #FFB000; background: #0A0A0A; color: #FFB000; font-family: inherit; font-size: 18px">
+<select aria-label="Audio language" style="flex: 1 1 180px; height: 60px; padding: 0 12px; border: 2px solid #404040; background: #0A0A0A; color: #F5F5F5; font-family: inherit; font-size: 15px"><option>AUDIO: TÜRKÇE</option><option>AUDIO: ANY</option></select>
+<button type="submit" style="flex: 1 1 140px; height: 60px; border: 0; background: #FFB000; color: #0A0A0A; font-family: inherit; font-size: 16px; font-weight: 800">SEARCH</button>
+</form>
+</section>
+
+<sc-for list="{{boards}}" as="bd" hint-placeholder-count="2">
+<section style="display: flex; flex-direction: column; gap: 0; border: 1px solid #262626">
+<div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #171717">
+<h2 style="margin: 0; font-size: 18px; font-weight: 800; letter-spacing: 0.08em; color: #FFB000">{{bd.h}}</h2>
+<a href="#" style="font-size: 13px; padding: 8px 0">VIEW ALL →</a>
+</div>
+<div style="overflow-x: auto">
+<table style="width: 100%; min-width: 900px; border-collapse: collapse; font-size: 15px">
+<thead><tr style="text-align: left; font-size: 12px; color: #737373"><th style="padding: 10px 18px; font-weight: 500">WHEN</th><th style="padding: 10px 18px; font-weight: 500">TITLE</th><th style="padding: 10px 18px; font-weight: 500">SERVICE</th><th style="padding: 10px 18px; font-weight: 500">AUDIO</th><th style="padding: 10px 18px; font-weight: 500">STATUS</th></tr></thead>
+<tbody>
+<sc-for list="{{bd.rows}}" as="r" hint-placeholder-count="5">
+<tr style="border-top: 1px solid #1F1F1F">
+<td style="padding: 14px 18px; color: #A3A3A3">{{r.w}}</td>
+<td style="padding: 14px 18px"><span style="display: flex; align-items: center; gap: 12px"><img src="{{r.img}}" alt="" style="width: 30px; height: 45px; object-fit: cover"><span style="font-weight: 700; color: #F5F5F5">{{r.t}}</span></span></td>
+<td style="padding: 14px 18px; color: #D4D4D4">{{r.s}}</td>
+<td style="padding: 14px 18px; color: #FFB000">{{r.a}}</td>
+<td style="padding: 14px 18px"><span style="{{r.stStyle}}">{{r.st}}</span></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+</sc-for>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const st = (k) => 'font-size: 13px; font-weight: 800; padding: 4px 8px; ' + (k === 'new' ? 'background: #FFB000; color: #0A0A0A' : k === 'leave' ? 'background: #7F1D1D; color: #FECACA' : 'border: 1px solid #404040; color: #D4D4D4');
+return {
+boards: [
+{ h: 'ARRIVALS — NEW DUBS', rows: [['TODAY 06:00', 'Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'Disney+', 'TR · AR · PT', 'NEW DUB', 'new'], ['TODAY 03:00', 'Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'Netflix', 'TR · ES', 'NEW DUB', 'new'], ['YESTERDAY', 'Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'Disney+', 'DE · FR', 'NEW DUB', 'new'], ['NOV 01', 'Demon Slayer S4', '8e2de4d5af09254f1969c0aac5f7ff72', 'Netflix', 'ES · PT · DE', 'STREAMING', 'on'], ['OCT 31', 'Elemental', 'd72425766e887bab76cad923ba40aba6', 'Disney+', 'TR', 'STREAMING', 'on']] },
+{ h: 'DEPARTURES — LEAVING SOON', rows: [['IN 9 DAYS', 'Spirited Away', 'c7d07cd502e08e290cd41761b2472cef', 'Netflix', 'TR · EN · JA', 'LEAVING', 'leave'], ['IN 12 DAYS', 'Soul', '33e8d6e312d2c2a28eb7e6c8b92bd882', 'Disney+', 'TR · EN', 'LEAVING', 'leave'], ['IN 14 DAYS', 'Luca', '8a0c424f5b0aaaf2e47ebfabe38e12cd', 'Disney+', 'TR · EN · IT', 'LEAVING', 'leave'], ['IN 21 DAYS', 'Encanto', '2e0943299c347febf750aa19360d1513', 'Disney+', 'TR · ES', 'LEAVING', 'leave']] }
+].map((bd) => ({ h: bd.h, rows: bd.rows.map((r) => ({ w: r[0], t: r[1], img: b(r[2]), s: r[3], a: r[4], st: r[5], stStyle: st(r[6]) })) }))
+};
+}
+}
+</script>
+</body>
+</html>

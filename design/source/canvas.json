@@ -1,0 +1,1084 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Home.dc.html": {
+      "expand": "fill",
+      "h": 2650,
+      "is_interactive": true,
+      "title": "1. Home (EN, global) — v4",
+      "w": 1440,
+      "x": 0,
+      "y": 1800,
+      "page": "site"
+    },
+    "List.dc.html": {
+      "expand": "fill",
+      "h": 1900,
+      "title": "3. List page (EN) — v4",
+      "w": 1440,
+      "x": 3040,
+      "y": 1800,
+      "is_interactive": true,
+      "page": "site"
+    },
+    "Main.dc.html": {
+      "h": 1400,
+      "title": "Sayt xaritasi — nechta sahifa, nima qiladi",
+      "w": 1440,
+      "x": 0,
+      "y": 0,
+      "page": "site"
+    },
+    "MobileSearch.dc.html": {
+      "h": 844,
+      "title": "Telefon — qidiruv",
+      "w": 390,
+      "x": 470,
+      "y": 5400,
+      "page": "site"
+    },
+    "MobileTitle.dc.html": {
+      "h": 1700,
+      "title": "Telefon — film sahifasi",
+      "w": 390,
+      "x": 0,
+      "y": 5400,
+      "page": "site"
+    },
+    "Platform.dc.html": {
+      "expand": "fill",
+      "h": 1800,
+      "title": "4. Service page — Netflix (EN) — v4",
+      "w": 1440,
+      "x": 4560,
+      "y": 1800,
+      "is_interactive": true,
+      "page": "site"
+    },
+    "Title.dc.html": {
+      "expand": "fill",
+      "h": 2650,
+      "title": "2. Title page (EN) — v4",
+      "w": 1440,
+      "x": 1520,
+      "y": 1800,
+      "is_interactive": true,
+      "page": "site"
+    },
+    "HomeA.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1900,
+      "title": "A — Aurora (kinematografik karusel)",
+      "expand": "fill",
+      "page": "home5"
+    },
+    "HomeB.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1900,
+      "title": "B — Lens (qidiruv birinchi, yorug')",
+      "expand": "fill",
+      "page": "home5"
+    },
+    "HomeC.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 1900,
+      "title": "C — Journal (jurnal uslubi)",
+      "expand": "fill",
+      "page": "home5"
+    },
+    "HomeD.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 1250,
+      "title": "D — Bento (plitkalar)",
+      "expand": "fill",
+      "page": "home5"
+    },
+    "HomeE.dc.html": {
+      "x": 6080,
+      "y": 0,
+      "w": 1440,
+      "h": 1900,
+      "title": "E — Babel (til birinchi)",
+      "expand": "fill",
+      "page": "home5"
+    },
+    "HomeF.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "F — Command (buyruq paneli)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeG.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "G — Finder (filtr paneli + natijalar)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeH.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "H — Answer (tayyor javob kartasi)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeI.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "I — Atlas (davlat birinchi)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeJ.dc.html": {
+      "x": 6080,
+      "y": 0,
+      "w": 1440,
+      "h": 1500,
+      "title": "J — Board (jonli tablo)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeK.dc.html": {
+      "x": 0,
+      "y": 2000,
+      "w": 1440,
+      "h": 1500,
+      "title": "K — Wizard (3 qadam tanlov)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeL.dc.html": {
+      "x": 1520,
+      "y": 2000,
+      "w": 1440,
+      "h": 1000,
+      "title": "L — Wall (poster devori + qidiruv)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeM.dc.html": {
+      "x": 3040,
+      "y": 2000,
+      "w": 1440,
+      "h": 1500,
+      "title": "M — Matrix (taqqoslash jadvali)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeN.dc.html": {
+      "x": 4560,
+      "y": 2000,
+      "w": 1440,
+      "h": 1300,
+      "title": "N — Ask (AI suhbat)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeO.dc.html": {
+      "x": 6080,
+      "y": 2000,
+      "w": 1440,
+      "h": 1600,
+      "title": "O — Lanes (til yo'laklari)",
+      "expand": "fill",
+      "page": "home10"
+    },
+    "HomeP.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 2350,
+      "title": "P — raqobatchilarda isbotlangan tuzilma + til qatlami",
+      "expand": "fill",
+      "page": "proven"
+    },
+    "HomeQ.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 2650,
+      "title": "Q — Bosh sahifa (IVI tuzilmasi + bizning qatlam)",
+      "expand": "fill",
+      "page": "ivi"
+    },
+    "Catalog.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1650,
+      "title": "Katalog — Movies (IVI /movies tuzilmasi)",
+      "expand": "fill",
+      "page": "ivi"
+    },
+    "HomeR.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 2200,
+      "title": "Model 1 — glotvi · Türkiye (qidiruv header ichida)",
+      "expand": "fill",
+      "page": "models3"
+    },
+    "HomeS.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 2100,
+      "title": "Model 2 — dubzio · USA (qidiruv hero ichida)",
+      "expand": "fill",
+      "page": "models3"
+    },
+    "HomeT.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 2100,
+      "title": "Model 3 — dubtiv · France (lokal SEO: VF / VOSTFR)",
+      "expand": "fill",
+      "page": "models3"
+    },
+    "DS.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1600,
+      "h": 2750,
+      "title": "Dizayn tizimi v1 — eski (yalpiz rang)",
+      "page": "archive"
+    },
+    "HomeFinal.dc.html": {
+      "x": 1680,
+      "y": 0,
+      "w": 1440,
+      "h": 2900,
+      "title": "1. Bosh sahifa — yakuniy uslub",
+      "expand": "fill",
+      "page": "final",
+      "is_interactive": true
+    },
+    "SearchPage.dc.html": {
+      "x": 3200,
+      "y": 0,
+      "w": 1440,
+      "h": 2000,
+      "title": "2. Qidiruv natijalari sahifasi",
+      "expand": "fill",
+      "page": "final"
+    },
+    "TitleFinal.dc.html": {
+      "x": 4720,
+      "y": 0,
+      "w": 1440,
+      "h": 2750,
+      "title": "3. Serial sahifasi — treylerlar (har sezon/qism, til bo'yicha)",
+      "expand": "fill",
+      "page": "final",
+      "is_interactive": true
+    },
+    "Share.dc.html": {
+      "x": 6240,
+      "y": 0,
+      "w": 1680,
+      "h": 1320,
+      "title": "18. Share kartalar — Stories / Reels / YouTube",
+      "page": "final",
+      "is_interactive": true
+    },
+    "Sitemap.dc.html": {
+      "x": 0,
+      "y": 3300,
+      "w": 1440,
+      "h": 1520,
+      "title": "0. Sayt xaritasi — 20 tur, ~510 → ~30 000 URL",
+      "page": "final"
+    },
+    "Movie.dc.html": {
+      "x": 1520,
+      "y": 3300,
+      "w": 1440,
+      "h": 2280,
+      "title": "4. Film sahifasi (movie)",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Season.dc.html": {
+      "x": 3040,
+      "y": 3300,
+      "w": 1440,
+      "h": 2045,
+      "title": "5. Sezon / qism sahifasi",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Browse.dc.html": {
+      "x": 4560,
+      "y": 3300,
+      "w": 1440,
+      "h": 2065,
+      "title": "6. Katalog — filtrlar",
+      "page": "final",
+      "expand": "fill"
+    },
+    "LangHub.dc.html": {
+      "x": 6080,
+      "y": 3300,
+      "w": 1440,
+      "h": 2630,
+      "title": "7. Til hubi — Türkçe dublaj",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Collection.dc.html": {
+      "x": 0,
+      "y": 6150,
+      "w": 1440,
+      "h": 2135,
+      "title": "8. To'plam (ro'yxat) sahifasi",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Service.dc.html": {
+      "x": 1520,
+      "y": 6150,
+      "w": 1440,
+      "h": 2500,
+      "title": "9. Servis sahifasi — Netflix",
+      "page": "final",
+      "expand": "fill"
+    },
+    "NewLeaving.dc.html": {
+      "x": 3040,
+      "y": 6150,
+      "w": 1440,
+      "h": 1510,
+      "title": "10. Yangi va ketayotganlar",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Trailers.dc.html": {
+      "x": 4560,
+      "y": 6150,
+      "w": 1440,
+      "h": 2165,
+      "title": "11. Treylerlar hubi",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Person.dc.html": {
+      "x": 6080,
+      "y": 6150,
+      "w": 1440,
+      "h": 1860,
+      "title": "12. Shaxs sahifasi (rasmsiz)",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Kids.dc.html": {
+      "x": 0,
+      "y": 8850,
+      "w": 1440,
+      "h": 1900,
+      "title": "13. sofo kids",
+      "page": "final",
+      "expand": "fill"
+    },
+    "MyList.dc.html": {
+      "x": 1520,
+      "y": 8850,
+      "w": 1440,
+      "h": 1550,
+      "title": "14. Mening ro'yxatim + xabarlar",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Onboarding.dc.html": {
+      "x": 3040,
+      "y": 8850,
+      "w": 1440,
+      "h": 900,
+      "title": "15. Onboarding — 3 qadam",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Editions.dc.html": {
+      "x": 4560,
+      "y": 8850,
+      "w": 1440,
+      "h": 1340,
+      "title": "16. Editionlar + bo'sh natija + 404",
+      "page": "final",
+      "expand": "fill"
+    },
+    "About.dc.html": {
+      "x": 6080,
+      "y": 8850,
+      "w": 1440,
+      "h": 1300,
+      "title": "17. Qanday ishlaydi / biz haqimizda",
+      "page": "final",
+      "expand": "fill"
+    },
+    "MobileHomeF.dc.html": {
+      "x": 0,
+      "y": 11000,
+      "w": 390,
+      "h": 1380,
+      "title": "Telefon — Bosh sahifa",
+      "page": "final"
+    },
+    "MobileSearchF.dc.html": {
+      "x": 470,
+      "y": 11000,
+      "w": 390,
+      "h": 844,
+      "title": "Telefon — Qidiruv",
+      "page": "final"
+    },
+    "MobileTitleF.dc.html": {
+      "x": 940,
+      "y": 11000,
+      "w": 390,
+      "h": 1320,
+      "title": "Telefon — Serial sahifasi",
+      "page": "final"
+    },
+    "MovieAnswer.dc.html": {
+      "x": 0,
+      "y": 12900,
+      "w": 1440,
+      "h": 1620,
+      "title": "4a. Film — 3 soniyalik javob + mavjudlik tarixi",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Franchise.dc.html": {
+      "x": 1520,
+      "y": 12900,
+      "w": 1440,
+      "h": 2060,
+      "title": "19. Franshiza — ko'rish tartibi (Kung Fu Panda)",
+      "page": "final",
+      "expand": "fill"
+    },
+    "Releases.dc.html": {
+      "x": 3040,
+      "y": 12900,
+      "w": 1440,
+      "h": 1670,
+      "title": "20. Chiqish kuzatuvchisi — Yakında dijitalde",
+      "page": "final",
+      "expand": "fill"
+    },
+    "AISearch.dc.html": {
+      "x": 4560,
+      "y": 12900,
+      "w": 1440,
+      "h": 1240,
+      "title": "AI qidiruv — Ask sofo (noindex)",
+      "page": "final",
+      "expand": "fill"
+    },
+    "SearchStates.dc.html": {
+      "x": 0,
+      "y": 15200,
+      "w": 1440,
+      "h": 720,
+      "title": "Holatlar — qidiruv (bo'sh, yozish, xato, natija yo'q)",
+      "page": "final"
+    },
+    "Modals.dc.html": {
+      "x": 1520,
+      "y": 15200,
+      "w": 1440,
+      "h": 1145,
+      "title": "Oynalar — Notify, kirish, xato xabari, edition menyu, KVKK",
+      "page": "final"
+    },
+    "States.dc.html": {
+      "x": 3040,
+      "y": 15200,
+      "w": 1440,
+      "h": 860,
+      "title": "Holatlar — yuklanish, servis xatosi, til tasdiqlanmagan, bo'sh",
+      "page": "final"
+    },
+    "MobileMovieF.dc.html": {
+      "x": 2500,
+      "y": 11000,
+      "w": 390,
+      "h": 915,
+      "title": "Telefon — Film (javob + tarix)",
+      "page": "final"
+    },
+    "MobileFiltersF.dc.html": {
+      "x": 2970,
+      "y": 11000,
+      "w": 390,
+      "h": 844,
+      "title": "Telefon — Filtrlar oynasi",
+      "page": "final"
+    },
+    "MobileListF.dc.html": {
+      "x": 3440,
+      "y": 11000,
+      "w": 390,
+      "h": 925,
+      "title": "Telefon — My list",
+      "page": "final"
+    },
+    "Brand.dc.html": {
+      "x": 8000,
+      "y": 0,
+      "w": 1440,
+      "h": 1290,
+      "title": "BREND — Sofo (tasdiqlangan logo, ranglar, sub-brendlar)",
+      "page": "final"
+    },
+    "DS2.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 2255,
+      "title": "Dizayn tizimi v2 — Sofo Orange (tokenlar, komponentlar)",
+      "page": "final"
+    },
+    "MSeason.dc.html": {
+      "x": 0,
+      "y": 16700,
+      "w": 390,
+      "h": 945,
+      "title": "Telefon — Sezon / qism",
+      "page": "final"
+    },
+    "MBrowse.dc.html": {
+      "x": 470,
+      "y": 16700,
+      "w": 390,
+      "h": 1255,
+      "title": "Telefon — Katalog",
+      "page": "final"
+    },
+    "MLangHub.dc.html": {
+      "x": 940,
+      "y": 16700,
+      "w": 390,
+      "h": 1205,
+      "title": "Telefon — Til hubi",
+      "page": "final"
+    },
+    "MCollection.dc.html": {
+      "x": 1410,
+      "y": 16700,
+      "w": 390,
+      "h": 880,
+      "title": "Telefon — To'plam",
+      "page": "final"
+    },
+    "MService.dc.html": {
+      "x": 1880,
+      "y": 16700,
+      "w": 390,
+      "h": 975,
+      "title": "Telefon — Servis (Netflix)",
+      "page": "final"
+    },
+    "MNewLeaving.dc.html": {
+      "x": 2350,
+      "y": 16700,
+      "w": 390,
+      "h": 690,
+      "title": "Telefon — Yangi va ketayotganlar",
+      "page": "final"
+    },
+    "MTrailers.dc.html": {
+      "x": 2820,
+      "y": 16700,
+      "w": 390,
+      "h": 1200,
+      "title": "Telefon — Treylerlar",
+      "page": "final"
+    },
+    "MPerson.dc.html": {
+      "x": 3290,
+      "y": 16700,
+      "w": 390,
+      "h": 740,
+      "title": "Telefon — Shaxs",
+      "page": "final"
+    },
+    "MKids.dc.html": {
+      "x": 3760,
+      "y": 16700,
+      "w": 390,
+      "h": 870,
+      "title": "Telefon — sofo kids",
+      "page": "final"
+    },
+    "MOnboarding.dc.html": {
+      "x": 4230,
+      "y": 16700,
+      "w": 390,
+      "h": 844,
+      "title": "Telefon — Onboarding",
+      "page": "final"
+    },
+    "MFranchise.dc.html": {
+      "x": 4700,
+      "y": 16700,
+      "w": 390,
+      "h": 890,
+      "title": "Telefon — Franshiza",
+      "page": "final"
+    },
+    "MReleases.dc.html": {
+      "x": 5170,
+      "y": 16700,
+      "w": 390,
+      "h": 615,
+      "title": "Telefon — Chiqish kuzatuvchisi",
+      "page": "final"
+    },
+    "MEditions.dc.html": {
+      "x": 5640,
+      "y": 16700,
+      "w": 390,
+      "h": 775,
+      "title": "Telefon — Editionlar + 404",
+      "page": "final"
+    },
+    "MAbout.dc.html": {
+      "x": 6110,
+      "y": 16700,
+      "w": 390,
+      "h": 625,
+      "title": "Telefon — Qanday ishlaydi",
+      "page": "final"
+    },
+    "MNotify.dc.html": {
+      "x": 6580,
+      "y": 16700,
+      "w": 390,
+      "h": 844,
+      "title": "Telefon — Notify oynasi + KVKK banner",
+      "page": "final"
+    },
+    "Responsive.dc.html": {
+      "x": 0,
+      "y": 18400,
+      "w": 1440,
+      "h": 1570,
+      "title": "Responsivlik qoidalari — 5 breakpoint, grid, komponentlar",
+      "page": "final"
+    },
+    "Alerts.dc.html": {
+      "x": 1520,
+      "y": 18400,
+      "w": 1440,
+      "h": 1340,
+      "title": "Eslatma shablonlari — Telegram + email",
+      "page": "final"
+    },
+    "AdminDash.dc.html": {
+      "x": 3040,
+      "y": 18400,
+      "w": 1440,
+      "h": 900,
+      "title": "Admin — Dashboard (ingest, KPI, eventlar)",
+      "page": "final"
+    },
+    "AdminQA.dc.html": {
+      "x": 4560,
+      "y": 18400,
+      "w": 1440,
+      "h": 900,
+      "title": "Admin — Data QA (xato xabarlari, TMDB bog'lash)",
+      "page": "final"
+    },
+    "AdminLists.dc.html": {
+      "x": 6080,
+      "y": 18400,
+      "w": 1440,
+      "h": 900,
+      "title": "Admin — To'plam muharriri",
+      "page": "final"
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-11-02T12:00:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas",
+    "page": "final"
+  },
+  "notes": {
+    "n1": {
+      "fill": "orange",
+      "size": 24,
+      "text": "Home v4 — to'liq inglizcha, til tanlash menyusi ishlaydi (Play rejimida bosib ko'ring). Posterlar haqiqiy (TMDB). Platforma, dublaj va reyting raqamlari hozircha NAMUNA.",
+      "w": 620,
+      "x": 0,
+      "y": 4500,
+      "page": "site"
+    },
+    "t1": {
+      "kind": "title1",
+      "maxW": 1440,
+      "text": "Sayt xaritasi: 7 xil sahifa, ~560 ta URL",
+      "w": 240,
+      "x": 0,
+      "y": -300,
+      "page": "site"
+    },
+    "t2": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Kompyuter versiyasi",
+      "w": 240,
+      "x": 0,
+      "y": 1520,
+      "page": "site"
+    },
+    "t3": {
+      "kind": "title1",
+      "maxW": 2000,
+      "text": "Telefon versiyasi",
+      "w": 240,
+      "x": 0,
+      "y": 5120,
+      "page": "site"
+    },
+    "n2": {
+      "x": 1520,
+      "y": 4500,
+      "w": 620,
+      "text": "Title v4 — 'I want to watch in' tanlovi ishlaydi: tilni bosing, platformalar ro'yxati, sezonlar va FAQ shu tilga moslashadi. Narxlar va til ma'lumotlari NAMUNA.",
+      "fill": "orange",
+      "size": 24,
+      "page": "site"
+    },
+    "h5": {
+      "x": 0,
+      "y": -300,
+      "text": "Homepage — 5 xil variant (birini tanlang)",
+      "kind": "title1",
+      "maxW": 7520,
+      "page": "home5"
+    },
+    "h5n": {
+      "x": 0,
+      "y": 2000,
+      "w": 760,
+      "page": "home5",
+      "fill": "orange",
+      "size": 24,
+      "text": "5 ta variant bir-birini takrorlamaydi: A — kinematografik karusel (to'q binafsha), B — qidiruv birinchi (yorug'), C — jurnal (gazeta uslubi), D — bento plitkalar, E — til birinchi (yorqin ko'k). Posterlar haqiqiy (TMDB), raqamlar va platforma ma'lumotlari NAMUNA."
+    },
+    "p10a": {
+      "x": 0,
+      "y": -300,
+      "text": "+10 variant — hammasi 'qidiruv platformasi' sifatida (striming emas)",
+      "kind": "title1",
+      "maxW": 7520,
+      "page": "home10"
+    },
+    "p10b": {
+      "x": 0,
+      "y": 1720,
+      "text": "K — O",
+      "kind": "title1",
+      "maxW": 7520,
+      "page": "home10"
+    },
+    "p10n": {
+      "x": 0,
+      "y": 3700,
+      "w": 900,
+      "page": "home10",
+      "fill": "orange",
+      "size": 24,
+      "text": "Hammasi kino QIDIRUV platformasi sifatida qurilgan (striming emas): asosiy harakat — qidirish va 'qayerda, qaysi tilda'. Posterlar haqiqiy (TMDB); sonlar, foizlar, narxlar va platforma ma'lumotlari NAMUNA."
+    },
+    "pt": {
+      "x": 0,
+      "y": -300,
+      "text": "P — to'g'ridan-to'g'ri raqobatchilar tuzilmasi asosida",
+      "kind": "title1",
+      "maxW": 1440,
+      "page": "proven"
+    },
+    "pn": {
+      "x": 1520,
+      "y": 0,
+      "w": 700,
+      "page": "proven",
+      "fill": "yellow",
+      "size": 24,
+      "text": "Har blok qayerdan:\n1. Hero + 'Streaming on' + 'Where to watch' — PlayPilot, OTTASIA\n2. Platformalar ikonka qatori — JustWatch\n3. All/Movies/TV + filtrlar + nomlar soni — JustWatch\n4. Popular / New / Top rated — PlayPilot\n5. New this week / Leaving soon — What's on Netflix\n6. Pastda SEO matn + boshqa davlatlar — JustWatch\n\nBizning qo'shimcha: 'Audio' filtri birinchi, posterda TR DUB / TR SUB belgisi, hero'da audio tillar."
+    },
+    "it": {
+      "x": 0,
+      "y": -300,
+      "text": "IVI modeli — tuzilma 1:1, brend va qatlam bizniki",
+      "kind": "title1",
+      "maxW": 2960,
+      "page": "ivi"
+    },
+    "in": {
+      "x": 3040,
+      "y": 0,
+      "w": 720,
+      "page": "ivi",
+      "fill": "yellow",
+      "size": 24,
+      "text": "IVI → bizda:\n• Markaziy karusel, yonlarida qo'shni slaydlar → xuddi shunday\n• 'Новый сезон' belgisi → 'NEW TURKISH DUB'\n• 'Смотреть' → 'Where to watch' (platformaga yo'naltiradi)\n• Posterda 'И' belgisi → platforma logosi; yosh belgisi → audio til (TR)\n• Kayfiyat qatorlari ('Ком в горле'...) → 'Family night', 'Leaving soon'...\n• O'rtada SEO matn 'Развернуть' → 'Read more'\n• Janr plitkalari → xuddi shunday\n• Katalog filtrlari + 'На языке оригинала / С субтитрами' → Audio, Dubbed, Original, Subtitles\n\nO'zgartirilgan (nusxa emas): logo, asosiy rang (IVI qizil → bizda yalpiz yashil), shrift."
+    },
+    "m3t": {
+      "x": 0,
+      "y": -300,
+      "text": "3 model — IVI tuzilmasi, qidiruv birinchi, IVI kamchiliklaridan foydalanilgan",
+      "kind": "title1",
+      "maxW": 4480,
+      "page": "models3"
+    },
+    "m3n": {
+      "x": 4560,
+      "y": 0,
+      "w": 760,
+      "page": "models3",
+      "fill": "yellow",
+      "size": 24,
+      "text": "IVI kamchiligi → bizning javob:\n1. Qidiruv kichik link → katta qidiruv birinchi o'rinda\n2. Faqat o'z katalogi → barcha legal platformalar\n3. Til faqat 'o'zbek tili' belgisi → istalgan audio til, platforma va sezon bo'yicha\n4. 30+ qator, yarmi bo'sh (sekin) → 5–6 ta foydali qator, server render\n5. 'Watch 30 days free' paywall → neytral 'Where to watch'\n6. Narx va 'ketayotganlar' yo'q → narx va 'Leaving soon'\n\nBrend nomlari (3 modelda sinab ko'ring): glotvi, dubzio, dubtiv — .com bo'sh (RDAP, 2026-11-03)."
+    },
+    "ft": {
+      "x": 0,
+      "y": -300,
+      "text": "Yagona uslub — dizayn tizimi v2 + 1–3 va 18-sahifalar",
+      "kind": "title1",
+      "maxW": 4640,
+      "page": "final"
+    },
+    "ftr": {
+      "x": 6240,
+      "y": 1400,
+      "w": 1600,
+      "page": "final",
+      "fill": "yellow",
+      "size": 24,
+      "text": "Treyler qoidasi (huquqiy):\n1. Rasmiy treyler — faqat YouTube embed (TMDB /videos API kalitlari: film, sezon, qism). Yuklab olish, qayta kesish, ustiga yozish — YouTube siyosati bo'yicha TAQIQ.\n2. Bizning 'treyler' = kadrsiz motion-karta: key art + til + platforma + havola. Film kadrlaridan montaj qilmaymiz (mualliflik huquqi, takedown xavfi).\n3. Stories: 1080×1920 PNG/MP4, telefonda 'Share' → Instagram; havola stikerni foydalanuvchi qo'shadi (biz havolani nusxalaymiz).\n4. Brend: Sofo (tasdiqlangan 2026-11-03); logo va Sofo Orange tasdiqlangan. Raqamlar va 'kalkıyor' sanasi NAMUNA."
+    },
+    "az": {
+      "x": 0,
+      "y": 3000,
+      "text": "Barcha sahifalar A–Z — 20 tur (0 = sayt xaritasi)",
+      "kind": "title1",
+      "maxW": 7520,
+      "page": "final"
+    },
+    "azm": {
+      "x": 0,
+      "y": 10700,
+      "text": "Telefon versiyasi",
+      "kind": "title1",
+      "maxW": 2000,
+      "page": "final"
+    },
+    "azn": {
+      "x": 1500,
+      "y": 11000,
+      "w": 900,
+      "page": "final",
+      "fill": "orange",
+      "size": 24,
+      "text": "Hamma sahifalar bitta uslubda: sofo logo, bir xil header (qidiruv + edition + xabarlar + My list) va footer (editionlar, TMDB atributsiyasi).\nPosterlar haqiqiy (TMDB, Türkiye nomlari bilan). Servis, narx, sana, dublaj va son ma'lumotlari — NAMUNA.\nShaxs sahifalarida foto yo'q (initsiallar) — litsenziya tufayli."
+    },
+    "v1": {
+      "x": 0,
+      "y": 12600,
+      "text": "Qiymat ekranlari (TASK-051) — nega Google bizni ko'rsatadi",
+      "kind": "title1",
+      "maxW": 6000,
+      "page": "final"
+    },
+    "v2": {
+      "x": 0,
+      "y": 14900,
+      "text": "Holatlar va oynalar — dasturchi uchun",
+      "kind": "title1",
+      "maxW": 6000,
+      "page": "final"
+    },
+    "v3": {
+      "x": 6080,
+      "y": 12900,
+      "w": 900,
+      "page": "final",
+      "fill": "yellow",
+      "size": 24,
+      "text": "Qiymatlar → ekran:\nV1 til haqiqati — har ekranda TR dub/sub belgisi, qism darajasida\nV2 3 soniyalik javob — 4a (tepada bitta jumla + schema)\nV3 mavjudlik tarixi — 4a (vaqt chizig'i + change log)\nV4 franshiza/shaxs — 19 va 12\nV5 chiqish kuzatuvchisi — 20\nV9/V10 AI qidiruv va tavsiya — Ask sofo\nV12 ishonch — 'Something wrong?' oynasi, checked_at, 'tasdiqlanmagan' holati\nMa'lumotlar NAMUNA."
+    },
+    "mz": {
+      "x": 0,
+      "y": 16400,
+      "text": "Telefon — qolgan sahifalar (15 ta)",
+      "kind": "title1",
+      "maxW": 7000,
+      "page": "final"
+    },
+    "sp": {
+      "x": 0,
+      "y": 18100,
+      "text": "Dasturchi uchun — responsivlik, eslatmalar, admin panel",
+      "kind": "title1",
+      "maxW": 7520,
+      "page": "final"
+    },
+    "done": {
+      "x": 7600,
+      "y": 18400,
+      "w": 900,
+      "page": "final",
+      "fill": "yellow",
+      "size": 24,
+      "text": "Dizayn yakunlandi (2026-11-04):\n• 20 sahifa turi — kompyuter (20) + telefon (21 ekran)\n• Holatlar, oynalar, KVKK banner\n• Responsivlik qoidalari (xs/sm/md/lg/xl)\n• Dizayn tizimi v2 (tokenlar, komponentlar, kontrast)\n• Brend: Sofo logo + sub-brendlar\n• Eslatmalar: Telegram + email\n• Admin: dashboard, data QA, to'plam muharriri\nKeyingi: kodlash (PRD v2, 1-hafta)."
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Home.dc.html",
+    "Title.dc.html",
+    "List.dc.html",
+    "Platform.dc.html",
+    "MobileTitle.dc.html",
+    "MobileSearch.dc.html",
+    "HomeA.dc.html",
+    "HomeB.dc.html",
+    "HomeC.dc.html",
+    "HomeD.dc.html",
+    "HomeE.dc.html",
+    "HomeF.dc.html",
+    "HomeG.dc.html",
+    "HomeH.dc.html",
+    "HomeI.dc.html",
+    "HomeJ.dc.html",
+    "HomeK.dc.html",
+    "HomeL.dc.html",
+    "HomeM.dc.html",
+    "HomeN.dc.html",
+    "HomeO.dc.html",
+    "HomeP.dc.html",
+    "HomeQ.dc.html",
+    "Catalog.dc.html",
+    "HomeR.dc.html",
+    "HomeS.dc.html",
+    "HomeT.dc.html",
+    "DS.dc.html",
+    "HomeFinal.dc.html",
+    "SearchPage.dc.html",
+    "TitleFinal.dc.html",
+    "Share.dc.html",
+    "Sitemap.dc.html",
+    "Movie.dc.html",
+    "Season.dc.html",
+    "Browse.dc.html",
+    "LangHub.dc.html",
+    "Collection.dc.html",
+    "Service.dc.html",
+    "NewLeaving.dc.html",
+    "Trailers.dc.html",
+    "Person.dc.html",
+    "Kids.dc.html",
+    "MyList.dc.html",
+    "Onboarding.dc.html",
+    "Editions.dc.html",
+    "About.dc.html",
+    "MobileHomeF.dc.html",
+    "MobileSearchF.dc.html",
+    "MobileTitleF.dc.html",
+    "MovieAnswer.dc.html",
+    "Franchise.dc.html",
+    "Releases.dc.html",
+    "AISearch.dc.html",
+    "SearchStates.dc.html",
+    "Modals.dc.html",
+    "States.dc.html",
+    "MobileMovieF.dc.html",
+    "MobileFiltersF.dc.html",
+    "MobileListF.dc.html",
+    "Brand.dc.html",
+    "DS2.dc.html",
+    "MSeason.dc.html",
+    "MBrowse.dc.html",
+    "MLangHub.dc.html",
+    "MCollection.dc.html",
+    "MService.dc.html",
+    "MNewLeaving.dc.html",
+    "MTrailers.dc.html",
+    "MPerson.dc.html",
+    "MKids.dc.html",
+    "MOnboarding.dc.html",
+    "MFranchise.dc.html",
+    "MReleases.dc.html",
+    "MEditions.dc.html",
+    "MAbout.dc.html",
+    "MNotify.dc.html",
+    "Responsive.dc.html",
+    "Alerts.dc.html",
+    "AdminDash.dc.html",
+    "AdminQA.dc.html",
+    "AdminLists.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "final",
+      "name": "YAGONA USLUB — dizayn tizimi + sahifalar"
+    },
+    {
+      "id": "models3",
+      "name": "ARXIV · 3 model — IVI asosida, qidiruv birinchi"
+    },
+    {
+      "id": "ivi",
+      "name": "ARXIV · IVI modeli — Home Q + Katalog"
+    },
+    {
+      "id": "proven",
+      "name": "ARXIV · Homepage P — raqobatchilar tuzilmasi"
+    },
+    {
+      "id": "home10",
+      "name": "ARXIV · Homepage — +10 variant (qidiruv platformasi)"
+    },
+    {
+      "id": "home5",
+      "name": "ARXIV · Homepage — 5 variant"
+    },
+    {
+      "id": "site",
+      "name": "ARXIV · Sayt (v4 sahifalar)"
+    },
+    {
+      "id": "archive",
+      "name": "ARXIV · Dizayn tizimi v1 (yalpiz)"
+    }
+  ],
+  "title": "Global Movie Search — Sayt arxitekturasi"
+}

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home F — Command</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#0D0F12}
+a{color:#E8EAED;text-decoration:none}a:hover{color:#7DD3FC}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0D0F12; color: #E8EAED; font-family: 'IBM Plex Sans', system-ui, sans-serif">
+<header style="max-width: 1200px; margin: 0 auto; padding: 18px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="#" style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600">[brand]<span style="color: #7DD3FC">_</span></a>
+<span style="flex-grow: 1"></span>
+<a href="#" style="padding: 12px 8px; font-size: 14px; color: #9AA0A6">Lists</a>
+<a href="#" style="padding: 12px 8px; font-size: 14px; color: #9AA0A6">Services</a>
+<button type="button" style="height: 40px; padding: 0 12px; border-radius: 8px; border: 1px solid #2A2F36; background: #14171B; color: #E8EAED; font-family: 'IBM Plex Mono', monospace; font-size: 13px">EN · TR</button>
+</header>
+
+<main style="max-width: 1200px; margin: 0 auto; padding: 56px 32px 72px; box-sizing: border-box; display: flex; flex-direction: column; gap: 48px">
+<section style="display: flex; flex-direction: column; align-items: center; gap: 20px">
+<h1 style="margin: 0; text-align: center; font-size: 44px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em">Type a title and a language.<br><span style="color: #9AA0A6">We'll tell you where it plays.</span></h1>
+<div style="width: 100%; max-width: 760px; border-radius: 16px; background: #14171B; border: 1px solid #2A2F36; box-shadow: 0 30px 80px rgba(0,0,0,0.6); overflow: hidden">
+<div style="display: flex; align-items: center; gap: 12px; padding: 0 18px; height: 64px; border-bottom: 1px solid #2A2F36">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="#9AA0A6" stroke-width="2"></circle><path d="m20 20-3.5-3.5" stroke="#9AA0A6" stroke-width="2" stroke-linecap="round"></path></svg>
+<label for="cmd" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search</label>
+<input id="cmd" type="search" value="inside out 2 turkish" style="flex-grow: 1; min-width: 0; height: 60px; border: 0; background: transparent; color: #E8EAED; font-family: inherit; font-size: 20px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; padding: 4px 8px; border-radius: 6px; border: 1px solid #2A2F36; color: #9AA0A6">⌘K</span>
+</div>
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="3">
+<div style="padding: 10px 8px; display: flex; flex-direction: column; gap: 2px">
+<span style="padding: 6px 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #6B7280">{{g.h}}</span>
+<sc-for list="{{g.items}}" as="it" hint-placeholder-count="2">
+<a href="#" style="{{it.row}}">
+<sc-if value="{{it.hasImg}}" hint-placeholder-val="{{true}}"><img src="{{it.img}}" alt="" style="width: 32px; height: 48px; object-fit: cover; border-radius: 5px"></sc-if>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">{{it.t}}</span><span style="font-size: 13px; color: #9AA0A6">{{it.s}}</span></span>
+<span style="{{it.tagStyle}}">{{it.tag}}</span>
+</a>
+</sc-for>
+</div>
+</sc-for>
+<div style="display: flex; gap: 16px; padding: 10px 18px; border-top: 1px solid #2A2F36; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7280"><span>↑↓ navigate</span><span>↵ open</span><span>tab change language</span></div>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px">
+<sc-for list="{{cols}}" as="c" hint-placeholder-count="3">
+<div style="border-radius: 14px; border: 1px solid #22262C; padding: 18px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #7DD3FC; padding-bottom: 8px">{{c.h}}</span>
+<sc-for list="{{c.items}}" as="i" hint-placeholder-count="4">
+<a href="#" style="display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid #1B1F24; font-size: 15px"><span>{{i.t}}</span><span style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #9AA0A6">{{i.v}}</span></a>
+</sc-for>
+</div>
+</sc-for>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+const row = 'display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 10px; ';
+const ok = 'font-family: \'IBM Plex Mono\', monospace; font-size: 12px; padding: 4px 8px; border-radius: 6px; background: rgba(74,222,128,0.12); color: #4ADE80';
+const mid = 'font-family: \'IBM Plex Mono\', monospace; font-size: 12px; padding: 4px 8px; border-radius: 6px; background: #1B1F24; color: #9AA0A6';
+return {
+groups: [
+{ h: 'Titles', items: [
+{ t: 'Inside Out 2 (2024)', s: 'Disney+ · Türkiye', img: '/_blob/79f8fee8ed49eaf30382120f6b21d16f', hasImg: true, tag: 'TR audio ✓', tagStyle: ok, row: row + 'background: #1B2028' },
+{ t: 'Coco (2017)', s: 'Disney+ · Türkiye', img: '/_blob/5ded58698603822d03ccd70fd08231b5', hasImg: true, tag: 'TR audio ✓', tagStyle: ok, row: row }
+] },
+{ h: 'Lists', items: [{ t: 'Pixar movies dubbed in Turkish', s: '24 titles · updated today', img: '', hasImg: false, tag: 'list', tagStyle: mid, row: row }] },
+{ h: 'Language', items: [{ t: 'Browse everything in Türkçe', s: 'Audio and subtitles', img: '', hasImg: false, tag: 'TR', tagStyle: mid, row: row }] }
+],
+cols: [
+{ h: 'Top searches', items: [{ t: 'The Wild Robot', v: '▲ 3' }, { t: 'Arcane', v: '▲ 1' }, { t: 'Demon Slayer', v: '▲ 5' }, { t: 'Moana 2', v: '▼ 1' }] },
+{ h: 'New dubs', items: [{ t: 'Inside Out 2', v: 'TR AR PT' }, { t: 'Moana 2', v: 'DE FR' }, { t: 'Kung Fu Panda 4', v: 'ES TR' }, { t: 'Elemental', v: 'TR ES' }] },
+{ h: 'Leaving soon', items: [{ t: 'Spirited Away', v: '9 days' }, { t: 'Soul', v: '12 days' }, { t: 'Luca', v: '14 days' }, { t: 'Encanto', v: '21 days' }] }
+]
+};
+}
+}
+</script>
+</body>
+</html>

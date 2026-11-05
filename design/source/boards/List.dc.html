@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>List — animated movies by dub language</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0C10}
+a{color:#FFFFFF;text-decoration:none}a:hover{color:#D4D6DC}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0B0C10; color: #FFFFFF; font-family: 'Inter', system-ui, sans-serif">
+
+<header style="border-bottom: 1px solid #1C1E25">
+<div style="max-width: 1400px; margin: 0 auto; padding: 14px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="Home.dc.html" style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">[BRAND]</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 2px; font-size: 15px; font-weight: 500; color: #C9CBD2">
+<a href="Home.dc.html" style="padding: 12px 10px">Home</a>
+<a href="#" style="padding: 12px 10px">Movies</a>
+<a href="#" style="padding: 12px 10px">TV Shows</a>
+<a href="#" style="padding: 12px 10px">Anime</a>
+<a href="Platform.dc.html" style="padding: 12px 10px">Services</a>
+<a href="#" style="padding: 12px 10px; color: #FFFFFF; font-weight: 700">Lists</a>
+</nav>
+<form role="search" style="flex: 999 1 300px; min-width: 0; display: flex">
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search movies and shows</label>
+<input id="q" type="search" placeholder="Search any movie or show, in any language…" style="width: 100%; height: 44px; box-sizing: border-box; padding: 0 16px; font-size: 15px; font-family: inherit; color: #FFFFFF; background: #16181F; border: 1px solid #262932; border-radius: 22px">
+</form>
+<button type="button" style="height: 44px; padding: 0 14px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; background: #16181F; border: 1px solid #262932; border-radius: 22px">Türkiye</button>
+<button type="button" style="height: 44px; padding: 0 14px; font-family: inherit; font-size: 14px; font-weight: 600; color: #FFFFFF; background: #16181F; border: 1px solid #262932; border-radius: 22px">English ▾</button>
+</div>
+</header>
+
+<main style="max-width: 1400px; margin: 0 auto; padding: 28px 32px 72px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px">
+<section style="position: relative; border-radius: 24px; overflow: hidden; background: #13151B; display: flex; flex-wrap: wrap; align-items: center; gap: 32px; box-sizing: border-box; padding: 40px">
+<div style="flex: 999 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
+<nav aria-label="Breadcrumb" style="display: flex; gap: 8px; font-size: 14px; color: #8B8E98"><a href="Home.dc.html" style="color: #8B8E98">Home</a><span>›</span><a href="#" style="color: #8B8E98">Lists</a></nav>
+<h1 style="margin: 0; font-size: 52px; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em">Animated movies dubbed in {{langEn}}</h1>
+<p style="margin: 0; font-size: 17px; line-height: 1.6; color: #C9CBD2; max-width: 640px">Every animated movie you can stream legally in {{country}} with {{langEn}} audio — checked daily on each service.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 10px; font-size: 14px; color: #A9ACB5"><span>{{count}} movies</span><span aria-hidden="true">·</span><span>Updated today</span><span aria-hidden="true">·</span><span>Only legal services</span></div>
+</div>
+<div style="flex: 1 1 360px; display: flex; justify-content: center">
+<sc-for list="{{fan}}" as="f" hint-placeholder-count="5"><img src="{{f.src}}" alt="" style="{{f.style}}"></sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="font-size: 14px; font-weight: 700; color: #A9ACB5; margin-right: 4px">Dubbed in</span>
+<sc-for list="{{langChips}}" as="l" hint-placeholder-count="8">
+<button type="button" onClick="{{l.pick}}" style="{{l.style}}">{{l.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="font-size: 14px; font-weight: 700; color: #A9ACB5; margin-right: 4px">On</span>
+<sc-for list="{{svcChips}}" as="s" hint-placeholder-count="5">
+<button type="button" onClick="{{s.pick}}" style="{{s.style}}">{{s.label}}</button>
+</sc-for>
+<span style="flex-grow: 1"></span>
+<label for="sort" style="font-size: 14px; color: #8B8E98">Sort</label>
+<select id="sort" style="height: 44px; padding: 0 12px; font-family: inherit; font-size: 14px; color: #FFFFFF; background: #16181F; border: 1px solid #262932; border-radius: 12px"><option>Most popular</option><option>Newest</option><option>TMDB score</option></select>
+</div>
+</section>
+
+<ol style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 28px 20px">
+<sc-for list="{{items}}" as="it" hint-placeholder-count="10">
+<li style="display: flex; flex-direction: column; gap: 10px">
+<a href="Title.dc.html" style="position: relative; display: block">
+<img src="{{it.img}}" alt="{{it.name}}" style="display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 14px">
+<span style="position: absolute; left: 10px; top: 10px; min-width: 32px; height: 32px; padding: 0 8px; box-sizing: border-box; border-radius: 16px; background: rgba(11,12,16,0.85); font-size: 14px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{it.n}}</span>
+<span style="position: absolute; left: 10px; bottom: 10px; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #FFFFFF; color: #0B0C10">{{langCode}} AUDIO</span>
+</a>
+<span style="display: flex; flex-direction: column; gap: 4px">
+<a href="Title.dc.html" style="font-size: 16px; font-weight: 700">{{it.name}}</a>
+<span style="font-size: 13px; color: #8B8E98">{{it.meta}}</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #C9CBD2">
+<sc-for list="{{it.logos}}" as="g" hint-placeholder-count="2"><img src="{{g}}" alt="" style="width: 20px; height: 20px; border-radius: 5px"></sc-for>{{it.svc}}</span>
+</span>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+<div style="padding: 32px; border-radius: 16px; border: 1px dashed #2C2F39; color: #A9ACB5; font-size: 15px">No movies with {{langEn}} audio on this service in {{country}} right now.</div>
+</sc-if>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 22px; font-weight: 800">Related lists</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px">
+<sc-for list="{{related}}" as="r" hint-placeholder-count="4">
+<a href="#" style="box-sizing: border-box; padding: 16px 18px; border-radius: 14px; background: #13151B; border: 1px solid #23262E; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 16px; font-weight: 700">{{r.name}}</span><span style="font-size: 13px; color: #8B8E98">{{r.meta}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { lang: 'tr', svc: 'all' }; }
+renderVals() {
+const LG = { netflix: '/_blob/d2df8e6b31dc8a17d738cdcbe082abae', prime: '/_blob/996ff9952cc48dec9ccd2e076c38e147', disney: '/_blob/73cc46ffcd16b9ca2ab5420acf984a61' };
+const LN = { tr: ['Türkçe', 'Turkish', 'TR'], es: ['Español', 'Spanish', 'ES'], de: ['Deutsch', 'German', 'DE'], fr: ['Français', 'French', 'FR'], pt: ['Português', 'Portuguese', 'PT'], ru: ['Русский', 'Russian', 'RU'], ar: ['العربية', 'Arabic', 'AR'], en: ['English', 'English', 'EN'] };
+const M = [
+['The Wild Robot', '/_blob/cb4f087928b468549d841e1ee3e42661', '2024 · 1h 42m · TMDB 8.3', ['netflix', 'prime'], 'tresdefrptruaren'],
+['Inside Out 2', '/_blob/79f8fee8ed49eaf30382120f6b21d16f', '2024 · 1h 36m · TMDB 7.6', ['disney'], 'tresdefrptruaren'],
+['Moana 2', '/_blob/1e670cb28388c895319bac5d4cfbc2c3', '2024 · 1h 40m · TMDB 7.0', ['disney'], 'tresdefrpten'],
+['Kung Fu Panda 4', '/_blob/adb806acfa10e9988ff559ed874dc96e', '2024 · 1h 34m · TMDB 7.1', ['netflix', 'prime'], 'tresdefrruen'],
+['Spirited Away', '/_blob/c7d07cd502e08e290cd41761b2472cef', '2001 · 2h 5m · TMDB 8.5', ['netflix'], 'tresdefrptruaren'],
+['Coco', '/_blob/5ded58698603822d03ccd70fd08231b5', '2017 · 1h 45m · TMDB 8.2', ['disney'], 'tresdefrptruaren'],
+['The Super Mario Bros. Movie', '/_blob/47f8a7c4cd8d8c24bf5128dfbdba945e', '2023 · 1h 32m · TMDB 7.6', ['netflix'], 'esdefrptruen'],
+['Soul', '/_blob/33e8d6e312d2c2a28eb7e6c8b92bd882', '2020 · 1h 41m · TMDB 8.0', ['disney'], 'tresdefrptaren'],
+['Luca', '/_blob/8a0c424f5b0aaaf2e47ebfabe38e12cd', '2021 · 1h 35m · TMDB 7.8', ['disney'], 'tresdefrptruen'],
+['Encanto', '/_blob/2e0943299c347febf750aa19360d1513', '2021 · 1h 42m · TMDB 7.6', ['disney'], 'tresdefrptruaren'],
+['Elemental', '/_blob/d72425766e887bab76cad923ba40aba6', '2023 · 1h 42m · TMDB 7.6', ['disney'], 'tresfrptruen'],
+['Across the Spider-Verse', '/_blob/03b2f15bf88d978897f8069cf919e46b', '2023 · 2h 20m · TMDB 8.3', ['netflix', 'prime'], 'tresdefrptruaren']
+];
+const lang = this.state.lang, svc = this.state.svc, svcName = { netflix: 'Netflix', prime: 'Prime Video', disney: 'Disney+' };
+const has = (codes, l) => { for (let i = 0; i < codes.length; i += 2) { if (codes.substr(i, 2) === l) return true; } return false; };
+const list = M.filter((m) => has(m[4], lang) && (svc === 'all' || m[3].indexOf(svc) >= 0));
+const chip = 'height: 40px; padding: 0 14px; border-radius: 20px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; ';
+const on = chip + 'background: #FFFFFF; color: #0B0C10; border: 1px solid #FFFFFF';
+const off = chip + 'background: transparent; color: #FFFFFF; border: 1px solid #2C2F39';
+const fanImgs = list.slice(0, 5).map((m) => m[1]);
+return {
+langEn: LN[lang][1], langCode: LN[lang][2], country: 'Türkiye', count: String(list.length),
+empty: list.length === 0,
+fan: fanImgs.map((s, i) => ({ src: s, style: 'width: 120px; height: 180px; object-fit: cover; border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,0.55); ' + (i ? 'margin-left: -40px; ' : '') + 'transform: rotate(' + ((i - 2) * 5) + 'deg) translateY(' + Math.abs(i - 2) * 8 + 'px)' })),
+langChips: Object.keys(LN).map((k) => ({ label: LN[k][0], style: k === lang ? on : off, pick: () => this.setState({ lang: k }) })),
+svcChips: [['all', 'All services'], ['netflix', 'Netflix'], ['disney', 'Disney+'], ['prime', 'Prime Video']].map((s) => ({ label: s[1], style: s[0] === svc ? on : off, pick: () => this.setState({ svc: s[0] }) })),
+items: list.map((m, i) => ({ n: String(i + 1), name: m[0], img: m[1], meta: m[2], logos: m[3].map((k) => LG[k]), svc: m[3].map((k) => svcName[k]).join(' · ') })),
+related: [
+{ name: 'Anime dubbed in ' + LN[lang][1], meta: 'Updated daily' }, { name: 'Family movies on Netflix with ' + LN[lang][1] + ' audio', meta: 'Updated daily' },
+{ name: 'Free animated movies (legal, with ads)', meta: 'By country' }, { name: 'New ' + LN[lang][1] + ' dubs this month', meta: 'Updated daily' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

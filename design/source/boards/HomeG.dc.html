@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home G — Finder</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F4F5F7}
+a{color:#111827;text-decoration:none}a:hover{color:#0F766E}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #F4F5F7; color: #111827; font-family: 'Figtree', system-ui, sans-serif">
+<header style="background: #FFFFFF; border-bottom: 1px solid #E5E7EB">
+<div style="max-width: 1400px; margin: 0 auto; padding: 14px 28px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+<a href="#" style="font-size: 22px; font-weight: 800">[BRAND]</a>
+<form role="search" style="flex: 999 1 360px; min-width: 0; display: flex">
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search</label>
+<input id="q" type="search" placeholder="Search 400,000+ movies and shows" style="width: 100%; height: 48px; box-sizing: border-box; padding: 0 18px; border-radius: 12px; border: 1px solid #D1D5DB; background: #F9FAFB; font-family: inherit; font-size: 16px; color: #111827">
+</form>
+<button type="button" style="height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid #D1D5DB; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; color: #111827">English ▾</button>
+</div>
+</header>
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 24px 28px 64px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+<aside aria-label="Filters" style="flex: 1 1 260px; max-width: 300px; box-sizing: border-box; padding: 20px; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 16px; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #6B7280">Audio language</span>
+<sc-for list="{{audio}}" as="a" hint-placeholder-count="7">
+<label style="display: flex; align-items: center; gap: 10px; min-height: 32px; font-size: 15px"><input type="checkbox" checked="{{a.on}}" style="width: 18px; height: 18px; accent-color: #0F766E">{{a.t}}<span style="margin-left: auto; font-size: 13px; color: #9CA3AF">{{a.n}}</span></label>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<label for="ctry" style="font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #6B7280">Country</label>
+<select id="ctry" style="height: 44px; padding: 0 10px; border-radius: 10px; border: 1px solid #D1D5DB; background: #FFFFFF; font-family: inherit; font-size: 15px"><option>Türkiye</option><option>United States</option><option>Germany</option></select>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #6B7280">Services</span>
+<sc-for list="{{svc}}" as="s" hint-placeholder-count="3">
+<label style="display: flex; align-items: center; gap: 10px; min-height: 36px; font-size: 15px"><input type="checkbox" checked="{{true}}" style="width: 18px; height: 18px; accent-color: #0F766E"><img src="{{s.logo}}" alt="" style="width: 26px; height: 26px; border-radius: 6px">{{s.t}}</label>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #6B7280">Price</span>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{price}}" as="p" hint-placeholder-count="4"><button type="button" style="{{p.s}}">{{p.t}}</button></sc-for>
+</div>
+</div>
+</aside>
+
+<main style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<h1 style="margin: 0; font-size: 26px; font-weight: 800">312 titles with Turkish audio <span style="font-weight: 500; color: #6B7280">in Türkiye</span></h1>
+<div style="display: flex; gap: 6px">
+<sc-for list="{{types}}" as="t" hint-placeholder-count="4"><button type="button" style="{{t.s}}">{{t.t}}</button></sc-for>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px">
+<sc-for list="{{res}}" as="r" hint-placeholder-count="9">
+<a href="#" style="display: flex; gap: 14px; padding: 12px; background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 14px">
+<img src="{{r.img}}" alt="" style="width: 72px; height: 108px; object-fit: cover; border-radius: 8px; flex-shrink: 0">
+<span style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+<span style="font-size: 16px; font-weight: 700">{{r.t}}</span>
+<span style="font-size: 13px; color: #6B7280">{{r.m}}</span>
+<span style="display: flex; gap: 4px"><sc-for list="{{r.logos}}" as="g" hint-placeholder-count="2"><img src="{{g}}" alt="" style="width: 22px; height: 22px; border-radius: 5px"></sc-for></span>
+<span style="align-self: flex-start; font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #CCFBF1; color: #115E59">TR audio · {{r.subs}}</span>
+</span>
+</a>
+</sc-for>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const L = { n: b('d2df8e6b31dc8a17d738cdcbe082abae'), p: b('996ff9952cc48dec9ccd2e076c38e147'), d: b('73cc46ffcd16b9ca2ab5420acf984a61') };
+const chip = 'height: 38px; padding: 0 12px; border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; ';
+const on = chip + 'background: #0F766E; color: #FFFFFF; border: 1px solid #0F766E';
+const off = chip + 'background: #FFFFFF; color: #374151; border: 1px solid #D1D5DB';
+const R = [['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', 'Movie · 2024', 'np'], ['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'Movie · 2024', 'd'], ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b', 'Series · 2021', 'n'], ['Coco', '5ded58698603822d03ccd70fd08231b5', 'Movie · 2017', 'd'], ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'Movie · 2024', 'np'], ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', 'Anime · 2019', 'n'], ['Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'Movie · 2024', 'd'], ['Spirited Away', 'c7d07cd502e08e290cd41761b2472cef', 'Movie · 2001', 'n'], ['Encanto', '2e0943299c347febf750aa19360d1513', 'Movie · 2021', 'd']];
+return {
+audio: [['Türkçe', '312', true], ['English', '4,820', false], ['Español', '1,940', false], ['Deutsch', '1,610', false], ['Français', '1,520', false], ['Português', '1,110', false], ['Русский', '890', false]].map((a) => ({ t: a[0], n: a[1], on: a[2] })),
+svc: [{ t: 'Netflix', logo: L.n }, { t: 'Disney+', logo: L.d }, { t: 'Prime Video', logo: L.p }],
+price: ['Subscription', 'Free', 'Rent', 'Buy'].map((t, i) => ({ t, s: i === 0 ? on : off })),
+types: ['All', 'Movies', 'Series', 'Anime'].map((t, i) => ({ t, s: i === 0 ? on : off })),
+res: R.map((r) => ({ t: r[0], img: b(r[1]), m: r[2], logos: r[3].split('').map((k) => L[k]), subs: 'TR subs' }))
+};
+}
+}
+</script>
+</body>
+</html>

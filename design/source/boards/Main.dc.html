@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>Sayt xaritasi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#FF8A57;text-decoration:none}a:hover{color:#FFB08C}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1400px; box-sizing: border-box; padding: 56px 64px; background: #0B0B0F; color: #F4F4F6; font-family: 'Manrope', system-ui, sans-serif; display: flex; flex-direction: column; gap: 36px">
+
+<div style="display: flex; flex-direction: column; gap: 14px">
+<h1 style="margin: 0; font-family: 'Bebas Neue', sans-serif; font-size: 72px; line-height: 0.95; font-weight: 400; letter-spacing: 0.01em">Sayt: 7 xil sahifa, ~560 ta</h1>
+<p style="margin: 0; font-size: 19px; line-height: 1.5; color: #C4C4CC; max-width: 1000px">Odam Google'da film nomini yozadi. Bizning sahifaga tushadi va film qaysi platformada turkcha dublaj bilan borligini darhol ko'radi. Keyin «İzle» tugmasi orqali Netflix, Prime yoki boshqa legal platformaga o'tadi.</p>
+</div>
+
+<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+<sc-for list="{{flow}}" as="f" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="box-sizing: border-box; padding: 14px 20px; background: #15151C; border: 1px solid #26262F; border-radius: 12px; display: flex; align-items: center; gap: 12px">
+<span style="width: 30px; height: 30px; border-radius: 15px; background: #FF6B2C; color: #111111; font-weight: 800; font-size: 15px; display: flex; align-items: center; justify-content: center">{{f.n}}</span>
+<span style="font-size: 16px; font-weight: 600">{{f.t}}</span>
+</div>
+<sc-if value="{{f.arrow}}" hint-placeholder-val="{{true}}">
+<svg width="28" height="16" viewBox="0 0 28 16" fill="none" aria-hidden="true"><path d="M1 8h24m0 0-6-6m6 6-6 6" stroke="#6B6B76" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</sc-if>
+</div>
+</sc-for>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px">
+<sc-for list="{{pages}}" as="p" hint-placeholder-count="8">
+<div style="box-sizing: border-box; padding: 16px; background: #15151C; border: 1px solid #26262F; border-radius: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="position: relative; width: 100%; height: 140px; background: #0F0F14; border-radius: 10px; overflow: hidden">
+<sc-for list="{{p.blocks}}" as="bk" hint-placeholder-count="6">
+<div style="{{bk.s}}"></div>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px">
+<span style="font-size: 18px; font-weight: 700">{{p.name}}</span>
+<span style="font-family: 'Bebas Neue', sans-serif; font-size: 34px; line-height: 1; color: #FF8A57">{{p.count}}</span>
+</div>
+<span style="font-size: 14px; line-height: 1.5; color: #C4C4CC">{{p.desc}}</span>
+<span style="font-size: 12px; color: #8C8C97">{{p.example}}</span>
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: auto">
+<span style="{{p.tagStyle}}">{{p.tag}}</span>
+<sc-if value="{{p.hasBoard}}" hint-placeholder-val="{{true}}">
+<a href="{{p.board}}" style="font-size: 14px; font-weight: 700; padding: 10px 0">Ekranni ko'rish →</a>
+</sc-if>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 22px; font-weight: 700">Raqobatchilardan nimani oldik va nima bilan kuchliroqmiz</h2>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px">
+<sc-for list="{{rivals}}" as="r" hint-placeholder-count="5">
+<div style="{{r.box}}">
+<span style="font-size: 16px; font-weight: 800">{{r.name}}</span>
+<span style="font-size: 14px; line-height: 1.5">{{r.take}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+renderVals() {
+const B = (l, t, w, h, c, r) => ({ s: 'position: absolute; left: ' + l + '%; top: ' + t + '%; width: ' + w + '%; height: ' + h + '%; background: ' + c + '; border-radius: ' + (r || 4) + 'px' });
+const pc = ['#4A2C7A', '#8A2F2F', '#1F5B6E', '#7A5A16', '#2E6B2A', '#6B2550'];
+const row = (top, h, n, w, gap) => Array.from({ length: n }, (_, i) => B(4 + i * (w + gap), top, w, h, pc[i % 6]));
+const tag = (t) => ({ tag: t, tagStyle: 'font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; ' + (t === 'MVP' ? 'background: #FF6B2C; color: #111111' : 'background: #26262F; color: #C4C4CC') });
+const pg = (name, count, desc, example, t, board, blocks) => Object.assign({ name, count, desc, example, board: board || '', hasBoard: !!board, blocks }, tag(t));
+return {
+flow: [
+{ n: '1', t: 'Google: «Son Kale türkçe dublaj»', arrow: true },
+{ n: '2', t: 'Film sahifasi', arrow: true },
+{ n: '3', t: 'Dublaj bor-yo\'qligini ko\'radi', arrow: true },
+{ n: '4', t: '«İzle» → Netflix / Prime', arrow: false }
+],
+pages: [
+pg('Bosh sahifa', '2', 'Netflix uslubida: katta afisha, Türkiye top-10, yangi turkcha dublajlar, platformalar bo\'yicha qatorlar.', 'TR va EN versiya', 'MVP', 'Home.dc.html',
+[B(4, 6, 92, 44, '#2A1E4A', 8), B(8, 18, 34, 7, '#F4F4F6'), B(8, 31, 16, 8, '#FF6B2C')].concat(row(58, 36, 5, 16, 3))),
+pg('Film / serial sahifasi', '474', 'Eng muhim sahifa. Qayerda ko\'rish, turkcha dublaj va altyazı, narx, har sezon bo\'yicha dublaj, aktyorlar, treyler, o\'xshash filmlar.', '343 turkcha + 131 inglizcha', 'MVP', 'Title.dc.html',
+[B(0, 0, 100, 46, '#1E2A3A', 0), B(6, 18, 18, 64, '#8A2F2F', 6), B(29, 26, 42, 8, '#F4F4F6'), B(29, 40, 24, 9, '#2563EB', 6), B(29, 60, 66, 8, '#26262F'), B(29, 72, 66, 8, '#26262F'), B(29, 84, 66, 8, '#26262F')]),
+pg('To\'plam sahifasi', '68', '«Türkçe dublajlı aksiyon filmleri» kabi tayyor ro\'yxatlar. Platforma va yil bo\'yicha filtr.', 'Masalan: anime, Kore dizileri, korku', 'MVP', 'List.dc.html',
+[B(4, 8, 52, 9, '#F4F4F6'), B(4, 24, 13, 7, '#FF6B2C', 99), B(19, 24, 13, 7, '#26262F', 99), B(34, 24, 13, 7, '#26262F', 99)].concat(row(38, 26, 6, 13.5, 2.5), row(69, 26, 6, 13.5, 2.5))),
+pg('Platforma sahifasi', '8', '«Netflix\'te Türkçe dublajlı diziler». Har bir platformadagi barcha dublajli kontent bir joyda.', 'Netflix, Prime Video, Disney+, HBO Max, TOD, tabii, Exxen, Gain', 'MVP', 'Platform.dc.html',
+[B(4, 6, 92, 30, '#5B1414', 8), B(8, 15, 30, 8, '#F4F4F6')].concat(row(46, 22, 6, 13.5, 2.5), row(72, 22, 6, 13.5, 2.5))),
+pg('Qidiruv', '1', 'Nom yozilayotganda darhol natija chiqadi. Xato yozilsa ham, turkcha yoki original nom bilan topadi.', 'Har sahifaning tepasida', 'MVP', 'MobileSearch.dc.html',
+[B(6, 10, 88, 16, '#26262F', 8), B(9, 15, 3, 6, '#FF6B2C', 1), B(6, 36, 10, 18, pc[0]), B(19, 39, 40, 5, '#F4F4F6'), B(19, 47, 22, 4, '#6B6B76'), B(6, 62, 10, 18, pc[1]), B(19, 65, 34, 5, '#F4F4F6'), B(19, 73, 22, 4, '#6B6B76')]),
+pg('Yangi qo\'shilganlar', '1', 'Bu hafta qaysi film va serial turkcha dublaj bilan chiqdi. Har hafta yangilanadi, odam qaytib keladi.', 'Bosh sahifadagi qator bilan bog\'langan', 'MVP', '',
+[B(6, 10, 40, 8, '#F4F4F6'), B(6, 28, 88, 14, '#1B1B23'), B(6, 46, 88, 14, '#1B1B23'), B(6, 64, 88, 14, '#1B1B23'), B(80, 31, 11, 8, '#2563EB', 99), B(80, 49, 11, 8, '#2563EB', 99), B(80, 67, 11, 8, '#2563EB', 99)]),
+pg('Ma\'lumot sahifalari', '8', 'Biz haqimizda, Qanday tekshiramiz, Aloqa, Maxfiylik — TR va EN. Google ishonchi uchun kerak.', '4 ta sahifa × 2 til', 'MVP', '',
+[B(8, 12, 50, 9, '#F4F4F6'), B(8, 32, 84, 4, '#3A3A44'), B(8, 42, 80, 4, '#3A3A44'), B(8, 52, 84, 4, '#3A3A44'), B(8, 62, 60, 4, '#3A3A44'), B(8, 76, 70, 4, '#3A3A44')]),
+pg('Admin panel', '1', 'Faqat biz uchun, yopiq. Ma\'lumot yangilanishi, xato nomlarni tuzatish, sahifani yashirish.', 'Google\'ga ko\'rinmaydi', 'Ichki', '',
+[B(0, 0, 22, 100, '#15151C', 0), B(28, 10, 30, 8, '#F4F4F6'), B(28, 28, 66, 10, '#1B1B23'), B(28, 42, 66, 10, '#1B1B23'), B(28, 56, 66, 10, '#1B1B23'), B(28, 70, 66, 10, '#1B1B23'), B(84, 30, 8, 6, '#2E6B2A', 99)])
+],
+rivals: [
+{ name: 'Netflix', take: 'Katta afisha, gorizontal qatorlar, raqamli Top-10. Bosh sahifa shu uslubda.', box: 'box-sizing: border-box; padding: 16px; background: #15151C; border: 1px solid #26262F; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; color: #C4C4CC' },
+{ name: 'Kinopoisk', take: 'Film sahifasi tuzilishi: reyting, aktyorlar, treyler, o\'xshashlar, onlayn ko\'rish bloki.', box: 'box-sizing: border-box; padding: 16px; background: #15151C; border: 1px solid #26262F; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; color: #C4C4CC' },
+{ name: 'JustWatch', take: 'Platformalar va narxlar jadvali, platforma bo\'yicha filtr. Lekin dublaj tilini ko\'rsatmaydi.', box: 'box-sizing: border-box; padding: 16px; background: #15151C; border: 1px solid #26262F; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; color: #C4C4CC' },
+{ name: 'Letterboxd', take: 'Chiroyli to\'plamlar va poster panjarasi. To\'plam sahifalari shu uslubda.', box: 'box-sizing: border-box; padding: 16px; background: #15151C; border: 1px solid #26262F; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; color: #C4C4CC' },
+{ name: 'Bizda bor, ularda yo\'q', take: 'Har platforma va har sezon bo\'yicha turkcha dublaj/altyazı + oxirgi tekshiruv sanasi. Faqat legal havolalar.', box: 'box-sizing: border-box; padding: 16px; background: #FF6B2C; border-radius: 12px; display: flex; flex-direction: column; gap: 6px; color: #111111' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

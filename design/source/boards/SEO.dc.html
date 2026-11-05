@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<title>SEO tizimi</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#2448D8}a:hover{color:#1A36A8}
+</style>
+</helmet>
+<div style="width: 1440px; height: 1180px; box-sizing: border-box; padding: 56px 64px; background: #F7F7F5; color: #111318; font-family: 'Inter Tight', system-ui, sans-serif; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<p style="margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6070">SEO tizimi · har bir sahifaga avtomatik qo'llanadi</p>
+<h1 style="margin: 0; font-size: 44px; line-height: 1.1; font-weight: 700; letter-spacing: -0.02em">Linking, shablon, texnik qatlam va trafik realligi</h1>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px">
+<sc-for list="{{cols}}" as="c" hint-placeholder-count="3">
+<div style="box-sizing: border-box; padding: 20px; background: #FFFFFF; border: 1px solid #E3E4E8; border-radius: 14px; display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-size: 20px; font-weight: 600">{{c.h}}</h2>
+<sc-for list="{{c.rows}}" as="r" hint-placeholder-count="6">
+<div style="display: flex; flex-direction: column; gap: 4px; padding-top: 12px; border-top: 1px solid #EDEEF1">
+<span style="font-size: 14px; font-weight: 600">{{r.k}}</span>
+<span style="{{r.vStyle}}">{{r.v}}</span>
+</div>
+</sc-for>
+</div>
+</sc-for>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; flex-grow: 1">
+<div style="box-sizing: border-box; padding: 20px; background: #111318; color: #FFFFFF; border-radius: 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #C9CCD4">Faktlar (KP, 2026-11-02)</span>
+<span style="font-size: 15px; line-height: 1.5">Rejadagi 500 entity talabi: TR 269 590/oy, US 5,07 mln/oy. Talabning hammasi klikka aylanmaydi: AI Overview bor so'rovlarda organik CTR tadqiqotlarda −58% gacha tushgan.</span>
+<span style="font-size: 15px; line-height: 1.5">Yangi domen: Google indekslash va ishonch 4–12 hafta oladi.</span>
+</div>
+<div style="box-sizing: border-box; padding: 20px; background: #FFF1E8; border-radius: 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9A3412">Taxmin — organik tashrif/oy</span>
+<sc-for list="{{forecast}}" as="f" hint-placeholder-count="4">
+<div style="display: flex; justify-content: space-between; gap: 12px; font-size: 15px; padding-bottom: 6px; border-bottom: 1px solid #F5D6C3">
+<span>{{f.m}}</span><span style="font-weight: 700">{{f.v}}</span>
+</div>
+</sc-for>
+<span style="font-size: 13px; line-height: 1.45; color: #5B2410">1 oyda 50K–500K yangi domen uchun real emas. 50K/oy — 90-kun gate. 500K uchun 5 000+ sahifa va backlink kerak.</span>
+</div>
+<div style="box-sizing: border-box; padding: 20px; background: #FFFFFF; border: 1px solid #E3E4E8; border-radius: 14px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #5B6070">Tezlatgichlar (ROI bo'yicha)</span>
+<sc-for list="{{levers}}" as="l" hint-placeholder-count="5">
+<div style="display: flex; gap: 10px; font-size: 14px; line-height: 1.45">
+<span style="flex-shrink: 0; width: 22px; height: 22px; border-radius: 11px; background: #2448D8; color: #FFFFFF; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center">{{l.n}}</span>
+<span>{{l.t}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+renderVals() {
+const txt = 'font-size: 13px; line-height: 1.45; color: #3D414C';
+const code = 'font-family: \'JetBrains Mono\', monospace; font-size: 12px; line-height: 1.5; color: #2448D8; background: #EEF1FD; padding: 4px 6px; border-radius: 6px';
+const r = (k, v, isCode) => ({ k, v, vStyle: isCode ? code : txt });
+return {
+cols: [
+{ h: 'Ichki linking', rows: [
+r('Ierarxiya', 'Ana sayfa → ro\'yxatlar → title. Har bir title ≤ 3 klikda.'),
+r('Title → title', '6–10 o\'xshash nom (janr + dublaj holati bir xil).'),
+r('Title → ro\'yxat', 'Nom kirgan 2–3 ro\'yxat, anchor = so\'rov matni.'),
+r('Ro\'yxat → ro\'yxat', 'Qo\'shni janr/servis ro\'yxatlari (4–6 ta).'),
+r('Breadcrumb', 'Ana sayfa › Dizi › {Ad} + BreadcrumbList schema.'),
+r('TR ↔ EN', 'Faqat ikkala versiya mavjud bo\'lsa hreflang juftligi.')
+]},
+{ h: 'On-page shablon (TR title)', rows: [
+r('<title> ≤ 60', '{Ad} hangi platformda? Türkçe dublaj var mı?', true),
+r('Meta description', '{Ad} ({Yıl}) {servisler}\'de. Türkçe dublaj: {holat}. Son kontrol: {tarih}.', true),
+r('H1', '{Ad} nerede izlenir?', true),
+r('Javob bloki (40–60 so\'z)', 'Birinchi paragrafda to\'g\'ridan-to\'g\'ri javob: servis + dublaj + sana. Featured snippet / AI Overview manbasi.'),
+r('Schema', 'TVSeries | Movie + potentialAction WatchAction, BreadcrumbList.'),
+r('FAQ bloki', 'Faqat ma\'lumotdan generatsiya (dublaj, bepulmi, qaysi davlatda). Matn shabloni ≠ thin content: har sahifada noyob data.')
+]},
+{ h: 'Texnik qatlam', rows: [
+r('Render', 'SSG + ISR (24 soat). JS siz to\'liq HTML.'),
+r('Core Web Vitals', 'LCP < 2,5 s mobil; poster AVIF, o\'lchami belgilangan (CLS 0).'),
+r('Canonical', 'Self-canonical. ?ulke=, filtrlar → bazaviy URL.'),
+r('Sitemap', 'Index + tur bo\'yicha bo\'lingan; lastmod faqat availability haqiqatan o\'zgarganda.', false),
+r('Indeks gate', 'Metadata to\'liq + ≥1 tasdiqlangan availability, aks holda noindex va sitemapdan tashqari.'),
+r('Yuborish', 'GSC (sitemap + URL inspection 1a uchun), IndexNow (Bing/Yandex).')
+]}
+],
+forecast: [
+{ m: '1-oy', v: '1K – 5K' },
+{ m: '3-oy (gate)', v: '15K – 50K' },
+{ m: '6-oy (5 000 sahifa)', v: '50K – 150K' },
+{ m: '12-oy', v: '150K – 500K' }
+],
+levers: [
+{ n: '1', t: 'Yangi chiqayotgan nomlar sahifasini premyeradan OLDIN chiqarish (raqobat yo\'q oyna).' },
+{ n: '2', t: 'Ro\'yxat sahifalari — "türkçe dublaj" bosh so\'rovlari, oyiga yangilanadi.' },
+{ n: '3', t: 'Digital PR: "Netflix TR\'da dublajli nomlar" tadqiqoti → TR media backlinklari.' },
+{ n: '4', t: 'Telegram/X kanali: haftalik "yangi dublajlar" — to\'g\'ridan trafik + brend qidiruvi.' },
+{ n: '5', t: 'GSC so\'rovlaridan har hafta yangi sahifalar (talab bor, sahifa yo\'q).' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

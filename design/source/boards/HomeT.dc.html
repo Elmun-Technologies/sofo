@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Modèle 3 — dubtiv France</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B0B0E}
+a{color:#FFFFFF;text-decoration:none}a:hover{color:#FFD2C7}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0B0B0E; color: #FFFFFF; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; overflow: hidden">
+
+<div style="background: #17171C; font-size: 13px; color: #C9C9D2">
+<div style="max-width: 1360px; margin: 0 auto; padding: 8px 28px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span>Vous êtes en France — catalogue et langues adaptés à la France.</span>
+<a href="#" style="font-weight: 700; padding: 6px 0">Changer de pays</a>
+</div>
+</div>
+
+<header>
+<div style="max-width: 1360px; margin: 0 auto; padding: 16px 28px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px">
+<a href="#" style="font-size: 26px; font-weight: 800; letter-spacing: -0.04em">dub<span style="color: #FF6B4A">tiv</span></a>
+<nav aria-label="Principal" style="display: flex; gap: 2px; font-size: 15px; font-weight: 700; color: #A0A0AC">
+<a href="#" style="padding: 12px 8px; color: #FFFFFF">Accueil</a><a href="#" style="padding: 12px 8px; color: #A0A0AC">Films</a><a href="#" style="padding: 12px 8px; color: #A0A0AC">Séries</a><a href="#" style="padding: 12px 8px; color: #A0A0AC">Animés</a><a href="#" style="padding: 12px 8px; color: #A0A0AC">dubtiv kids</a>
+</nav>
+<span style="flex-grow: 1"></span>
+<button type="button" style="height: 42px; padding: 0 12px; border-radius: 12px; border: 0; background: #17171C; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700">FR · Français ▾</button>
+</div>
+</header>
+
+<section style="max-width: 1360px; margin: 0 auto; padding: 8px 28px 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+<form role="search" style="display: flex; flex-wrap: wrap; gap: 8px">
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Rechercher</label>
+<input id="q" type="search" placeholder="Rechercher un film, une série, un animé…" style="flex: 999 1 420px; min-width: 0; height: 64px; box-sizing: border-box; padding: 0 22px; border-radius: 18px; border: 2px solid #FF6B4A; background: #121217; color: #FFFFFF; font-family: inherit; font-size: 19px">
+<button type="submit" style="flex: 1 1 150px; height: 64px; border: 0; border-radius: 18px; background: #FF6B4A; color: #0B0B0E; font-family: inherit; font-size: 17px; font-weight: 800">Où regarder ?</button>
+</form>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="6"><button type="button" style="{{c.s}}">{{c.t}}</button></sc-for>
+</div>
+</section>
+
+<section aria-label="À la une" style="padding-top: 22px">
+<div style="display: flex; justify-content: center; align-items: center; gap: 22px">
+<div style="flex: 0 0 15%; height: 340px; border-radius: 22px; overflow: hidden; opacity: 0.45"><img src="/_blob/d5a4b5eb4214f38a4ed921decc62a2a3" alt="" style="width: 100%; height: 100%; object-fit: cover; object-position: right center"></div>
+<div style="position: relative; flex: 0 0 66%; max-width: 940px; height: 340px; border-radius: 22px; overflow: hidden">
+<img src="/_blob/639102cbae922345a6f75cfad5711f2f" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover">
+<div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,11,14,0.94) 0%, rgba(11,11,14,0.5) 45%, rgba(11,11,14,0) 75%)"></div>
+<span style="position: absolute; left: 32px; top: 0; font-size: 12px; font-weight: 800; padding: 5px 12px; border-radius: 0 0 10px 10px; background: #FF6B4A; color: #0B0B0E">NOUVEAU EN VF</span>
+<div style="position: absolute; left: 32px; bottom: 28px; max-width: 420px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 46px; line-height: 0.95; font-weight: 800; letter-spacing: -0.03em">Vice-Versa 2</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #D6D6DE"><img src="/_blob/73cc46ffcd16b9ca2ab5420acf984a61" alt="" style="width: 22px; height: 22px; border-radius: 5px">Disney+ · VF · VOSTFR · Audiodescription</span>
+<span style="display: flex; gap: 10px">
+<a href="#" style="height: 46px; padding: 0 20px; display: inline-flex; align-items: center; border-radius: 12px; background: #FF6B4A; color: #0B0B0E; font-size: 15px; font-weight: 800">Où regarder</a>
+<a href="#" style="height: 46px; padding: 0 16px; display: inline-flex; align-items: center; border-radius: 12px; background: rgba(255,255,255,0.14); font-size: 15px; font-weight: 700">Bande-annonce</a>
+</span>
+</div>
+</div>
+<div style="flex: 0 0 15%; height: 340px; border-radius: 22px; overflow: hidden; opacity: 0.45"><img src="/_blob/1179309321f9ffa02b539f4c31ff5bd0" alt="" style="width: 100%; height: 100%; object-fit: cover; object-position: left center"></div>
+</div>
+</section>
+
+<main style="max-width: 1360px; margin: 0 auto; padding: 30px 28px 64px; box-sizing: border-box; display: flex; flex-direction: column; gap: 34px">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+<section style="display: flex; flex-direction: column; gap: 14px">
+<a href="#" style="align-self: flex-start; font-size: 23px; font-weight: 800">{{r.h}} <span style="color: #A0A0AC">›</span></a>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px">
+<sc-for list="{{r.items}}" as="c" hint-placeholder-count="7">
+<a href="#" style="position: relative; display: block">
+<img src="{{c.img}}" alt="{{c.t}}" style="display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 12px">
+<sc-if value="{{c.hasBadge}}" hint-placeholder-val="{{true}}"><span style="{{c.badgeStyle}}">{{c.badge}}</span></sc-if>
+<span style="position: absolute; left: 8px; right: 8px; bottom: 8px; display: flex; justify-content: space-between; align-items: center"><img src="{{c.logo}}" alt="" style="width: 22px; height: 22px; border-radius: 6px"><span style="font-size: 11px; font-weight: 800; padding: 3px 6px; border-radius: 6px; background: rgba(11,11,14,0.8)">{{c.lang}}</span></span>
+</a>
+</sc-for>
+</div>
+</section>
+</sc-for>
+
+<section style="display: flex; flex-direction: column; gap: 8px; max-width: 920px">
+<h2 style="margin: 0; font-size: 20px; font-weight: 800">Films et séries en VF ou VOSTFR : où les regarder légalement en France ?</h2>
+<p style="margin: 0; font-size: 15px; line-height: 1.6; color: #A0A0AC">dubtiv vérifie chaque jour Netflix, Disney+, Prime Video, Canal+, Max, Arte et france.tv pour vous dire où chaque titre est disponible, en version française ou en VOSTFR…</p>
+<a href="#" style="font-size: 14px; font-weight: 700; color: #A0A0AC; padding: 6px 0">Lire la suite</a>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const L = { N: b('d2df8e6b31dc8a17d738cdcbe082abae'), P: b('996ff9952cc48dec9ccd2e076c38e147'), D: b('73cc46ffcd16b9ca2ab5420acf984a61') };
+const T = { robot: ['Le Robot sauvage', 'cb4f087928b468549d841e1ee3e42661', 'P'], arc: ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b', 'N'], io: ['Vice-Versa 2', '79f8fee8ed49eaf30382120f6b21d16f', 'D'], ds: ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', 'N'], moana: ['Vaiana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'D'], kfp: ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'N'], coco: ['Coco', '5ded58698603822d03ccd70fd08231b5', 'D'], jjk: ['Jujutsu Kaisen', 'e622889c112ac94528cebedd9f389f09', 'N'], sa: ['Le Voyage de Chihiro', 'c7d07cd502e08e290cd41761b2472cef', 'N'], enc: ['Encanto', '2e0943299c347febf750aa19360d1513', 'D'], aot: ['L\'Attaque des Titans', '93cf3e1c3aaff5d0d4a1608218ae34b7', 'N'], mario: ['Super Mario Bros.', '47f8a7c4cd8d8c24bf5128dfbdba945e', 'N'], sv: ['Spider-Verse', '03b2f15bf88d978897f8069cf919e46b', 'N'], el: ['Élémentaire', 'd72425766e887bab76cad923ba40aba6', 'D'], soul: ['Soul', '33e8d6e312d2c2a28eb7e6c8b92bd882', 'D'], luca: ['Luca', '8a0c424f5b0aaaf2e47ebfabe38e12cd', 'D'], op: ['One Piece', 'b696d2769e7c1c80631606bc89386aec', 'N'] };
+const BS = 'position: absolute; left: 8px; top: 8px; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; ';
+const BG = { vf: ['nouveau en VF', 'background: #FF6B4A; color: #0B0B0E'], top: ['Top 10', 'background: #FFFFFF; color: #0B0B0E'], gratuit: ['gratuit', 'background: #22C55E; color: #0B0B0E'], part: ['part le 30/11', 'background: #F59E0B; color: #0B0B0E'] };
+const row = (h, keys, lang) => ({ h, items: keys.map((k) => { const p = k.split(':'); const t = T[p[0]]; const bd = p[1] ? BG[p[1]] : null; return { t: t[0], img: b(t[1]), logo: L[t[2]], lang: p[2] || lang, hasBadge: !!bd, badge: bd ? bd[0] : '', badgeStyle: bd ? BS + bd[1] : '' }; }) });
+const chip = 'height: 42px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ';
+return {
+chips: [['VF · version française', 1], ['VOSTFR', 0], ['VO', 0], ['Audiodescription', 0], ['Gratuit', 0], ['Mes services : Netflix, Disney+ ▾', 0]].map((c) => ({ t: c[0], s: chip + (c[1] ? 'background: #FFFFFF; color: #0B0B0E; border: 1px solid #FFFFFF' : 'background: transparent; color: #D6D6DE; border: 1px solid #2E2E38') })),
+rows: [
+row('Top 10 en France cette semaine', ['io:top', 'robot:top', 'arc:top', 'moana:top', 'ds:top', 'kfp:top', 'sv:top'], 'VF'),
+row('Nouveautés en VF', ['io:vf', 'moana:vf', 'el:vf', 'kfp:vf', 'mario:vf', 'sv:vf', 'robot:vf'], 'VF'),
+row('Animés en VF ou VOSTFR', ['ds', 'jjk::VOSTFR', 'aot', 'op::VOSTFR', 'sa', 'arc', 'ds'], 'VF'),
+row('Bientôt retirés de Netflix et Disney+', ['sa:part', 'soul:part', 'luca:part', 'enc:part', 'coco:part', 'el:part', 'mario:part'], 'VF')
+]
+};
+}
+}
+</script>
+</body>
+</html>

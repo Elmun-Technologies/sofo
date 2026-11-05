@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Share cards — Stories, Reels, YouTube</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Nunito:wght@900&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A0D}
+button{cursor:pointer}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0A0A0D; color: #FFFFFF; font-family: 'Manrope', system-ui, sans-serif; padding: 40px; box-sizing: border-box; display: flex; flex-direction: column; gap: 40px">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
+<span style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em">Share cards</span>
+<span style="font-size: 15px; color: #A1A1AD">Generated per title, season and list · built from key art, never from film footage</span>
+<span style="flex-grow: 1"></span>
+<button type="button" onClick="{{toggle}}" style="{{gbtn}}">{{glabel}}</button>
+</div>
+
+<section style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 800; color: #A1A1AD; letter-spacing: 0.06em">STORY · 1080×1920 · TITLE</span>
+<div style="position: relative; width: 360px; height: 640px; border-radius: 22px; overflow: hidden; background: #0A0A0D">
+<img src="/_blob/eccffb3d20c5131d98f95617ef8f8b32" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 30%; filter: blur(14px) brightness(0.45); transform: scale(1.15)">
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 66px 28px 0; box-sizing: border-box; gap: 12px">
+<img src="/_blob/08d298c5c43e27d20a009e1485cb9b3b" alt="Arcane" style="width: 150px; height: 225px; object-fit: cover; border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.6)">
+<span style="font-size: 34px; font-weight: 800; letter-spacing: -0.03em">Arcane</span>
+<span style="display: flex; gap: 6px"><span style="font-size: 12px; font-weight: 800; padding: 5px 10px; border-radius: 999px; background: #3B82F6">türkçe dublaj</span><span style="font-size: 12px; font-weight: 800; padding: 5px 10px; border-radius: 999px; background: #E5E7EB; color: #0A0A0D">altyazı</span></span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700"><img src="/_blob/d2df8e6b31dc8a17d738cdcbe082abae" alt="" style="width: 26px; height: 26px; border-radius: 6px">Netflix'te · 2 sezon</span>
+</div>
+<div style="position: absolute; left: 0; right: 0; bottom: 96px; display: flex; flex-direction: column; align-items: center; gap: 8px">
+<span style="font-size: 20px; font-weight: 800; letter-spacing: -0.04em"><span style="display: inline-flex; align-items: center; gap: 0.22em; font-family: Nunito, Manrope, sans-serif; font-weight: 900; letter-spacing: -0.03em"><span style="width: 1.12em; height: 1.12em; border-radius: 0.3em; background: #FF5A1F; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; line-height: 1; padding-bottom: 0.08em; box-sizing: border-box">s</span>sofo</span></span>
+<span style="font-size: 12px; color: #D4D4DC">Nerede izlenir? · sofo.tv/arcane</span>
+</div>
+<sc-if value="{{guides}}" hint-placeholder-val="{{true}}">
+<div style="position: absolute; left: 0; right: 0; top: 0; height: 50px; background: repeating-linear-gradient(45deg, rgba(245,158,11,0.25) 0 8px, rgba(245,158,11,0.08) 8px 16px); border-bottom: 1px dashed #FBBF24; font-size: 10px; font-weight: 800; color: #FBBF24; display: flex; align-items: flex-end; padding: 0 10px 4px; box-sizing: border-box">IG UI · keep clear</div>
+<div style="position: absolute; left: 70px; right: 70px; top: 442px; height: 38px; border: 2px dashed #FF5A1F; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #FF5A1F; background: rgba(10,10,13,0.6)">LINK STICKER (user adds)</div>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; height: 84px; background: repeating-linear-gradient(45deg, rgba(245,158,11,0.25) 0 8px, rgba(245,158,11,0.08) 8px 16px); border-top: 1px dashed #FBBF24; font-size: 10px; font-weight: 800; color: #FBBF24; padding: 4px 10px; box-sizing: border-box">IG reply bar · keep clear</div>
+</sc-if>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 800; color: #A1A1AD; letter-spacing: 0.06em">STORY · LEAVING SOON ALERT</span>
+<div style="position: relative; width: 360px; height: 640px; border-radius: 22px; overflow: hidden; background: #1A1206">
+<img src="/_blob/1a1c9590170189ced4c2504e9d847887" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.35">
+<div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(26,18,6,0.2), #1A1206 75%)"></div>
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 76px 28px 0; box-sizing: border-box; gap: 14px">
+<span style="align-self: flex-start; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 999px; background: #FBBF24; color: #0A0A0D">SON 5 GÜN</span>
+<span style="font-size: 40px; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em">Spider-Verse<br>Netflix'ten<br>kalkıyor</span>
+<span style="font-size: 16px; color: #F5E6C8">30 Kasım · türkçe dublaj ile izle</span>
+<img src="/_blob/03b2f15bf88d978897f8069cf919e46b" alt="Spider-Man: Across the Spider-Verse" style="width: 120px; height: 180px; object-fit: cover; border-radius: 12px; margin-top: 4px">
+</div>
+<div style="position: absolute; left: 28px; right: 28px; bottom: 96px; display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 20px; font-weight: 800; letter-spacing: -0.04em"><span style="display: inline-flex; align-items: center; gap: 0.22em; font-family: Nunito, Manrope, sans-serif; font-weight: 900; letter-spacing: -0.03em"><span style="width: 1.12em; height: 1.12em; border-radius: 0.3em; background: #FF5A1F; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; line-height: 1; padding-bottom: 0.08em; box-sizing: border-box">s</span>sofo</span></span>
+<span style="font-size: 12px; color: #F5E6C8">sofo.tv/son-sans</span>
+</div>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 800; color: #A1A1AD; letter-spacing: 0.06em">STORY · WEEKLY TOP 5 LIST</span>
+<div style="position: relative; width: 360px; height: 640px; border-radius: 22px; overflow: hidden; background: linear-gradient(180deg, #2A130A, #0A0A0D 60%)">
+<div style="position: absolute; inset: 0; display: flex; flex-direction: column; padding: 70px 24px 0; box-sizing: border-box; gap: 12px">
+<span style="font-size: 13px; font-weight: 800; color: #FF5A1F; letter-spacing: 0.08em">BU HAFTA · TÜRKÇE DUBLAJ</span>
+<span style="font-size: 30px; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em">En çok aranan 5 animasyon</span>
+<sc-for list="{{top}}" as="t" hint-placeholder-count="5">
+<span style="display: flex; align-items: center; gap: 12px"><span style="width: 26px; font-size: 26px; font-weight: 800; color: #FF5A1F">{{t.n}}</span><img src="{{t.img}}" alt="" style="width: 34px; height: 51px; object-fit: cover; border-radius: 6px"><span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 800">{{t.t}}</span><span style="font-size: 12px; color: #A1A1AD">{{t.s}}</span></span></span>
+</sc-for>
+</div>
+<div style="position: absolute; left: 24px; right: 24px; bottom: 96px; display: flex; align-items: center; justify-content: space-between">
+<span style="font-size: 20px; font-weight: 800; letter-spacing: -0.04em"><span style="display: inline-flex; align-items: center; gap: 0.22em; font-family: Nunito, Manrope, sans-serif; font-weight: 900; letter-spacing: -0.03em"><span style="width: 1.12em; height: 1.12em; border-radius: 0.3em; background: #FF5A1F; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; line-height: 1; padding-bottom: 0.08em; box-sizing: border-box">s</span>sofo</span></span>
+<span style="font-size: 12px; color: #A1A1AD">sofo.tv/top</span>
+</div>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 800; color: #A1A1AD; letter-spacing: 0.06em">PHONE · SHARE SHEET</span>
+<div style="position: relative; width: 360px; height: 640px; border-radius: 30px; overflow: hidden; background: #0A0A0D; border: 6px solid #1C1C24; box-sizing: border-box">
+<img src="/_blob/eccffb3d20c5131d98f95617ef8f8b32" alt="" style="position: absolute; left: 0; right: 0; top: 0; width: 100%; height: 220px; object-fit: cover; opacity: 0.5">
+<div style="position: absolute; inset: 0; background: rgba(0,0,0,0.55)"></div>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; border-radius: 22px 22px 0 0; background: #15151B; padding: 14px 18px 22px; display: flex; flex-direction: column; gap: 14px">
+<span style="align-self: center; width: 40px; height: 4px; border-radius: 999px; background: #3A3A45"></span>
+<span style="display: flex; gap: 12px; align-items: center"><span style="width: 54px; height: 96px; border-radius: 8px; overflow: hidden; flex: 0 0 54px; position: relative"><img src="/_blob/08d298c5c43e27d20a009e1485cb9b3b" alt="" style="width: 100%; height: 100%; object-fit: cover"></span><span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 16px; font-weight: 800">Share Arcane</span><span style="font-size: 12px; color: #A1A1AD">Story card · 9:16 · with your link</span></span></span>
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px">
+<sc-for list="{{targets}}" as="t" hint-placeholder-count="8">
+<span style="display: flex; flex-direction: column; align-items: center; gap: 6px"><span style="{{t.s}}">{{t.i}}</span><span style="font-size: 11px; font-weight: 700; color: #D4D4DC; text-align: center">{{t.t}}</span></span>
+</sc-for>
+</div>
+<span style="font-size: 12px; line-height: 1.4; color: #FF5A1F; padding: 10px 12px; border-radius: 12px; background: #2A150D">✓ Link copied — in Instagram tap Sticker → Link and paste</span>
+</div>
+</div>
+</div>
+</section>
+
+<section style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 800; color: #A1A1AD; letter-spacing: 0.06em">YOUTUBE · 1920×1080 · "WHERE TO WATCH" VIDEO</span>
+<div style="position: relative; width: 640px; height: 360px; border-radius: 18px; overflow: hidden; background: #0A0A0D">
+<img src="/_blob/eccffb3d20c5131d98f95617ef8f8b32" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 30%; opacity: 0.5">
+<div style="position: absolute; inset: 0; background: linear-gradient(90deg, #0A0A0D 30%, rgba(10,10,13,0.1))"></div>
+<div style="position: absolute; left: 32px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; gap: 12px; width: 330px">
+<span style="font-size: 13px; font-weight: 800; color: #FF5A1F; letter-spacing: 0.08em">NEREDE İZLENİR?</span>
+<span style="font-size: 44px; line-height: 1; font-weight: 800; letter-spacing: -0.03em">Arcane</span>
+<span style="font-size: 16px; color: #D4D4DC">2 sezon · 18 bölüm · türkçe dublaj ve altyazı</span>
+<span style="display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800"><img src="/_blob/d2df8e6b31dc8a17d738cdcbe082abae" alt="" style="width: 30px; height: 30px; border-radius: 7px">Netflix — abonelik</span>
+<span style="display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; color: #A1A1AD"><img src="/_blob/996ff9952cc48dec9ccd2e076c38e147" alt="" style="width: 30px; height: 30px; border-radius: 7px">Prime Video — satın al</span>
+</div>
+<img src="/_blob/08d298c5c43e27d20a009e1485cb9b3b" alt="" style="position: absolute; right: 36px; top: 40px; width: 186px; height: 280px; object-fit: cover; border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.6)">
+<span style="position: absolute; right: 16px; bottom: 12px; font-size: 16px; font-weight: 800; letter-spacing: -0.04em"><span style="display: inline-flex; align-items: center; gap: 0.22em; font-family: Nunito, Manrope, sans-serif; font-weight: 900; letter-spacing: -0.03em"><span style="width: 1.12em; height: 1.12em; border-radius: 0.3em; background: #FF5A1F; display: inline-flex; align-items: center; justify-content: center; color: #FFFFFF; line-height: 1; padding-bottom: 0.08em; box-sizing: border-box">s</span>sofo</span></span>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 13px; font-weight: 800; color: #A1A1AD; letter-spacing: 0.06em">REELS / SHORTS · 9:16 · 8 SECONDS · STORYBOARD</span>
+<div style="display: flex; gap: 12px">
+<sc-for list="{{frames}}" as="f" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<div style="position: relative; width: 158px; height: 281px; border-radius: 14px; overflow: hidden; background: #0A0A0D">
+<img src="/_blob/eccffb3d20c5131d98f95617ef8f8b32" alt="" style="{{f.bg}}">
+<div style="position: absolute; inset: 0; background: rgba(10,10,13,0.35)"></div>
+<sc-if value="{{f.poster}}" hint-placeholder-val="{{false}}"><img src="/_blob/08d298c5c43e27d20a009e1485cb9b3b" alt="" style="position: absolute; left: 34px; top: 40px; width: 90px; height: 135px; object-fit: cover; border-radius: 8px"></sc-if>
+<span style="{{f.ts}}">{{f.text}}</span>
+</div>
+<span style="font-size: 12px; font-weight: 800">{{f.time}}</span>
+<span style="font-size: 11px; color: #A1A1AD; width: 158px">{{f.note}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1680,"height":1320}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { guides: true }; }
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const g = this.state.guides;
+const ic = 'width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; ';
+const ts = 'position: absolute; left: 12px; right: 12px; font-weight: 800; letter-spacing: -0.02em; ';
+return {
+guides: g,
+glabel: g ? 'Hide safe zones' : 'Show safe zones',
+gbtn: 'height: 40px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 800; ' + (g ? 'background: #FBBF24; color: #0A0A0D; border: 1px solid #FBBF24' : 'background: #15151B; color: #FFFFFF; border: 1px solid #26262F'),
+toggle: () => this.setState({ guides: !g }),
+top: [
+['1', 'Arcane', 'Netflix · dublaj', '08d298c5c43e27d20a009e1485cb9b3b'],
+['2', 'Moana 2', 'Disney+ · dublaj', '1e670cb28388c895319bac5d4cfbc2c3'],
+['3', 'The Wild Robot', 'Prime Video · dublaj', 'cb4f087928b468549d841e1ee3e42661'],
+['4', 'Inside Out 2', 'Disney+ · dublaj', '79f8fee8ed49eaf30382120f6b21d16f'],
+['5', 'Kung Fu Panda 4', 'Netflix · dublaj', 'adb806acfa10e9988ff559ed874dc96e']
+].map((r) => ({ n: r[0], t: r[1], s: r[2], img: b(r[3]) })),
+targets: [
+['Story', 'IG', 'background: linear-gradient(135deg, #F58529, #DD2A7B 55%, #8134AF); color: #FFFFFF'],
+['Reels', '▶', 'background: linear-gradient(135deg, #DD2A7B, #8134AF); color: #FFFFFF'],
+['WhatsApp', 'WA', 'background: #25D366; color: #0A0A0D'],
+['Telegram', 'TG', 'background: #2AABEE; color: #FFFFFF'],
+['TikTok', 'TT', 'background: #FFFFFF; color: #0A0A0D'],
+['X', 'X', 'background: #26262F; color: #FFFFFF'],
+['Save video', '↓', 'background: #26262F; color: #FFFFFF'],
+['Copy link', '🔗', 'background: #26262F; color: #FFFFFF']
+].map((t) => ({ t: t[0], i: t[1], s: ic + t[2] })),
+frames: [
+{ time: '0–2 s', note: 'Key art, slow zoom (Ken Burns) + music', text: 'Bu hafta ne izlesem?', ts: ts + 'top: 200px; font-size: 18px', bg: 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 70% 30%; transform: scale(1.25)', poster: false },
+{ time: '2–4 s', note: 'Poster drops in, title', text: 'Arcane', ts: ts + 'top: 196px; font-size: 26px; text-align: center', bg: 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(8px) brightness(0.5)', poster: true },
+{ time: '4–6 s', note: 'Language + service — our unique data', text: 'Türkçe dublaj · Netflix', ts: ts + 'top: 120px; font-size: 20px; text-align: center; color: #FF5A1F', bg: 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(8px) brightness(0.4)', poster: false },
+{ time: '6–8 s', note: 'CTA + logo + short link', text: 'sofo.tv/arcane', ts: ts + 'top: 124px; font-size: 18px; text-align: center', bg: 'position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: blur(14px) brightness(0.3)', poster: false }
+]
+};
+}
+}
+</script>
+</body>
+</html>

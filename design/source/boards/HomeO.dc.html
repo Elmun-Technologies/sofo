@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home O — Lanes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&amp;display=swap">
+<style>
+body{margin:0;background:#FAF7F0}
+a{color:#1D1B16;text-decoration:none}a:hover{color:#B4461B}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #FAF7F0; color: #1D1B16; font-family: 'Bricolage Grotesque', system-ui, sans-serif">
+<header style="border-bottom: 1px solid #E6DFD0">
+<div style="max-width: 1400px; margin: 0 auto; padding: 16px 28px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px">
+<a href="#" style="font-size: 24px; font-weight: 800">[BRAND]</a>
+<form role="search" style="flex: 999 1 360px; min-width: 0; display: flex"><label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search</label><input id="q" type="search" placeholder="Search a movie or show, then pick a language" style="width: 100%; height: 48px; box-sizing: border-box; padding: 0 18px; border-radius: 14px; border: 1px solid #D9D0BD; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1D1B16"></form>
+<button type="button" style="height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid #D9D0BD; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; color: #1D1B16">Türkiye · English ▾</button>
+</div>
+</header>
+
+<div style="max-width: 1400px; margin: 0 auto; padding: 28px 28px 72px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start">
+<nav aria-label="Languages" style="flex: 1 1 200px; max-width: 220px; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #8A8270; padding: 0 10px 8px">Languages</span>
+<sc-for list="{{index}}" as="i" hint-placeholder-count="12"><a href="#" style="{{i.s}}"><span>{{i.n}}</span><span style="font-size: 12px; color: #8A8270">{{i.c}}</span></a></sc-for>
+</nav>
+
+<main style="flex: 999 1 700px; min-width: 0; display: flex; flex-direction: column; gap: 40px">
+<h1 style="margin: 0; font-size: 56px; line-height: 1.02; font-weight: 800; letter-spacing: -0.03em">Same stories.<br>Your voice.</h1>
+<sc-for list="{{lanes}}" as="l" hint-placeholder-count="4">
+<section style="display: flex; flex-direction: column; gap: 14px; padding-top: 18px; border-top: 3px solid #1D1B16">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 style="margin: 0; display: flex; align-items: baseline; gap: 12px"><span style="font-size: 34px; font-weight: 800">{{l.native}}</span><span style="font-size: 16px; font-weight: 400; color: #8A8270">{{l.en}} audio · {{l.count}}</span></h2>
+<a href="#" style="font-size: 15px; font-weight: 600; padding: 10px 0">See all in {{l.native}} →</a>
+</div>
+<div style="display: flex; gap: 14px; overflow-x: auto; padding-bottom: 6px">
+<sc-for list="{{l.items}}" as="c" hint-placeholder-count="7">
+<a href="#" style="flex: 0 0 150px; display: flex; flex-direction: column; gap: 8px">
+<span style="position: relative; display: block"><img src="{{c.img}}" alt="{{c.t}}" style="display: block; width: 150px; height: 225px; object-fit: cover; border-radius: 12px"><img src="{{c.logo}}" alt="" style="position: absolute; right: 8px; bottom: 8px; width: 26px; height: 26px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.3)"></span>
+<span style="font-size: 15px; font-weight: 600">{{c.t}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const N = b('d2df8e6b31dc8a17d738cdcbe082abae'), D = b('73cc46ffcd16b9ca2ab5420acf984a61'), P = b('996ff9952cc48dec9ccd2e076c38e147');
+const T = { robot: ['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', N], io: ['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', D], arc: ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b', N], ds: ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', N], moana: ['Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', D], kfp: ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', P], coco: ['Coco', '5ded58698603822d03ccd70fd08231b5', D], sa: ['Spirited Away', 'c7d07cd502e08e290cd41761b2472cef', N], enc: ['Encanto', '2e0943299c347febf750aa19360d1513', D], aot: ['Attack on Titan', '93cf3e1c3aaff5d0d4a1608218ae34b7', N], mario: ['Super Mario Bros.', '47f8a7c4cd8d8c24bf5128dfbdba945e', N], soul: ['Soul', '33e8d6e312d2c2a28eb7e6c8b92bd882', D] };
+const it = (keys) => keys.map((k) => ({ t: T[k][0], img: b(T[k][1]), logo: T[k][2] }));
+const idx = [['Türkçe', '3,120', 1], ['English', '48,200'], ['Español', '19,400'], ['Deutsch', '16,100'], ['Français', '15,200'], ['Português', '11,100'], ['Русский', '8,900'], ['العربية', '4,300'], ['Italiano', '7,800'], ['Polski', '5,600'], ['日本語', '6,700'], ['한국어', '3,900']];
+return {
+index: idx.map((i) => ({ n: i[0], c: i[1], s: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 10px; border-radius: 10px; font-size: 16px; font-weight: 600; ' + (i[2] ? 'background: #1D1B16; color: #FAF7F0' : '') })),
+lanes: [
+{ native: 'Türkçe', en: 'Turkish', count: '3,120 titles', items: it(['io', 'robot', 'arc', 'coco', 'kfp', 'enc', 'sa']) },
+{ native: 'Español', en: 'Spanish', count: '19,400 titles', items: it(['ds', 'arc', 'moana', 'mario', 'aot', 'soul', 'robot']) },
+{ native: 'Deutsch', en: 'German', count: '16,100 titles', items: it(['kfp', 'moana', 'io', 'sa', 'enc', 'coco', 'ds']) },
+{ native: 'Português', en: 'Portuguese', count: '11,100 titles', items: it(['enc', 'robot', 'aot', 'soul', 'arc', 'mario', 'io']) }
+]
+};
+}
+}
+</script>
+</body>
+</html>

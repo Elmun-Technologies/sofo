@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home N — Ask</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700;9..40,800&amp;display=swap">
+<style>
+body{margin:0;background:#0F1412}
+a{color:#ECFDF5;text-decoration:none}a:hover{color:#6EE7B7}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0F1412; color: #ECFDF5; font-family: 'DM Sans', system-ui, sans-serif">
+<header style="max-width: 1300px; margin: 0 auto; padding: 18px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="#" style="font-size: 22px; font-weight: 800">[BRAND]</a>
+<span style="flex-grow: 1"></span>
+<a href="#" style="padding: 12px 8px; font-size: 15px; color: #A7C4B8">Browse</a>
+<a href="#" style="padding: 12px 8px; font-size: 15px; color: #A7C4B8">Languages</a>
+<button type="button" style="height: 42px; padding: 0 14px; border-radius: 999px; border: 1px solid #23302B; background: #151C19; color: #ECFDF5; font-family: inherit; font-size: 14px; font-weight: 600">English ▾</button>
+</header>
+
+<main style="max-width: 1300px; margin: 0 auto; padding: 32px 32px 72px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+<section style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+<h1 style="margin: 0; font-size: 64px; line-height: 1; font-weight: 800; letter-spacing: -0.03em">Just ask.<br><span style="color: #6EE7B7">In any language.</span></h1>
+<div style="display: flex; flex-direction: column; gap: 16px; padding: 22px; border-radius: 26px; background: #151C19; border: 1px solid #1F2A25">
+<div style="align-self: flex-end; max-width: 520px; padding: 14px 18px; border-radius: 20px 20px 4px 20px; background: #6EE7B7; color: #052E1F; font-size: 16px; line-height: 1.5; font-weight: 500">Something like Coco my kids can watch in Turkish tonight. We have Netflix and Disney+.</div>
+<div style="max-width: 640px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 16px; line-height: 1.55; color: #D1FAE5">Here are 3 family movies with <b>Turkish audio</b> on your services in Türkiye, all under 1h 45m:</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<sc-for list="{{picks}}" as="p" hint-placeholder-count="3">
+<a href="#" style="display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: 16px; background: #0F1412; border: 1px solid #23302B">
+<img src="{{p.img}}" alt="" style="width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 10px">
+<span style="font-size: 15px; font-weight: 700">{{p.t}}</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #A7C4B8"><img src="{{p.logo}}" alt="" style="width: 18px; height: 18px; border-radius: 4px">{{p.m}}</span>
+</a>
+</sc-for>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{follow}}" as="f" hint-placeholder-count="4"><button type="button" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid #2C3B35; background: transparent; color: #D1FAE5; font-family: inherit; font-size: 14px">{{f}}</button></sc-for>
+</div>
+</div>
+<form style="display: flex; gap: 8px; padding-top: 6px">
+<label for="ask" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Ask</label>
+<input id="ask" type="text" placeholder="Ask anything about what to watch…" style="flex-grow: 1; min-width: 0; height: 56px; box-sizing: border-box; padding: 0 18px; border-radius: 18px; border: 1px solid #2C3B35; background: #0F1412; color: #ECFDF5; font-family: inherit; font-size: 16px">
+<button type="submit" style="height: 56px; padding: 0 22px; border: 0; border-radius: 18px; background: #6EE7B7; color: #052E1F; font-family: inherit; font-size: 15px; font-weight: 800">Ask</button>
+</form>
+</div>
+</section>
+
+<aside style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 10px">
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6EE7B7">Try asking</span>
+<sc-for list="{{tries}}" as="t" hint-placeholder-count="6"><a href="#" style="padding: 14px 16px; border-radius: 16px; background: #151C19; border: 1px solid #1F2A25; font-size: 15px; line-height: 1.45">{{t}}</a></sc-for>
+<span style="font-size: 12px; line-height: 1.5; color: #7E9A8F; padding-top: 6px">Answers use only live data from legal services. We never guess a language.</span>
+</aside>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+return {
+picks: [{ t: 'Encanto', img: b('2e0943299c347febf750aa19360d1513'), logo: b('73cc46ffcd16b9ca2ab5420acf984a61'), m: 'Disney+ · 1h 42m' }, { t: 'The Wild Robot', img: b('cb4f087928b468549d841e1ee3e42661'), logo: b('d2df8e6b31dc8a17d738cdcbe082abae'), m: 'Netflix · 1h 42m' }, { t: 'Luca', img: b('8a0c424f5b0aaaf2e47ebfabe38e12cd'), logo: b('73cc46ffcd16b9ca2ab5420acf984a61'), m: 'Disney+ · 1h 35m' }],
+follow: ['Shorter than 90 min', 'Only Netflix', 'Anime instead', 'In English with Turkish subs'],
+tries: ['Is Arcane season 2 dubbed in Spanish?', 'Anime with German dub on Netflix', 'Free movies with Arabic audio', 'What leaves Disney+ in Türkiye this month?', 'Best Pixar films in Portuguese', 'Something like Spirited Away, English dub']
+};
+}
+}
+</script>
+</body>
+</html>

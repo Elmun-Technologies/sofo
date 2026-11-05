@@ -1,0 +1,12 @@
+:root{
+  --orange:#FF5A1F; --orange-hover:#FF7A47; --orange-press:#E04A12; --orange-tint:#FFD5C7; --orange-deep:#2A150D;
+  --ink:#0A0A0D; --surface:#15151B; --surface-2:#1C1C24; --line:#26262F;
+  --text:#FFFFFF; --text-2:#A1A1AD; --text-3:#6E6E7A;
+  --dub:#3B82F6; --available:#4ADE80; --leaving:#FBBF24; --free:#A78BFA;
+  --r-chip:999px; --r-input:12px; --r-button:12px; --r-poster:12px; --r-card:16px; --r-panel:20px; --r-hero:24px;
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px; --sp-10:40px; --sp-12:48px;
+  --font-ui:'Manrope',system-ui,sans-serif; --font-logo:'Nunito',sans-serif;
+  --container:1360px;
+}
+/* Breakpoints: xs 360 (3 poster) · sm 480 (4) · md 768 (5) · lg 1024 (6) · xl 1280 (6-7) */
+/* CTA: orange fon ustida QORA matn (6.4:1). Oq matn faqat >=18px bold yoki logo. */

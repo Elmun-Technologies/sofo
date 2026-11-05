@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Model 2 — dubzio</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0A0A10}
+a{color:#FFFFFF;text-decoration:none}a:hover{color:#D6D0FF}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0A0A10; color: #FFFFFF; font-family: 'Onest', system-ui, sans-serif; overflow: hidden">
+
+<header>
+<div style="max-width: 1360px; margin: 0 auto; padding: 16px 28px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px">
+<a href="#" style="font-size: 26px; font-weight: 800; letter-spacing: -0.04em">dub<span style="color: #8B7CFF">zio</span></a>
+<nav aria-label="Main" style="display: flex; gap: 2px; flex-grow: 1; font-size: 15px; font-weight: 600; color: #A3A3B5">
+<a href="#" style="padding: 12px 8px; color: #FFFFFF">Home</a><a href="#" style="padding: 12px 8px; color: #A3A3B5">Movies</a><a href="#" style="padding: 12px 8px; color: #A3A3B5">TV</a><a href="#" style="padding: 12px 8px; color: #A3A3B5">dubzio anime</a><a href="#" style="padding: 12px 8px; color: #A3A3B5">dubzio kids</a>
+</nav>
+<button type="button" style="height: 42px; padding: 0 12px; border-radius: 12px; border: 0; background: #16161F; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600">United States · EN</button>
+<a href="#" style="height: 42px; padding: 0 14px; display: inline-flex; align-items: center; border-radius: 12px; background: #16161F; font-size: 14px; font-weight: 600">Sign in</a>
+</div>
+</header>
+
+<section style="position: relative; max-width: 1360px; margin: 0 auto; padding: 0 28px; box-sizing: border-box">
+<div style="position: relative; height: 470px; border-radius: 26px; overflow: hidden">
+<img src="/_blob/1a1c9590170189ced4c2504e9d847887" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%">
+<div style="position: absolute; inset: 0; background: linear-gradient(0deg, rgba(10,10,16,0.98) 0%, rgba(10,10,16,0.6) 45%, rgba(10,10,16,0.2) 100%)"></div>
+<div style="position: absolute; left: 0; right: 0; bottom: 36px; display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 0 24px; text-align: center">
+<h1 style="margin: 0; font-size: 50px; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em">What do you want to watch —<br>and in which language?</h1>
+<form role="search" style="width: 100%; max-width: 860px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 8px; padding: 8px; border-radius: 20px; background: rgba(22,22,31,0.9); border: 1px solid #2E2E3E">
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Search</label>
+<input id="q" type="search" placeholder="Movie, series, anime, actor…" style="flex: 999 1 300px; min-width: 0; height: 58px; box-sizing: border-box; padding: 0 18px; border: 0; border-radius: 14px; background: #0A0A10; color: #FFFFFF; font-family: inherit; font-size: 18px">
+<button type="button" style="flex: 1 1 170px; height: 58px; border: 0; border-radius: 14px; background: #20202C; color: #FFFFFF; font-family: inherit; font-size: 15px; font-weight: 700">Audio: any ▾</button>
+<button type="submit" style="flex: 1 1 120px; height: 58px; border: 0; border-radius: 14px; background: #8B7CFF; color: #0A0A10; font-family: inherit; font-size: 16px; font-weight: 800">Find it</button>
+</form>
+<span style="font-size: 14px; color: #C9C9D6">Now trending: <a href="#" style="font-weight: 700">Across the Spider-Verse</a> · on Netflix · English, Español, Français +28 audio</span>
+</div>
+</div>
+</section>
+
+<main style="max-width: 1360px; margin: 0 auto; padding: 26px 28px 64px; box-sizing: border-box; display: flex; flex-direction: column; gap: 34px">
+<section aria-label="Services" style="display: flex; gap: 10px; overflow-x: auto">
+<sc-for list="{{svc}}" as="s" hint-placeholder-count="10"><a href="#" style="{{s.style}}"><sc-if value="{{s.hasLogo}}" hint-placeholder-val="{{true}}"><img src="{{s.logo}}" alt="" style="width: 28px; height: 28px; border-radius: 7px"></sc-if>{{s.n}}</a></sc-for>
+</section>
+
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+<section style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
+<a href="#" style="font-size: 23px; font-weight: 800">{{r.h}} <span style="color: #A3A3B5">›</span></a>
+<span style="font-size: 13px; color: #74748A">{{r.sub}}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px">
+<sc-for list="{{r.items}}" as="c" hint-placeholder-count="7">
+<a href="#" style="display: flex; flex-direction: column; gap: 8px">
+<span style="position: relative; display: block">
+<img src="{{c.img}}" alt="{{c.t}}" style="display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 14px">
+<sc-if value="{{c.hasBadge}}" hint-placeholder-val="{{true}}"><span style="{{c.badgeStyle}}">{{c.badge}}</span></sc-if>
+</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #A3A3B5"><img src="{{c.logo}}" alt="" style="width: 18px; height: 18px; border-radius: 4px">{{c.price}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const L = { N: b('d2df8e6b31dc8a17d738cdcbe082abae'), P: b('996ff9952cc48dec9ccd2e076c38e147'), D: b('73cc46ffcd16b9ca2ab5420acf984a61') };
+const T = { robot: ['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', 'N', 'Subscription'], arc: ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b', 'N', 'Subscription'], io: ['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'D', 'Subscription'], ds: ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', 'N', 'Subscription'], moana: ['Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'D', 'Subscription'], kfp: ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'P', 'Rent $3.99'], coco: ['Coco', '5ded58698603822d03ccd70fd08231b5', 'D', 'Subscription'], jjk: ['Jujutsu Kaisen', 'e622889c112ac94528cebedd9f389f09', 'N', 'Subscription'], sa: ['Spirited Away', 'c7d07cd502e08e290cd41761b2472cef', 'N', 'Subscription'], enc: ['Encanto', '2e0943299c347febf750aa19360d1513', 'D', 'Subscription'], aot: ['Attack on Titan', '93cf3e1c3aaff5d0d4a1608218ae34b7', 'N', 'Subscription'], mario: ['Super Mario Bros.', '47f8a7c4cd8d8c24bf5128dfbdba945e', 'P', 'Buy $14.99'], sv: ['Spider-Verse', '03b2f15bf88d978897f8069cf919e46b', 'N', 'Subscription'], el: ['Elemental', 'd72425766e887bab76cad923ba40aba6', 'D', 'Subscription'], soul: ['Soul', '33e8d6e312d2c2a28eb7e6c8b92bd882', 'D', 'Subscription'], luca: ['Luca', '8a0c424f5b0aaaf2e47ebfabe38e12cd', 'D', 'Subscription'], op: ['One Piece', 'b696d2769e7c1c80631606bc89386aec', 'N', 'Subscription'], rick: ['Rick and Morty', '39beccc02edc0ee830f583d6e867930b', 'P', 'Free with ads'] };
+const BS = 'position: absolute; left: 8px; top: 8px; font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; ';
+const BG = { es: ['doblada al español', 'background: #F97316; color: #0A0A10'], en: ['English dub', 'background: #8B7CFF; color: #0A0A10'], top: ['Top 10', 'background: #FFFFFF; color: #0A0A10'], leave: ['leaves Nov 30', 'background: #F59E0B; color: #0A0A10'], free: ['free', 'background: #22C55E; color: #0A0A10'] };
+const row = (h, sub, keys) => ({ h, sub, items: keys.map((k) => { const p = k.split(':'); const t = T[p[0]]; const bd = p[1] ? BG[p[1]] : null; return { t: t[0], img: b(t[1]), logo: L[t[2]], price: t[3], hasBadge: !!bd, badge: bd ? bd[0] : '', badgeStyle: bd ? BS + bd[1] : '' }; }) });
+const pill = 'flex-shrink: 0; height: 50px; padding: 0 16px; display: inline-flex; align-items: center; gap: 10px; border-radius: 14px; background: #16161F; border: 1px solid #262633; font-size: 14px; font-weight: 700; ';
+return {
+svc: [['Netflix', L.N], ['Disney+', L.D], ['Prime Video', L.P], ['Max', ''], ['Hulu', ''], ['Apple TV+', ''], ['Peacock', ''], ['Paramount+', ''], ['Tubi · free', ''], ['Crunchyroll', '']].map((s) => ({ n: s[0], logo: s[1], hasLogo: !!s[1], style: pill + (s[1] ? '' : 'padding-left: 18px') })),
+rows: [
+row('Top 10 in the US this week', 'Updated daily', ['sv:top', 'robot:top', 'arc:top', 'io:top', 'moana:top', 'ds:top', 'kfp:top']),
+row('Doblado al español', 'Spanish audio available in the US', ['coco:es', 'enc:es', 'robot:es', 'io:es', 'sv:es', 'moana:es', 'mario:es']),
+row('Anime with English dub', 'Sub or dub — you choose', ['ds:en', 'jjk:en', 'aot:en', 'op:en', 'sa:en', 'rick', 'arc']),
+row('Free and legal', 'Free with ads', ['rick:free', 'op:free', 'aot:free', 'mario:free', 'kfp:free', 'sv:free', 'sa:free']),
+row('Leaving Netflix and Disney+ soon', 'Watch before it\'s gone', ['sa:leave', 'soul:leave', 'luca:leave', 'enc:leave', 'el:leave', 'coco:leave', 'robot:leave'])
+]
+};
+}
+}
+</script>
+</body>
+</html>

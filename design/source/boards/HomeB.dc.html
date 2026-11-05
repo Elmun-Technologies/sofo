@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home B — Lens</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#F6F7F9}
+a{color:#0E1116;text-decoration:none}a:hover{color:#2F5BFF}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #F6F7F9; color: #0E1116; font-family: 'Manrope', system-ui, sans-serif">
+
+<header>
+<div style="max-width: 1240px; margin: 0 auto; padding: 18px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="#" style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">[BRAND]</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 2px; flex-grow: 1; font-size: 15px; font-weight: 600; color: #5A6170">
+<a href="#" style="padding: 12px 10px; color: #5A6170">Explore</a>
+<a href="#" style="padding: 12px 10px; color: #5A6170">Lists</a>
+<a href="#" style="padding: 12px 10px; color: #5A6170">Services</a>
+<a href="#" style="padding: 12px 10px; color: #5A6170">New this week</a>
+</nav>
+<button type="button" style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #DDE1E7; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; color: #0E1116">English ▾</button>
+<button type="button" style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #DDE1E7; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; color: #0E1116">United States ▾</button>
+</div>
+</header>
+
+<main style="max-width: 1240px; margin: 0 auto; padding: 48px 32px 72px; box-sizing: border-box; display: flex; flex-direction: column; gap: 56px">
+<section style="display: flex; flex-direction: column; align-items: center; gap: 22px; text-align: center">
+<h1 style="margin: 0; font-size: 60px; line-height: 1.05; font-weight: 800; letter-spacing: -0.03em; max-width: 900px">Find where to watch anything — <span style="color: #2F5BFF">in your language.</span></h1>
+<p style="margin: 0; font-size: 18px; line-height: 1.6; color: #5A6170; max-width: 640px">One search across every legal streaming service. See which one has the audio or subtitles you need, in your country.</p>
+<form role="search" style="width: 100%; max-width: 980px; box-sizing: border-box; padding: 8px; background: #FFFFFF; border: 1px solid #DDE1E7; border-radius: 22px; box-shadow: 0 20px 50px rgba(14,17,22,0.08); display: flex; flex-wrap: wrap; gap: 8px">
+<label for="q" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Movie or show</label>
+<input id="q" type="search" placeholder="Movie or show title" style="flex: 999 1 280px; min-width: 0; height: 60px; box-sizing: border-box; padding: 0 20px; border: 0; border-radius: 16px; font-family: inherit; font-size: 18px; background: #F6F7F9; color: #0E1116">
+<label for="audio" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Audio language</label>
+<select id="audio" style="flex: 1 1 180px; height: 60px; padding: 0 14px; border: 0; border-radius: 16px; background: #F6F7F9; font-family: inherit; font-size: 15px; font-weight: 700; color: #0E1116"><option>Audio: Turkish</option><option>Audio: Any</option><option>Audio: Spanish</option></select>
+<label for="ctry" style="position: absolute; width: 1px; height: 1px; overflow: hidden">Country</label>
+<select id="ctry" style="flex: 1 1 160px; height: 60px; padding: 0 14px; border: 0; border-radius: 16px; background: #F6F7F9; font-family: inherit; font-size: 15px; font-weight: 700; color: #0E1116"><option>Türkiye</option><option>United States</option><option>Germany</option></select>
+<button type="submit" style="flex: 1 1 120px; height: 60px; border: 0; border-radius: 16px; background: #2F5BFF; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 800">Search</button>
+</form>
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; font-size: 14px">
+<span style="padding: 10px 4px; color: #5A6170">Try:</span>
+<sc-for list="{{tries}}" as="t" hint-placeholder-count="4"><a href="#" style="padding: 10px 14px; border-radius: 999px; background: #FFFFFF; border: 1px solid #DDE1E7; font-weight: 600">{{t}}</a></sc-for>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; align-items: start">
+<div style="box-sizing: border-box; padding: 24px; background: #FFFFFF; border: 1px solid #E5E8ED; border-radius: 22px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 8px"><h2 style="margin: 0; font-size: 20px; font-weight: 800">Trending searches</h2><span style="font-size: 13px; color: #5A6170">last 24 hours</span></div>
+<sc-for list="{{trend}}" as="t" hint-placeholder-count="6">
+<a href="#" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-top: 1px solid #EEF0F3">
+<span style="width: 24px; font-size: 15px; font-weight: 800; color: #9AA1AE">{{t.n}}</span>
+<img src="{{t.img}}" alt="" style="width: 40px; height: 60px; object-fit: cover; border-radius: 8px">
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{t.q}}</span><span style="font-size: 13px; color: #5A6170">{{t.m}}</span></span>
+<span style="font-size: 13px; font-weight: 800; color: #12A150">{{t.d}}</span>
+</a>
+</sc-for>
+</div>
+<div style="box-sizing: border-box; padding: 24px; background: #FFFFFF; border: 1px solid #E5E8ED; border-radius: 22px; display: flex; flex-direction: column; gap: 16px">
+<span style="font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #2F5BFF">What a result looks like</span>
+<div style="display: flex; gap: 16px; align-items: center">
+<img src="/_blob/08d298c5c43e27d20a009e1485cb9b3b" alt="" style="width: 72px; height: 108px; object-fit: cover; border-radius: 10px">
+<span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 22px; font-weight: 800">Arcane</span><span style="font-size: 14px; color: #5A6170">2021 · TV Series · 2 seasons</span><span style="font-size: 14px; font-weight: 700">Turkish audio in Türkiye</span></span>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; background: #F6F7F9">
+<sc-if value="{{r.hasLogo}}" hint-placeholder-val="{{true}}"><img src="{{r.logo}}" alt="" style="width: 36px; height: 36px; border-radius: 8px"></sc-if>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 700">{{r.name}}</span><span style="font-size: 13px; color: #5A6170">{{r.offer}}</span></span>
+<span style="{{r.style}}">{{r.status}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<h2 style="margin: 0; font-size: 22px; font-weight: 800">Popular right now</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 18px">
+<sc-for list="{{pop}}" as="p" hint-placeholder-count="8">
+<a href="#" style="display: flex; flex-direction: column; gap: 8px">
+<img src="{{p.img}}" alt="{{p.name}}" style="width: 100%; aspect-ratio: 2 / 3; object-fit: cover; border-radius: 14px">
+<span style="font-size: 14px; font-weight: 700">{{p.name}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 28px; padding: 28px; border-radius: 22px; background: #FFFFFF; border: 1px solid #E5E8ED">
+<span style="font-size: 14px; font-weight: 700; color: #5A6170">We check</span>
+<img src="/_blob/d2df8e6b31dc8a17d738cdcbe082abae" alt="Netflix" style="width: 44px; height: 44px; border-radius: 10px">
+<img src="/_blob/996ff9952cc48dec9ccd2e076c38e147" alt="Prime Video" style="width: 44px; height: 44px; border-radius: 10px">
+<img src="/_blob/73cc46ffcd16b9ca2ab5420acf984a61" alt="Disney+" style="width: 44px; height: 44px; border-radius: 10px">
+<span style="font-size: 14px; font-weight: 700; color: #5A6170">and every other legal service, daily.</span>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+return {
+tries: ['Arcane in Spanish', 'Inside Out 2 Turkish dub', 'Anime with German dub', 'Free movies in Arabic'],
+trend: [['Inside Out 2 türkçe dublaj', 'Disney+ · Turkish audio', '79f8fee8ed49eaf30382120f6b21d16f', '+240%'], ['Demon Slayer doblaje latino', 'Netflix · Spanish audio', '8e2de4d5af09254f1969c0aac5f7ff72', '+180%'], ['The Wild Robot streaming', 'Netflix · Prime Video', 'cb4f087928b468549d841e1ee3e42661', '+95%'], ['Moana 2 deutsch', 'Disney+ · German audio', '1e670cb28388c895319bac5d4cfbc2c3', '+70%'], ['Arcane season 2 dublaj', 'Netflix · Turkish audio', '08d298c5c43e27d20a009e1485cb9b3b', '+64%'], ['Spirited Away english dub', 'Netflix · English audio', 'c7d07cd502e08e290cd41761b2472cef', '+40%']].map((t, i) => ({ n: String(i + 1), q: t[0], m: t[1], img: b(t[2]), d: t[3] })),
+rows: [
+{ name: 'Netflix', logo: b('d2df8e6b31dc8a17d738cdcbe082abae'), hasLogo: true, offer: 'Subscription', status: 'Turkish audio', style: 'font-size: 13px; font-weight: 800; padding: 6px 10px; border-radius: 8px; background: #E3F6EA; color: #0B6B34' },
+{ name: 'Prime Video', logo: b('996ff9952cc48dec9ccd2e076c38e147'), hasLogo: true, offer: 'Buy · ₺149 / season', status: 'Subtitles only', style: 'font-size: 13px; font-weight: 800; padding: 6px 10px; border-radius: 8px; background: #EEF0F3; color: #3F4654' },
+{ name: 'Disney+', logo: b('73cc46ffcd16b9ca2ab5420acf984a61'), hasLogo: true, offer: 'Not available', status: '—', style: 'font-size: 13px; font-weight: 800; color: #9AA1AE' }
+],
+pop: [['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661'], ['Arcane', '08d298c5c43e27d20a009e1485cb9b3b'], ['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f'], ['Moana 2', '1e670cb28388c895319bac5d4cfbc2c3'], ['Coco', '5ded58698603822d03ccd70fd08231b5'], ['Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72'], ['Encanto', '2e0943299c347febf750aa19360d1513'], ['Spider-Verse', '03b2f15bf88d978897f8069cf919e46b']].map((p) => ({ name: p[0], img: b(p[1]) }))
+};
+}
+}
+</script>
+</body>
+</html>

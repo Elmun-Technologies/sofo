@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home K — Wizard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#FFF4EC}
+a{color:#2B1B17;text-decoration:none}a:hover{color:#E8462A}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #FFF4EC; color: #2B1B17; font-family: 'Outfit', system-ui, sans-serif">
+<header style="max-width: 1300px; margin: 0 auto; padding: 18px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="#" style="font-size: 24px; font-weight: 800">[BRAND]</a>
+<span style="flex-grow: 1"></span>
+<a href="#" style="padding: 12px 8px; font-size: 15px; font-weight: 600">Search</a>
+<a href="#" style="padding: 12px 8px; font-size: 15px; font-weight: 600">Lists</a>
+<button type="button" style="height: 44px; padding: 0 16px; border-radius: 999px; border: 0; background: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 700; color: #2B1B17">English ▾</button>
+</header>
+
+<main style="max-width: 1300px; margin: 0 auto; padding: 32px 32px 72px; box-sizing: border-box; display: flex; flex-direction: column; gap: 36px">
+<section style="display: flex; flex-direction: column; gap: 10px">
+<h1 style="margin: 0; font-size: 60px; line-height: 1.02; font-weight: 800; letter-spacing: -0.03em">Tonight's movie in 3 taps.</h1>
+<p style="margin: 0; font-size: 19px; color: #6B514A">Pick a language, a mood and the services you have. We'll find what you can watch right now.</p>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+<div style="box-sizing: border-box; padding: 22px; border-radius: 28px; background: #FFFFFF; display: flex; flex-direction: column; gap: 14px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="width: 34px; height: 34px; border-radius: 17px; background: #C9361C; color: #FFFFFF; font-weight: 800; display: flex; align-items: center; justify-content: center">{{s.n}}</span><span style="font-size: 20px; font-weight: 700">{{s.h}}</span></span>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{s.opts}}" as="o" hint-placeholder-count="6"><button type="button" style="{{o.s}}">{{o.t}}</button></sc-for>
+</div>
+</div>
+</sc-for>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px; padding: 26px; border-radius: 32px; background: #2B1B17; color: #FFF4EC">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px">
+<h2 style="margin: 0; font-size: 26px; font-weight: 800">12 picks · Türkçe · Feel-good · Netflix + Disney+</h2>
+<a href="#" style="font-size: 15px; font-weight: 700; color: #FFB4A3; padding: 10px 0">Shuffle ↻</a>
+</div>
+<div style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 6px">
+<sc-for list="{{picks}}" as="p" hint-placeholder-count="6">
+<a href="#" style="flex: 0 0 180px; display: flex; flex-direction: column; gap: 8px; color: #FFF4EC">
+<img src="{{p.img}}" alt="{{p.t}}" style="width: 180px; height: 270px; object-fit: cover; border-radius: 20px">
+<span style="font-size: 16px; font-weight: 700">{{p.t}}</span>
+<span style="font-size: 13px; color: #D9C4BD">{{p.m}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+const chip = 'height: 44px; padding: 0 16px; border-radius: 999px; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; ';
+const on = chip + 'background: #C9361C; color: #FFFFFF; border: 0';
+const off = chip + 'background: #FFF4EC; color: #2B1B17; border: 0';
+const mk = (arr, sel) => arr.map((t) => ({ t, s: sel.indexOf(t) >= 0 ? on : off }));
+return {
+steps: [
+{ n: '1', h: 'Language', opts: mk(['English', 'Türkçe', 'Español', 'Deutsch', 'Français', 'Português', 'Русский', 'العربية'], ['Türkçe']) },
+{ n: '2', h: 'Mood', opts: mk(['Feel-good', 'Edge of my seat', 'Make me laugh', 'Family night', 'Mind-bending', 'Epic anime'], ['Feel-good']) },
+{ n: '3', h: 'My services', opts: mk(['Netflix', 'Disney+', 'Prime Video', 'Max', 'Apple TV+', 'Free only'], ['Netflix', 'Disney+']) }
+],
+picks: [['Coco', '5ded58698603822d03ccd70fd08231b5', 'Disney+ · 1h 45m'], ['The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', 'Netflix · 1h 42m'], ['Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'Disney+ · 1h 36m'], ['Luca', '8a0c424f5b0aaaf2e47ebfabe38e12cd', 'Disney+ · 1h 35m'], ['Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'Netflix · 1h 34m'], ['Encanto', '2e0943299c347febf750aa19360d1513', 'Disney+ · 1h 42m'], ['Soul', '33e8d6e312d2c2a28eb7e6c8b92bd882', 'Disney+ · 1h 41m']].map((p) => ({ t: p[0], img: b(p[1]), m: p[2] }))
+};
+}
+}
+</script>
+</body>
+</html>

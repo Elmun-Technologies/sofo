@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home I — Atlas</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#0B1426}
+a{color:#EAF2FF;text-decoration:none}a:hover{color:#38BDF8}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #0B1426; color: #EAF2FF; font-family: 'Sora', system-ui, sans-serif">
+<header style="max-width: 1360px; margin: 0 auto; padding: 18px 32px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px">
+<a href="#" style="font-size: 21px; font-weight: 800">[BRAND]</a>
+<nav aria-label="Main" style="display: flex; flex-wrap: wrap; gap: 2px; flex-grow: 1; font-size: 14px; color: #9FB2D1"><a href="#" style="padding: 12px 10px; color: #9FB2D1">Countries</a><a href="#" style="padding: 12px 10px; color: #9FB2D1">Languages</a><a href="#" style="padding: 12px 10px; color: #9FB2D1">Services</a><a href="#" style="padding: 12px 10px; color: #9FB2D1">Search</a></nav>
+<button type="button" style="height: 42px; padding: 0 14px; border-radius: 12px; border: 1px solid #1E2C48; background: #111D35; color: #EAF2FF; font-family: inherit; font-size: 13px; font-weight: 600">English ▾</button>
+</header>
+
+<main style="max-width: 1360px; margin: 0 auto; padding: 40px 32px 72px; box-sizing: border-box; display: flex; flex-direction: column; gap: 48px">
+<section style="display: flex; flex-direction: column; gap: 22px">
+<h1 style="margin: 0; font-size: 64px; line-height: 1.02; font-weight: 800; letter-spacing: -0.03em">Every country has a<br>different catalog.</h1>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 24px; font-weight: 600; color: #9FB2D1">
+<span>I'm in</span>
+<button type="button" style="height: 56px; padding: 0 20px; border-radius: 16px; border: 0; background: #38BDF8; color: #0B1426; font-family: inherit; font-size: 22px; font-weight: 800">Türkiye ▾</button>
+<span>and want to watch in</span>
+<button type="button" style="height: 56px; padding: 0 20px; border-radius: 16px; border: 0; background: #FB7185; color: #0B1426; font-family: inherit; font-size: 22px; font-weight: 800">Türkçe ▾</button>
+<a href="#" style="height: 56px; padding: 0 22px; display: inline-flex; align-items: center; border-radius: 16px; border: 1px solid #2B3D63; font-size: 18px; font-weight: 700">Show me →</a>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 8px"><h2 style="margin: 0; font-size: 24px; font-weight: 700">#1 this week, country by country</h2><a href="#" style="font-size: 14px; color: #9FB2D1; padding: 10px 0">All 140 countries</a></div>
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px">
+<sc-for list="{{countries}}" as="c" hint-placeholder-count="8">
+<a href="#" style="display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: 18px; background: #111D35; border: 1px solid #1A2847">
+<img src="{{c.img}}" alt="" style="width: 64px; height: 96px; object-fit: cover; border-radius: 10px">
+<span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px"><span style="font-size: 11px; font-weight: 800; padding: 3px 6px; border-radius: 5px; background: #1E2C48; color: #9FB2D1">{{c.code}}</span><span style="font-size: 15px; font-weight: 700">{{c.name}}</span></span>
+<span style="font-size: 15px">{{c.title}}</span>
+<span style="font-size: 12px; color: #9FB2D1">{{c.where}}</span>
+</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-wrap: wrap; gap: 28px; padding: 28px; border-radius: 24px; background: #111D35; border: 1px solid #1A2847">
+<img src="/_blob/2773e2d8f4575e5e9ed94235960a3900" alt="" style="flex: 1 1 380px; width: 0; min-height: 260px; object-fit: cover; border-radius: 16px">
+<div style="flex: 1 1 420px; display: flex; flex-direction: column; gap: 14px">
+<span style="font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #38BDF8">One title, many borders</span>
+<h2 style="margin: 0; font-size: 30px; line-height: 1.15; font-weight: 800">Spirited Away — where it streams and in which voice</h2>
+<sc-for list="{{borders}}" as="r" hint-placeholder-count="5">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid #1E2C48; font-size: 15px">
+<span style="display: flex; align-items: center; gap: 10px"><span style="font-size: 11px; font-weight: 800; padding: 3px 6px; border-radius: 5px; background: #1E2C48; color: #9FB2D1">{{r.code}}</span>{{r.c}}</span>
+<span style="{{r.style}}">{{r.s}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+const b = (id) => '/_blob/' + id;
+return {
+countries: [['TR', 'Türkiye', 'Inside Out 2', '79f8fee8ed49eaf30382120f6b21d16f', 'Disney+ · TR audio'], ['DE', 'Germany', 'The Wild Robot', 'cb4f087928b468549d841e1ee3e42661', 'Netflix · DE audio'], ['US', 'United States', 'Arcane', '08d298c5c43e27d20a009e1485cb9b3b', 'Netflix · EN'], ['BR', 'Brazil', 'Moana 2', '1e670cb28388c895319bac5d4cfbc2c3', 'Disney+ · PT audio'], ['ES', 'Spain', 'Demon Slayer', '8e2de4d5af09254f1969c0aac5f7ff72', 'Netflix · ES audio'], ['FR', 'France', 'Kung Fu Panda 4', 'adb806acfa10e9988ff559ed874dc96e', 'Prime Video · FR audio'], ['AE', 'United Arab Emirates', 'Coco', '5ded58698603822d03ccd70fd08231b5', 'Disney+ · AR audio'], ['KZ', 'Kazakhstan', 'Jujutsu Kaisen', 'e622889c112ac94528cebedd9f389f09', 'Netflix · RU audio']].map((c) => ({ code: c[0], name: c[1], title: c[2], img: b(c[3]), where: c[4] })),
+borders: [['TR', 'Türkiye', 'Netflix · Turkish audio', 1], ['DE', 'Germany', 'Netflix · German audio', 1], ['US', 'United States', 'Max · English audio', 1], ['JP', 'Japan', 'Not streaming', 0], ['UZ', 'Uzbekistan', 'Netflix · subtitles only', 2]].map((r) => ({ code: r[0], c: r[1], s: r[2], style: r[3] === 1 ? 'font-size: 14px; font-weight: 700; color: #4ADE80' : r[3] === 2 ? 'font-size: 14px; font-weight: 700; color: #FBBF24' : 'font-size: 14px; color: #6B7FA3' }))
+};
+}
+}
+</script>
+</body>
+</html>
