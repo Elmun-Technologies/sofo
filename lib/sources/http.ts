@@ -22,6 +22,22 @@ export class HttpError extends Error {
   }
 }
 
+/** Missing API key / base URL — a setup problem, not a bad response. */
+export class SourceConfigError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SourceConfigError";
+  }
+}
+
+/** The API answered, but the payload does not match the documented shape. */
+export class SourceValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SourceValidationError";
+  }
+}
+
 export async function fetchJson<T>(url: string, opts: FetchJsonOptions = {}): Promise<T> {
   const { headers, retries = 3, minIntervalMs = 250 } = opts;
   const host = new URL(url).host;

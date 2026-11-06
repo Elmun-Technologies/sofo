@@ -1,0 +1,59 @@
+{
+  "id": 1396,
+  "name": "Breaking Bad",
+  "original_name": "Breaking Bad",
+  "original_language": "en",
+  "overview": "Kanser teşhisi konan kimya öğretmeni Walter White, uyuşturucu dünyasına girer.",
+  "first_air_date": "2008-01-20",
+  "episode_run_time": [45],
+  "vote_average": 8.9,
+  "popularity": 210.5,
+  "poster_path": "/poster-breaking-bad.jpg",
+  "backdrop_path": "/backdrop-breaking-bad.jpg",
+  "genres": [
+    { "id": 18, "name": "Dram" },
+    { "id": 80, "name": "Suç" }
+  ],
+  "seasons": [
+    {
+      "id": 3572,
+      "name": "Özel Bölümler",
+      "season_number": 0,
+      "air_date": null,
+      "episode_count": 9,
+      "poster_path": null,
+      "vote_average": 0
+    },
+    {
+      "id": 3573,
+      "name": "1. Sezon",
+      "season_number": 1,
+      "air_date": "2008-01-20",
+      "episode_count": 7,
+      "poster_path": "/season1.jpg",
+      "vote_average": 8.9
+    }
+  ],
+  "videos": {
+    "results": [
+      {
+        "key": "bbTrailer01",
+        "name": "Breaking Bad — Resmi Fragman",
+        "site": "YouTube",
+        "type": "Trailer",
+        "official": true,
+        "iso_639_1": "en",
+        "iso_3166_1": "US",
+        "published_at": "2010-01-20T10:00:00.000Z"
+      }
+    ]
+  },
+  "alternative_titles": {
+    "titles": [
+      { "iso_3166_1": "TR", "title": "Breaking Bad", "type": "" },
+      { "iso_3166_1": "US", "title": "Breaking Bad", "type": "" }
+    ]
+  },
+  "external_ids": { "imdb_id": "tt0903747" },
+  "belongs_to_collection": null
+}

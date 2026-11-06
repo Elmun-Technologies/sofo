@@ -1,0 +1,40 @@
+{
+  "id": 1184918,
+  "title": "Vahşi Robot",
+  "original_title": "The Wild Robot",
+  "original_language": "en",
+  "overview": "Issız bir adaya düşen robot Roz, yetim bir kaz yavrusuna annelik etmeyi öğrenir.",
+  "release_date": "2024-09-12",
+  "runtime": 102,
+  "vote_average": 8.3,
+  "popularity": 123.4,
+  "poster_path": "/poster-wild-robot.jpg",
+  "backdrop_path": "/backdrop-wild-robot.jpg",
+  "adult": false,
+  "genres": [
+    { "id": 16, "name": "Animasyon" },
+    { "id": 10751, "name": "Aile" }
+  ],
+  "belongs_to_collection": null,
+  "external_ids": { "imdb_id": "tt29623480" },
+  "alternative_titles": {
+    "titles": [
+      { "iso_3166_1": "TR", "title": "Vahşi Robot", "type": "" },
+      { "iso_3166_1": "US", "title": "The Wild Robot", "type": "" }
+    ]
+  },
+  "videos": {
+    "results": [
+      {
+        "key": "wildTrailer01",
+        "name": "Vahşi Robot — Resmi Fragman",
+        "site": "YouTube",
+        "type": "Trailer",
+        "official": true,
+        "iso_639_1": "tr",
+        "iso_3166_1": "TR",
+        "published_at": "2024-06-11T13:00:00.000Z"
+      }
+    ]
+  }
+}

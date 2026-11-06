@@ -1,0 +1,48 @@
+# Ingest cron (ADR 0001). Metadata is manual (dispatch); availability runs daily.
+# Secrets: DATABASE_URL, TMDB_API_KEY, STREAMING_AVAILABILITY_API_KEY (GitHub Actions secrets only).
+name: ingest
+
+on:
+  schedule:
+    - cron: "23 2 * * *"
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "metadata | availability | both"
+        default: "availability"
+      limit:
+        description: "Max titles (empty = all)"
+        default: ""
+
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+      STREAMING_AVAILABILITY_API_KEY: ${{ secrets.STREAMING_AVAILABILITY_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Migrate database
+        run: pnpm prisma migrate deploy
+
+      - name: Metadata (TMDB)
+        if: github.event_name == 'workflow_dispatch' && (inputs.stage == 'metadata' || inputs.stage == 'both')
+        run: pnpm ingest:metadata ${{ inputs.limit != '' && format('--limit={0}', inputs.limit) || '' }}
+
+      - name: Availability (Streaming Availability)
+        if: github.event_name == 'schedule' || inputs.stage == 'availability' || inputs.stage == 'both'
+        run: pnpm ingest:availability ${{ inputs.limit != '' && format('--limit={0}', inputs.limit) || '' }}

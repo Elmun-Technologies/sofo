@@ -180,6 +180,17 @@ pnpm ingest:availability    # 04-ingest
 - `app/global-not-found.tsx` (experimental `globalNotFound`) — several root layouts.
 - Seed data is SAMPLE (prisma/seed.ts + seed-extras.ts), incl. YouTube keys — replace via ingest (04).
 
+## Ingest (04, 2026-11-05)
+
+- `lib/sources/tmdb.ts` — TMDB v3 (details + `videos,alternative_titles,external_ids`, `tr-TR`/`en-US`). `lib/sources/streaming-availability.ts` — Streaming Availability API v4 `/shows/{id}?country&output_language&series_granularity=show`. Both go through `lib/sources/http.ts#fetchJson` (retry + per-host rate limit). Responses are validated by hand (`parseShow`, one bad option is dropped, the run continues) — zod was not added, keep the ingest dependency-free until a source changes shape.
+- Keys only in `.env.local` / GitHub Actions secrets: `TMDB_API_KEY`, `STREAMING_AVAILABILITY_API_KEY`. `STREAMING_AVAILABILITY_API_URL` switches the base URL (RapidAPI host → `X-RapidAPI-Key`). Without a key the scripts exit with a config message; seed data stays untouched.
+- Title list: `data/titles.csv` (`tmdb_id,type`, `#` comments, duplicates ignored). Commands: `pnpm ingest:metadata [-- --limit=50 --dry-run --file=…]` and `pnpm ingest:availability [-- --edition=tr --limit=50 --dry-run --file=…]` (default list = every title in the DB). Cron: `.github/workflows/ingest.yml` — availability daily, metadata dispatch-only.
+- Metadata → `Title`, `TitleLocalization` (tr/en, `altNames` from TMDB alternative titles, slug = `slugify(name)` + tmdb id suffix on collision), `Season` (specials skipped), official YouTube `Video` (fan uploads/other sites dropped), `Franchise`/`FranchiseItem` (release order by year, recomputed after each upsert). Credits/persons are not ingested yet. `isKids` = TMDB genre Family/Kids (section placement heuristic, not an availability claim).
+- Availability → title-level `Offer` (`seasonId` null) + `OfferLanguage` + `AvailabilityEvent`. Offer key = service × offer type × quality; a quality change is `removed` + `added`. Service map: netflix, prime→prime-video, disney→disney-plus, hbo→hbo-max, tod, tabii, exxen, gain; `addon` options and unmapped services are skipped. Prices only come from `rent`/`buy` options (never plan prices).
+- Language rule: languages the API lists become `confirmed_yes`; every other language gets **no row** (= `unknown`), never `confirmed_no`. The API's list is not treated as proof that a dub does not exist.
+- Idempotency: the same snapshot twice → 0 creates/updates/deactivations/events; only `checkedAt` is refreshed (that is the page's "checked" proof). `lib/ingest/diff.ts` is pure and unit-tested: `planDiff` → `applyPlanToState` → `planDiff` is empty.
+- TASK-006 (season/episode languages): the v4 schema does expose per-season and per-episode `streamingOptions` with their own `audios`/`subtitles` (`series_granularity=season|episode`), so the data exists. We still ingest title-level only (MVP pages read title-level offers); season-level dub rows are a follow-up. TR coverage/price of the API stays unverified without a live key.
+
 ## Glossary
 
 - **Availability** — nom × davlat × servis × taklif turi (subscription/free/ads/rent/buy).

@@ -1,0 +1,110 @@
+{
+  "itemType": "show",
+  "showType": "movie",
+  "id": "82",
+  "imdbId": "tt29623480",
+  "tmdbId": "movie/1184918",
+  "title": "The Wild Robot",
+  "originalTitle": "The Wild Robot",
+  "overview": "After a shipwreck, Roz learns to live on a wild island.",
+  "releaseYear": 2024,
+  "genres": [{ "id": "animation", "name": "Animation" }],
+  "streamingOptions": {
+    "tr": [
+      {
+        "service": {
+          "id": "netflix",
+          "name": "Netflix",
+          "homePage": "https://www.netflix.com",
+          "themeColorCode": "#E50914",
+          "imageSet": { "lightThemeImage": "l", "darkThemeImage": "d", "whiteImage": "w" }
+        },
+        "type": "subscription",
+        "link": "https://www.netflix.com/tr/title/81987654",
+        "quality": "uhd",
+        "audios": [{ "language": "tur" }, { "language": "eng" }],
+        "subtitles": [
+          { "locale": { "language": "tur" }, "closedCaptions": false },
+          { "locale": { "language": "eng" }, "closedCaptions": false }
+        ],
+        "availableSince": 1728000000,
+        "expiresSoon": true,
+        "expiresOn": 1798761600
+      },
+      {
+        "service": {
+          "id": "prime",
+          "name": "Prime Video",
+          "homePage": "https://www.primevideo.com",
+          "themeColorCode": "#1A98FF",
+          "imageSet": { "lightThemeImage": "l", "darkThemeImage": "d", "whiteImage": "w" }
+        },
+        "type": "rent",
+        "link": "https://www.primevideo.com/detail/0ABCDEF",
+        "quality": "hd",
+        "audios": [{ "language": "eng" }, { "language": "tur" }],
+        "subtitles": [{ "locale": { "language": "tur" } }],
+        "price": { "amount": "49.90", "currency": "try", "formatted": "49,90 TL" },
+        "availableSince": 1730000000,
+        "expiresSoon": false
+      },
+      {
+        "service": {
+          "id": "apple",
+          "name": "Apple TV",
+          "homePage": "https://tv.apple.com",
+          "themeColorCode": "#000000",
+          "imageSet": { "lightThemeImage": "l", "darkThemeImage": "d", "whiteImage": "w" }
+        },
+        "type": "buy",
+        "link": "https://tv.apple.com/tr/movie/1",
+        "quality": "uhd",
+        "audios": [{ "language": "eng" }],
+        "subtitles": [],
+        "price": { "amount": "129.90", "currency": "TRY", "formatted": "129,90 TL" },
+        "availableSince": 1730000000,
+        "expiresSoon": false
+      },
+      {
+        "service": {
+          "id": "prime",
+          "name": "Prime Video",
+          "homePage": "https://www.primevideo.com",
+          "themeColorCode": "#1A98FF",
+          "imageSet": { "lightThemeImage": "l", "darkThemeImage": "d", "whiteImage": "w" }
+        },
+        "type": "addon",
+        "addon": {
+          "id": "hbomaxus",
+          "name": "Max",
+          "homePage": "https://www.hbomax.com",
+          "themeColorCode": "#5B2BD6",
+          "imageSet": { "lightThemeImage": "l", "darkThemeImage": "d", "whiteImage": "w" }
+        },
+        "link": "https://www.primevideo.com/addon/1",
+        "audios": [{ "language": "eng" }],
+        "subtitles": [],
+        "availableSince": 1730000000,
+        "expiresSoon": false
+      }
+    ],
+    "us": [
+      {
+        "service": {
+          "id": "hbo",
+          "name": "Max",
+          "homePage": "https://www.hbomax.com",
+          "themeColorCode": "#5B2BD6",
+          "imageSet": { "lightThemeImage": "l", "darkThemeImage": "d", "whiteImage": "w" }
+        },
+        "type": "subscription",
+        "link": "https://www.hbomax.com/us/movie/1",
+        "quality": "uhd",
+        "audios": [{ "language": "eng" }, { "language": "spa" }],
+        "subtitles": [{ "locale": { "language": "eng" } }],
+        "availableSince": 1730000000,
+        "expiresSoon": false
+      }
+    ]
+  }
+}

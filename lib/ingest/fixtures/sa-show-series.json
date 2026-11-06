@@ -1,0 +1,60 @@
+{
+  "itemType": "show",
+  "showType": "series",
+  "id": "1396",
+  "imdbId": "tt0903747",
+  "tmdbId": "tv/1396",
+  "originalTitle": "Breaking Bad",
+  "streamingOptions": {
+    "tr": [
+      {
+        "service": {
+          "id": "netflix",
+          "name": "Netflix",
+          "homePage": "https://www.netflix.com",
+          "themeColorCode": "#E50914",
+          "imageSet": { "lightThemeImage": "l", "darkThemeImage": "d", "whiteImage": "w" }
+        },
+        "type": "subscription",
+        "link": "https://www.netflix.com/tr/title/70143836",
+        "quality": "hd",
+        "audios": [{ "language": "tur" }],
+        "subtitles": [{ "locale": { "language": "tur" }, "closedCaptions": false }],
+        "availableSince": 1600000000,
+        "expiresSoon": false
+      },
+      {
+        "service": {
+          "id": "netflix",
+          "name": "Netflix",
+          "homePage": "https://www.netflix.com",
+          "themeColorCode": "#E50914",
+          "imageSet": { "lightThemeImage": "l", "darkThemeImage": "d", "whiteImage": "w" }
+        },
+        "type": "subscription",
+        "link": "https://www.netflix.com/tr/title/70143836",
+        "quality": "hd",
+        "audios": [{ "language": "eng" }, { "language": "und" }],
+        "subtitles": [{ "locale": { "language": "eng" } }],
+        "availableSince": 1600000000,
+        "expiresSoon": false
+      },
+      {
+        "service": {
+          "id": "disney",
+          "name": "Disney+",
+          "homePage": "https://www.disneyplus.com",
+          "themeColorCode": "#0B2A5B",
+          "imageSet": { "lightThemeImage": "l", "darkThemeImage": "d", "whiteImage": "w" }
+        },
+        "type": "subscription",
+        "link": "https://www.disneyplus.com/tr/series/breaking-bad",
+        "quality": "uhd",
+        "audios": [{ "language": "eng" }],
+        "subtitles": [{ "locale": { "language": "tur" } }],
+        "availableSince": 1700000000,
+        "expiresSoon": false
+      }
+    ]
+  }
+}

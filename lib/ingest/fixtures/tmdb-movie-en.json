@@ -1,0 +1,47 @@
+{
+  "id": 1184918,
+  "title": "The Wild Robot",
+  "original_title": "The Wild Robot",
+  "original_language": "en",
+  "overview": "After a shipwreck, an intelligent robot called Roz is stranded on an uninhabited island.",
+  "release_date": "2024-09-12",
+  "runtime": 102,
+  "vote_average": 8.3,
+  "popularity": 120.1,
+  "poster_path": "/poster-wild-robot.jpg",
+  "backdrop_path": "/backdrop-wild-robot.jpg",
+  "adult": false,
+  "genres": [
+    { "id": 16, "name": "Animation" },
+    { "id": 10751, "name": "Family" }
+  ],
+  "belongs_to_collection": null,
+  "external_ids": { "imdb_id": "tt29623480" },
+  "alternative_titles": {
+    "titles": [{ "iso_3166_1": "US", "title": "The Wild Robot", "type": "" }]
+  },
+  "videos": {
+    "results": [
+      {
+        "key": "wildTrailer01",
+        "name": "The Wild Robot | Official Trailer",
+        "site": "YouTube",
+        "type": "Trailer",
+        "official": true,
+        "iso_639_1": "en",
+        "iso_3166_1": "US",
+        "published_at": "2024-06-11T13:00:00.000Z"
+      },
+      {
+        "key": "fanEdit01",
+        "name": "Wild Robot fan edit",
+        "site": "YouTube",
+        "type": "Trailer",
+        "official": false,
+        "iso_639_1": "en",
+        "iso_3166_1": "US",
+        "published_at": "2024-06-12T13:00:00.000Z"
+      }
+    ]
+  }
+}

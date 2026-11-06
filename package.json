@@ -14,6 +14,8 @@
     "db:seed": "dotenv -e .env.local -- prisma db seed",
     "postinstall": "prisma generate",
     "search:bench": "dotenv -e .env.local -- tsx scripts/search-bench.ts",
+    "ingest:metadata": "dotenv -e .env.local -- tsx scripts/ingest/metadata.ts",
+    "ingest:availability": "dotenv -e .env.local -- tsx scripts/ingest/availability.ts",
     "seo:sync-pages": "dotenv -e .env.local -- tsx scripts/seo/sync-pages.ts",
     "alerts:dispatch": "dotenv -e .env.local -- tsx scripts/alerts/dispatch.ts"
   },
