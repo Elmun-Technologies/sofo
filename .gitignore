@@ -8,3 +8,4 @@ coverage
 .env.*
 !.env.example
 design/source/generators/__pycache__
+artifacts/
