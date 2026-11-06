@@ -2,7 +2,8 @@
  * Sample seasons, people, videos, lists, franchises, releases, history and quality data.
  * Everything here is illustrative — not verified availability.
  */
-import type { LangStatus, PrismaClient } from "@prisma/client";
+import type { LangStatus } from "@prisma/client";
+import type { Db } from "../lib/db";
 import { slugify } from "../lib/slug";
 
 type Ctx = { titleIds: Map<number, number>; serviceIds: Map<string, number>; now: number };
@@ -110,7 +111,7 @@ const LISTS: { slug: string; name: string; intro: string; items: [number, string
   },
 ];
 
-export async function seedExtras(db: PrismaClient, { titleIds, serviceIds, now }: Ctx) {
+export async function seedExtras(db: Db, { titleIds, serviceIds, now }: Ctx) {
   const tid = (tmdbId: number) => {
     const id = titleIds.get(tmdbId);
     if (!id) throw new Error(`Unknown sample title ${tmdbId}`);

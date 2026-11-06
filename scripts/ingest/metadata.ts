@@ -6,12 +6,12 @@
  * Requires TMDB_API_KEY in .env.local (never in the repo). Idempotent: existing rows are updated.
  */
 import { readFile } from "node:fs/promises";
-import { db } from "../../lib/db";
 import { upsertTitleMetadata } from "../../lib/ingest/apply";
 import { mapMovie, mapTv } from "../../lib/ingest/metadata";
 import { parseTitleCsv } from "../../lib/ingest/title-list";
 import { HttpError, SourceConfigError } from "../../lib/sources/http";
 import { getMovie, getTv, isTmdbConfigured } from "../../lib/sources/tmdb";
+import { withNodeDb } from "../../lib/db-node";
 
 const args = process.argv.slice(2);
 const has = (name: string) => args.includes(`--${name}`);
@@ -57,9 +57,8 @@ async function main() {
   if (failed) process.exitCode = 1;
 }
 
-main()
+withNodeDb(main)
   .catch((err) => {
     console.error(`[metadata] ${describe(err)}`);
     process.exitCode = 1;
   })
-  .finally(() => db.$disconnect());

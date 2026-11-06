@@ -6,20 +6,15 @@ import { ServiceLeaving } from "@/components/catalog/service-leaving";
 import { DubBadge, NewBadge, SubBadge } from "@/components/ui/badges";
 import { PosterRow } from "@/components/ui/poster-row";
 import { cap, catalogHref } from "@/components/catalog/catalog-url";
-import { editionCodes, getEdition, paths } from "@/lib/editions";
+import { getEdition, paths } from "@/lib/editions";
 import { formatDate, formatPrice } from "@/lib/format";
 import { dubTerm, langName } from "@/lib/lang";
 import { getServicePage } from "@/lib/queries/catalog-pages";
 import { buildAlternates } from "@/lib/seo/hreflang";
 
 export const revalidate = 3600;
-// Only the edition's core services; anything else under /{lang}/ 404s (static routes still win).
-export const dynamicParams = false;
-
-export function generateStaticParams({ params }: { params: { lang?: string } }) {
-  const codes = params.lang ? [params.lang] : editionCodes();
-  return codes.flatMap((lang) => (getEdition(lang)?.coreServices ?? []).map((service) => ({ lang, service })));
-}
+// Only the edition's core services (checked in load()); anything else under /{lang}/ 404s.
+// Rendered on first request, then cached (ISR) — D1 is not reachable at build time (ADR 0002).
 
 async function load(lang: string, slug: string) {
   const e = getEdition(lang);

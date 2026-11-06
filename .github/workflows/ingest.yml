@@ -1,10 +1,10 @@
-# Ingest cron (ADR 0001). Metadata is manual (dispatch); availability runs daily.
-# Secrets: DATABASE_URL, TMDB_API_KEY, STREAMING_AVAILABILITY_API_KEY (GitHub Actions secrets only).
+# Ingest (manual). ADR 0002: the database is Cloudflare D1, which GitHub Actions cannot reach without
+# Cloudflare credentials — the daily schedule is disabled until a protected in-Worker ingest endpoint exists.
+# This job only validates that the ingest scripts run (dry-run against an ephemeral local D1).
+# Secrets: TMDB_API_KEY, STREAMING_AVAILABILITY_API_KEY (GitHub Actions secrets only).
 name: ingest
 
 on:
-  schedule:
-    - cron: "23 2 * * *"
   workflow_dispatch:
     inputs:
       stage:
@@ -23,7 +23,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
       STREAMING_AVAILABILITY_API_KEY: ${{ secrets.STREAMING_AVAILABILITY_API_KEY }}
     steps:
@@ -36,13 +35,13 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Migrate database
-        run: pnpm prisma migrate deploy
+      - name: Local D1 (ephemeral)
+        run: pnpm db:migrate
 
       - name: Metadata (TMDB)
         if: github.event_name == 'workflow_dispatch' && (inputs.stage == 'metadata' || inputs.stage == 'both')
-        run: pnpm ingest:metadata ${{ inputs.limit != '' && format('--limit={0}', inputs.limit) || '' }}
+        run: pnpm ingest:metadata --dry-run ${{ inputs.limit != '' && format('--limit={0}', inputs.limit) || '' }}
 
       - name: Availability (Streaming Availability)
-        if: github.event_name == 'schedule' || inputs.stage == 'availability' || inputs.stage == 'both'
-        run: pnpm ingest:availability ${{ inputs.limit != '' && format('--limit={0}', inputs.limit) || '' }}
+        if: inputs.stage == 'availability' || inputs.stage == 'both'
+        run: pnpm ingest:availability --dry-run ${{ inputs.limit != '' && format('--limit={0}', inputs.limit) || '' }}

@@ -10,7 +10,7 @@
  * t.me/<bot>?start=<signed userId>; when the user presses Start, the dispatcher (getUpdates) writes the
  * chat id into `telegram_id`. Until then alerts are pending.
  */
-import { db } from "../db";
+import { db, toList } from "../db";
 import { getEdition } from "../editions";
 import type { AlertKindName } from "./kinds";
 import { signUserRef, verifyUserRef } from "./token";
@@ -90,8 +90,8 @@ async function upsertAlerts(userId: string, alerts: { titleId: number; kinds: Al
     alerts.map((a) => {
       const prev = byTitle.get(a.titleId);
       return prev
-        ? db.alert.update({ where: { id: prev.id }, data: { kinds: mergeKinds(prev.kinds, a.kinds), channel } })
-        : db.alert.create({ data: { userId, titleId: a.titleId, kinds: a.kinds, channel } });
+        ? db.alert.update({ where: { id: prev.id }, data: { kinds: toList(mergeKinds(prev.kinds as AlertKindName[], a.kinds)), channel } })
+        : db.alert.create({ data: { userId, titleId: a.titleId, kinds: toList(a.kinds), channel } });
     }),
   );
   return alerts.length;

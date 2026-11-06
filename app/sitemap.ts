@@ -1,11 +1,13 @@
 import type { MetadataRoute } from "next";
 import { getAllPageInventory } from "@/lib/seo/pages";
-import { siteUrl } from "@/lib/site";
+import { DEMO_DATA, siteUrl } from "@/lib/site";
 
 /** Only indexable URLs (quality gate, PRD §10). Rebuilt hourly. */
-export const revalidate = 3600;
+// Reads D1 at request time (no DB at build — ADR 0002).
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  if (DEMO_DATA) return [];
   const base = siteUrl();
   const pages = await getAllPageInventory();
   return [

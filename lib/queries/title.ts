@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { cardInclude, getCards, toCard, type TitleCard } from "../catalog";
-import { db } from "../db";
+import { db, listHas } from "../db";
 import type { Edition } from "../editions";
 import { qualityGate } from "../quality-gate";
 import { computeShortAnswer, notOn, type AnswerOffer, type LangState } from "../short-answer";
@@ -140,7 +140,7 @@ export type TitlePageData = NonNullable<Awaited<ReturnType<typeof getTitlePage>>
 
 /** "If you liked …": same genre family, prefer edition-language dub, excluding itself. */
 export async function getSimilar(e: Edition, titleId: number, genres: string[], take = 6): Promise<TitleCard[]> {
-  const pool = await getCards(e, { id: { not: titleId }, genres: { hasSome: genres }, offers: { some: { countryCode: e.country, isActive: true } } }, { take: 30 });
+  const pool = await getCards(e, { id: { not: titleId }, OR: genres.map((g) => ({ genres: listHas(g) })), offers: { some: { countryCode: e.country, isActive: true } } }, { take: 30 });
   const overlap = (c: TitleCard) => c.genres.filter((g) => genres.includes(g)).length;
   return pool.sort((a, b) => Number(b.dub) - Number(a.dub) || overlap(b) - overlap(a)).slice(0, take);
 }

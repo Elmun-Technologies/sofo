@@ -17,7 +17,8 @@ import { getTrailers, type TrailerItem } from "@/lib/queries/value-pages";
 import { buildAlternates } from "@/lib/seo/hreflang";
 import { siteUrl } from "@/lib/site";
 
-export const revalidate = 3600;
+// Reads searchParams → rendered per request (the [lang] segment is otherwise ISR-cached; ADR 0002).
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/fragmanlar">): Promise<Metadata> {
   const { lang } = await params;

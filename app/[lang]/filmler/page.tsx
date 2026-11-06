@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { CatalogPage, catalogMetadata } from "@/components/catalog/catalog-page";
 import { getEdition } from "@/lib/editions";
 
-export const revalidate = 3600;
+// Reads searchParams → rendered per request (the [lang] segment is otherwise ISR-cached; ADR 0002).
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/[lang]/filmler">): Promise<Metadata> {
   const e = getEdition((await params).lang);

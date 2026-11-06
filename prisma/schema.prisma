@@ -1,15 +1,17 @@
 // Sofo — data model (MVP). Docs: docs/data-model.md
 // Conventions: models PascalCase, tables/columns snake_case (@@map / @map).
+// Database: Cloudflare D1 (SQLite) — ADR 0002. SQLite has no scalar lists: list fields are JSON text
+// (e.g. '["Animation","Drama"]'); lib/db.ts parses them back to string[] on read.
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  extensions = [pg_trgm, unaccent]
+  provider = "sqlite"
+  // Only used by Prisma CLI tooling (migrate diff); runtime connects through the D1 adapter.
+  url      = "file:./dev.db"
 }
 
 // ───────────────────────── Enums ─────────────────────────
@@ -109,15 +111,15 @@ model Title {
   tmdbId        Int       @map("tmdb_id")
   type          TitleType
   originalTitle String    @map("original_title")
-  originalLang  String    @map("original_lang") @db.VarChar(8)
+  originalLang  String    @map("original_lang")
   year          Int?
   runtimeMin    Int?      @map("runtime_min")
   ageRating     String?   @map("age_rating")
-  tmdbScore     Decimal?  @map("tmdb_score") @db.Decimal(3, 1)
+  tmdbScore     Decimal?  @map("tmdb_score")
   popularity    Float?
   posterPath    String?   @map("poster_path")
   backdropPath  String?   @map("backdrop_path")
-  genres        String[]
+  genres        String    @default("[]") /// JSON string[]
   isAnimation   Boolean   @default(false) @map("is_animation")
   isKids        Boolean   @default(false) @map("is_kids")
   franchiseId   Int?      @map("franchise_id")
@@ -145,14 +147,14 @@ model Title {
 
 /// Localized name/overview/slug per UI language (tr, en, fr...). No machine-translated overviews.
 model TitleLocalization {
-  id       Int      @id @default(autoincrement())
-  titleId  Int      @map("title_id")
-  lang     String   @db.VarChar(8)
+  id       Int     @id @default(autoincrement())
+  titleId  Int     @map("title_id")
+  lang     String
   name     String
-  altNames String[] @map("alt_names")
+  altNames String  @default("[]") @map("alt_names") /// JSON string[]
   overview String?
   slug     String
-  title    Title    @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  title    Title   @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
   @@unique([titleId, lang])
   @@unique([lang, slug])
@@ -164,9 +166,9 @@ model Season {
   titleId      Int       @map("title_id")
   number       Int
   name         String?
-  airDate      DateTime? @map("air_date") @db.Date
+  airDate      DateTime? @map("air_date")
   episodeCount Int?      @map("episode_count")
-  tmdbScore    Decimal?  @map("tmdb_score") @db.Decimal(3, 1)
+  tmdbScore    Decimal?  @map("tmdb_score")
   posterPath   String?   @map("poster_path")
   title        Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
   episodes     Episode[]
@@ -183,9 +185,9 @@ model Episode {
   number     Int
   name       String?
   overview   String?
-  airDate    DateTime? @map("air_date") @db.Date
+  airDate    DateTime? @map("air_date")
   runtimeMin Int?      @map("runtime_min")
-  tmdbScore  Decimal?  @map("tmdb_score") @db.Decimal(3, 1)
+  tmdbScore  Decimal?  @map("tmdb_score")
   stillPath  String?   @map("still_path")
   season     Season    @relation(fields: [seasonId], references: [id], onDelete: Cascade)
   offers     Offer[]
@@ -201,7 +203,7 @@ model Person {
   tmdbId   Int       @unique @map("tmdb_id")
   name     String
   slug     String    @unique
-  birthday DateTime? @db.Date
+  birthday DateTime?
   knownFor String?   @map("known_for")
   credits  Credit[]
 
@@ -252,9 +254,9 @@ model FranchiseItem {
 // ───────────────────────── Availability ─────────────────────────
 
 model Country {
-  code     String           @id @db.Char(2) // ISO 3166-1 alpha-2
+  code     String           @id // ISO 3166-1 alpha-2
   name     String
-  uiLangs  String[]         @map("ui_langs")
+  uiLangs  String           @default("[]") @map("ui_langs") /// JSON string[]
   services ServiceCountry[]
 
   @@map("country")
@@ -276,9 +278,9 @@ model Service {
 
 model ServiceCountry {
   serviceId   Int      @map("service_id")
-  countryCode String   @map("country_code") @db.Char(2)
-  priceFrom   Decimal? @map("price_from") @db.Decimal(10, 2)
-  currency    String?  @db.Char(3)
+  countryCode String   @map("country_code")
+  priceFrom   Decimal? @map("price_from")
+  currency    String?
   hasAdsTier  Boolean  @default(false) @map("has_ads_tier")
   service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   country     Country  @relation(fields: [countryCode], references: [code])
@@ -293,14 +295,14 @@ model Offer {
   titleId     Int       @map("title_id")
   seasonId    Int?      @map("season_id")
   episodeId   Int?      @map("episode_id")
-  countryCode String    @map("country_code") @db.Char(2)
+  countryCode String    @map("country_code")
   serviceId   Int       @map("service_id")
   type        OfferType
   quality     String? // sd | hd | uhd
-  price       Decimal?  @db.Decimal(10, 2)
-  currency    String?   @db.Char(3)
+  price       Decimal?
+  currency    String?
   url         String
-  leavingAt   DateTime? @map("leaving_at") @db.Date
+  leavingAt   DateTime? @map("leaving_at")
   source      String // streaming_availability | manual
   firstSeenAt DateTime  @default(now()) @map("first_seen_at")
   checkedAt   DateTime  @map("checked_at")
@@ -321,7 +323,7 @@ model Offer {
 
 model OfferLanguage {
   offerId Int        @map("offer_id")
-  lang    String     @db.VarChar(16) // BCP-47: tr, en, es-419, pt-BR
+  lang    String // BCP-47: tr, en, es-419, pt-BR
   kind    LangKind
   status  LangStatus @default(unknown)
   offer   Offer      @relation(fields: [offerId], references: [id], onDelete: Cascade)
@@ -333,9 +335,9 @@ model OfferLanguage {
 
 /// V3 — history. Written by the ingest diff; never edited by hand.
 model AvailabilityEvent {
-  id          BigInt     @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   titleId     Int        @map("title_id")
-  countryCode String     @map("country_code") @db.Char(2)
+  countryCode String     @map("country_code")
   serviceId   Int        @map("service_id")
   type        EventType
   offerType   OfferType? @map("offer_type")
@@ -354,12 +356,12 @@ model AvailabilityEvent {
 model ReleaseTrack {
   id          Int          @id @default(autoincrement())
   titleId     Int          @map("title_id")
-  countryCode String       @map("country_code") @db.Char(2)
+  countryCode String       @map("country_code")
   stage       ReleaseStage
-  date        DateTime?    @db.Date
+  date        DateTime?
   isEstimate  Boolean      @default(false) @map("is_estimate")
   serviceId   Int?         @map("service_id")
-  lang        String?      @db.VarChar(16) // for stage = dub
+  lang        String? // for stage = dub
   source      String
   title       Title        @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
@@ -377,7 +379,7 @@ model Video {
   key         String
   kind        VideoKind
   name        String
-  lang        String?   @db.VarChar(16)
+  lang        String?
   isOfficial  Boolean   @default(true) @map("is_official")
   isVertical  Boolean   @default(false) @map("is_vertical")
   durationSec Int?      @map("duration_sec")
@@ -395,8 +397,8 @@ model Video {
 
 model List {
   id          Int        @id @default(autoincrement())
-  lang        String     @db.VarChar(8)
-  countryCode String     @map("country_code") @db.Char(2)
+  lang        String
+  countryCode String     @map("country_code")
   slug        String
   name        String
   intro       String // human-written
@@ -426,8 +428,8 @@ model Page {
   id          Int         @id @default(autoincrement())
   path        String      @unique
   type        String // home | title | season | catalog | lang_hub | list | service | new_leaving | trailers | person | kids | franchise | releases | static
-  lang        String      @db.VarChar(8)
-  countryCode String      @map("country_code") @db.Char(2)
+  lang        String
+  countryCode String      @map("country_code")
   entityId    Int?        @map("entity_id")
   indexStatus IndexStatus @default(noindex) @map("index_status")
   qualityNote String?     @map("quality_note")
@@ -446,9 +448,9 @@ model User {
   email       String?         @unique
   telegramId  BigInt?         @unique @map("telegram_id")
   googleSub   String?         @unique @map("google_sub")
-  countryCode String          @default("TR") @map("country_code") @db.Char(2)
-  uiLang      String          @default("en") @map("ui_lang") @db.VarChar(8)
-  audioPref   String?         @map("audio_pref") @db.VarChar(16) // "tr" dub, "tr-sub", "original"
+  countryCode String          @default("TR") @map("country_code")
+  uiLang      String          @default("en") @map("ui_lang")
+  audioPref   String?         @map("audio_pref") // "tr" dub, "tr-sub", "original"
   createdAt   DateTime        @default(now()) @map("created_at")
   services    UserService[]
   watchlist   WatchlistItem[]
@@ -480,15 +482,15 @@ model WatchlistItem {
 }
 
 model Alert {
-  id         Int         @id @default(autoincrement())
-  userId     String      @map("user_id")
-  titleId    Int         @map("title_id")
-  kinds      AlertKind[]
-  channel    Channel     @default(telegram)
-  lastSentAt DateTime?   @map("last_sent_at")
-  createdAt  DateTime    @default(now()) @map("created_at")
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title      Title       @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  id         Int       @id @default(autoincrement())
+  userId     String    @map("user_id")
+  titleId    Int       @map("title_id")
+  kinds      String    @default("[]") /// JSON AlertKind[]
+  channel    Channel   @default(telegram)
+  lastSentAt DateTime? @map("last_sent_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
 
   @@unique([userId, titleId])
   @@map("alert")
@@ -513,8 +515,8 @@ model ErrorReport {
 
 /// Aggregated per day — powers "trending searches" and "Request a title". No personal data.
 model SearchStat {
-  day         DateTime @db.Date
-  countryCode String   @map("country_code") @db.Char(2)
+  day         DateTime
+  countryCode String   @map("country_code")
   query       String
   count       Int      @default(0)
   zeroResults Boolean  @default(false) @map("zero_results")

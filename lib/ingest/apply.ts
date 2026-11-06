@@ -3,13 +3,13 @@
  * Diff semantics live in ./diff.ts (pure); this file only persists the plan.
  */
 import { Prisma, type LangKind, type LangStatus } from "@prisma/client";
-import { db } from "../db";
+import { db, toList, type Db } from "../db";
 import { slugify } from "../slug";
 import { planDiff, planStats, type CurrentOfferState, type DiffPlan } from "./diff";
 import type { TitleMetadata } from "./metadata";
 import type { SnapshotOffer, SnapshotTitle } from "./normalize";
 
-type Tx = Prisma.TransactionClient;
+type Tx = Db;
 
 export type AvailabilityIngestResult = {
   titleId: number | null;
@@ -107,8 +107,8 @@ export async function ingestTitleAvailability(snapshot: SnapshotTitle, opts: { n
   const deactivatedIds = new Set(plan.deactivates.map((d) => d.id));
   const unchangedIds = current.filter((c) => !changedIds.has(c.id) && !deactivatedIds.has(c.id)).map((c) => c.id);
 
-  await db.$transaction(
-    async (tx) => {
+  // D1 has no interactive transactions (ADR 0002): writes run in order; the next run re-diffs anything left half-done.
+  await (async (tx: Db) => {
       for (const next of plan.creates) {
         const serviceId = services.idBySlug.get(next.serviceSlug);
         if (!serviceId) throw new Error(`Service "${next.serviceSlug}" is not seeded — run pnpm db:seed`);
@@ -153,9 +153,7 @@ export async function ingestTitleAvailability(snapshot: SnapshotTitle, opts: { n
         ];
       });
       if (events.length) await tx.availabilityEvent.createMany({ data: events });
-    },
-    { timeout: 30_000 },
-  );
+  })(db);
 
   return result;
 }
@@ -206,8 +204,8 @@ export async function upsertTitleMetadata(meta: TitleMetadata, opts: { dryRun?: 
     };
   }
 
-  return db.$transaction(
-    async (tx) => {
+  // D1 has no interactive transactions (ADR 0002): writes run in order and are idempotent upserts.
+  return (async (tx: Db) => {
       const core = {
         originalTitle: meta.originalTitle,
         originalLang: meta.originalLang,
@@ -217,7 +215,7 @@ export async function upsertTitleMetadata(meta: TitleMetadata, opts: { dryRun?: 
         popularity: meta.popularity,
         posterPath: meta.posterPath,
         backdropPath: meta.backdropPath,
-        genres: meta.genres,
+        genres: toList(meta.genres),
         isAnimation: meta.isAnimation,
         isKids: meta.isKids,
       };
@@ -234,8 +232,8 @@ export async function upsertTitleMetadata(meta: TitleMetadata, opts: { dryRun?: 
         const slug = await uniqueLocalizationSlug(tx, loc.lang, desired, title.id, meta.tmdbId);
         await tx.titleLocalization.upsert({
           where: { titleId_lang: { titleId: title.id, lang: loc.lang } },
-          create: { titleId: title.id, lang: loc.lang, name: loc.name, altNames: loc.altNames, overview: loc.overview, slug },
-          update: { name: loc.name, altNames: loc.altNames, overview: loc.overview, slug },
+          create: { titleId: title.id, lang: loc.lang, name: loc.name, altNames: toList(loc.altNames), overview: loc.overview, slug },
+          update: { name: loc.name, altNames: toList(loc.altNames), overview: loc.overview, slug },
         });
       }
 
@@ -297,7 +295,5 @@ export async function upsertTitleMetadata(meta: TitleMetadata, opts: { dryRun?: 
         videos: meta.videos.length,
         franchise: franchiseName,
       };
-    },
-    { timeout: 30_000 },
-  );
+  })(db);
 }

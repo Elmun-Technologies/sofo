@@ -8,6 +8,7 @@
 import { db } from "../../lib/db";
 import { EDITIONS } from "../../lib/editions";
 import { getPageInventory, summarizeInventory } from "../../lib/seo/pages";
+import { withNodeDb } from "../../lib/db-node";
 
 const CHUNK = 200;
 
@@ -47,9 +48,8 @@ async function main() {
   }
 }
 
-main()
+withNodeDb(main)
   .catch((err) => {
     console.error(err);
     process.exitCode = 1;
   })
-  .finally(() => db.$disconnect());

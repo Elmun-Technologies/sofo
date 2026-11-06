@@ -9,26 +9,20 @@ import { ChipLink, ChipRow } from "@/components/ui/chip";
 import { EmptyState } from "@/components/ui/empty-state";
 import { JsonLd } from "@/components/ui/json-ld";
 import { getPublishedLists } from "@/lib/catalog";
-import { editionCodes, getEdition, paths } from "@/lib/editions";
+import { getEdition, paths } from "@/lib/editions";
 import { formatDate, initials } from "@/lib/format";
 import { dubTerm } from "@/lib/lang";
-import { getCollection, getCollectionSlugs } from "@/lib/queries/catalog-pages";
+import { getCollection } from "@/lib/queries/catalog-pages";
 import { buildAlternates } from "@/lib/seo/hreflang";
 import { siteUrl } from "@/lib/site";
 
-export const revalidate = 3600;
+// Reads searchParams → rendered per request (the [lang] segment is otherwise ISR-cached; ADR 0002).
+export const dynamic = "force-dynamic";
 
 type Filter = "free" | "short";
 const FILTERS: Filter[] = ["free", "short"];
 
-export async function generateStaticParams() {
-  const out: { lang: string; list: string }[] = [];
-  for (const lang of editionCodes()) {
-    const e = getEdition(lang)!;
-    for (const list of await getCollectionSlugs(e)) out.push({ lang, list });
-  }
-  return out;
-}
+// No generateStaticParams: the page reads searchParams (?f=), so it renders per request (ADR 0002).
 
 export async function generateMetadata({ params, searchParams }: PageProps<"/[lang]/turkce-dublaj/[list]">): Promise<Metadata> {
   const { lang, list: slug } = await params;

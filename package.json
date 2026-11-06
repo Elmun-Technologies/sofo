@@ -10,25 +10,26 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
-    "prisma": "dotenv -e .env.local -- prisma",
-    "db:seed": "dotenv -e .env.local -- prisma db seed",
+    "prisma": "prisma",
+    "db:seed": "tsx prisma/seed.ts",
     "postinstall": "prisma generate",
     "search:bench": "dotenv -e .env.local -- tsx scripts/search-bench.ts",
     "ingest:metadata": "dotenv -e .env.local -- tsx scripts/ingest/metadata.ts",
     "ingest:availability": "dotenv -e .env.local -- tsx scripts/ingest/availability.ts",
     "seo:sync-pages": "dotenv -e .env.local -- tsx scripts/seo/sync-pages.ts",
-    "alerts:dispatch": "dotenv -e .env.local -- tsx scripts/alerts/dispatch.ts"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "alerts:dispatch": "dotenv -e .env.local -- tsx scripts/alerts/dispatch.ts",
+    "db:migrate": "wrangler d1 migrations apply DB --local --config freebuff.wrangler.jsonc"
   },
   "dependencies": {
+    "@prisma/adapter-d1": "6.19.3",
     "@prisma/client": "^6.19.3",
     "next": "^16.4.5",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261106.1",
+    "@opennextjs/cloudflare": "1.20.12",
     "@tailwindcss/postcss": "^4.3.4",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
@@ -40,6 +41,12 @@
     "tailwindcss": "^4.3.4",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "wrangler": "4.148.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "next@16.4.5": "patches/next@16.4.5.patch"
+    }
   }
 }

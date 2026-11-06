@@ -23,6 +23,9 @@ import { getTopOffer, getTrendingSearches, parseAudio, recordSearch, searchAll, 
 import { offerVerb } from "@/lib/services";
 import { requestTitle } from "./actions";
 
+// Reads searchParams → rendered per request (the [lang] segment is otherwise ISR-cached; ADR 0002).
+export const dynamic = "force-dynamic";
+
 type SP = Record<string, string | string[] | undefined>;
 
 const first = (v: string | string[] | undefined) => (typeof v === "string" ? v : Array.isArray(v) ? (v[0] ?? "") : "");

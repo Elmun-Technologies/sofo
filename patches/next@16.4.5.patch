@@ -1,0 +1,34 @@
+diff --git a/dist/compiled/@vercel/og/index.edge.js b/dist/compiled/@vercel/og/index.edge.js
+index 8cd9c3c07ff245a162e87fe11aa0ddcf35e9aabc..d002fe0a539b3f3906bccab8ba1a20d3c1472f0c 100644
+--- a/dist/compiled/@vercel/og/index.edge.js
++++ b/dist/compiled/@vercel/og/index.edge.js
+@@ -20552,9 +20552,9 @@ async function render(satori, resvg, sharp, opts, defaultFonts, element) {
+ // src/index.edge.ts
+ var initializedResvg = initWasm(resvg_wasm);
+ var initializeSatori = Xc(yoga_wasm);
+-var fallbackFont = fetch(
+-  new URL("./Geist-Regular.ttf", import.meta.url)
+-).then((res) => res.arrayBuffer());
++// sofo patch (ADR 0002): no bundled fallback font — Freebuff Sites rejects the `.bin` data module OpenNext
++// would create for it. Callers must always pass `fonts` (app/og/_lib/share.tsx does).
++var fallbackFont = Promise.resolve(null);
+ var ImageResponse = class extends Response {
+   constructor(element, options = {}) {
+     const result = new ReadableStream({
+@@ -20564,14 +20564,14 @@ var ImageResponse = class extends Response {
+           initializeSatori,
+           initializedResvg
+         ]);
+-        const fonts = [
++        const fonts = fontData ? [
+           {
+             name: "geist",
+             data: fontData,
+             weight: 400,
+             style: "normal"
+           }
+-        ];
++        ] : [];
+         const result2 = await render(
+           pc,
+           resvg_wasm_exports,

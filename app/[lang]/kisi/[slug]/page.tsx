@@ -16,7 +16,8 @@ import { formatDate } from "@/lib/format";
 import { langName } from "@/lib/lang";
 import { getPersonPage } from "@/lib/queries/value-pages";
 
-export const revalidate = 3600;
+// Reads searchParams → rendered per request (the [lang] segment is otherwise ISR-cached; ADR 0002).
+export const dynamic = "force-dynamic";
 
 /** Credit job → filter group. */
 const GROUPS = [

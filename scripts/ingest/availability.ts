@@ -15,6 +15,7 @@ import { parseTitleCsv } from "../../lib/ingest/title-list";
 import { editionCodes, getEdition } from "../../lib/editions";
 import { SourceConfigError } from "../../lib/sources/http";
 import { getShow, isStreamingAvailabilityConfigured } from "../../lib/sources/streaming-availability";
+import { withNodeDb } from "../../lib/db-node";
 
 const args = process.argv.slice(2);
 const has = (name: string) => args.includes(`--${name}`);
@@ -87,9 +88,8 @@ async function main() {
   if (totals.failed) process.exitCode = 1;
 }
 
-main()
+withNodeDb(main)
   .catch((err) => {
     console.error(`[availability] ${describe(err)}`);
     process.exitCode = 1;
   })
-  .finally(() => db.$disconnect());

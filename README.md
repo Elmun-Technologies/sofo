@@ -19,6 +19,8 @@ Sofo — film yoki serialni **qaysi legal servisda**, **qaysi davlatda** va **qa
 
 > Skrinshotlardagi ma'lumotlar — **namuna** (seed). Haqiqiy ma'lumot TMDB + Streaming Availability ingest orqali keladi.
 
+**Demo:** https://site-ba9127d751304bfab1b5d5927e2fbb88.freebuff.page/tr — Freebuff Sites (production), namuna ma'lumot, `noindex`.
+
 ---
 
 ## Imkoniyatlar
@@ -47,20 +49,21 @@ Sofo — film yoki serialni **qaysi legal servisda**, **qaysi davlatda** va **qa
 
 ## Texnologiyalar
 
-Next.js 16 (App Router, ISR) · React 19 · TypeScript (strict) · Tailwind CSS v4 · PostgreSQL 16 + Prisma 6 · `pg_trgm` + `unaccent` · Vitest · GitHub Actions (ingest cron). Qaror: [`docs/adr/0001-tech-stack.md`](docs/adr/0001-tech-stack.md).
+Next.js 16 (App Router, ISR) · React 19 · TypeScript (strict) · Tailwind CSS v4 · **Cloudflare Workers (OpenNext) + D1 (SQLite) + Prisma 6** · Vitest. Hosting — Freebuff Sites. Qarorlar: [`docs/adr/0001-tech-stack.md`](docs/adr/0001-tech-stack.md), [`docs/adr/0002-cloudflare-d1.md`](docs/adr/0002-cloudflare-d1.md).
 
 ## Ishga tushirish (lokal)
 
-Talab: **Node 20+**, **pnpm 9**, **Docker**.
+Talab: **Node 20+**, **pnpm 9**. Docker kerak emas — lokal D1 (SQLite) `.wrangler/` papkasida.
 
 ```bash
 pnpm install                 # bog'liqliklar + prisma generate
-cp .env.example .env.local   # DATABASE_URL docker-compose bilan mos
-docker compose up -d         # Postgres 16
-pnpm prisma migrate dev      # sxema, pg_trgm/unaccent, qidiruv indekslari
+cp .env.example .env.local   # ixtiyoriy kalitlar (TMDB, Telegram, admin…)
+pnpm db:migrate              # lokal D1 ← migrations/*.sql
 pnpm db:seed                 # namuna: 36 nom, 8 servis, sezonlar, tarix, to'plamlar
 pnpm dev                     # http://localhost:3000/tr
 ```
+
+Workers'dagi kabi tekshirish: `sites_prepare_next` (yoki Publish) build'idan keyin `wrangler dev --config freebuff.wrangler.jsonc`.
 
 Admin: `.env.local` ga `ADMIN_USER` / `ADMIN_PASSWORD` qo'ying (developmentda ularsiz ham ochiladi, productionda ularsiz `/admin` — 404).
 
@@ -70,8 +73,9 @@ Admin: `.env.local` ga `ADMIN_USER` / `ADMIN_PASSWORD` qo'ying (developmentda ul
 |---|---|
 | `pnpm dev` / `pnpm build` / `pnpm start` | Next.js |
 | `pnpm lint` · `pnpm typecheck` · `pnpm test` | Tekshiruvlar (ESLint, tsc, Vitest) |
-| `pnpm prisma migrate dev` | Migratsiyalar (`.env.local` dan o'qiydi) |
-| `pnpm db:seed` | Namuna ma'lumot (idempotent) |
+| `pnpm db:migrate` | Lokal D1 migratsiyalari (`migrations/*.sql`) |
+| `pnpm db:seed` | Namuna ma'lumot lokal D1'ga (idempotent) |
+| `python3 scripts/d1/build-bundle.py` | Deploy uchun migratsiya + demo to'plami (`lib/generated/d1-bundle.ts`) |
 | `pnpm ingest:metadata` | TMDB → nomlar, lokalizatsiya, sezonlar, treylerlar, franshizalar |
 | `pnpm ingest:availability` | Streaming Availability → offerlar, tillar, tarix (diff → event) |
 | `pnpm search:bench` | 50 so'rovlik qidiruv testi (p95 < 150 ms) |
@@ -86,7 +90,7 @@ To'liq ro'yxat — [`.env.example`](.env.example). Sirlar **faqat** `.env.local`
 
 | O'zgaruvchi | Kerak bo'lganda |
 |---|---|
-| `DATABASE_URL` | Har doim |
+| `SETUP_TOKEN` | Deploy: `/api/setup` (migratsiya, demo) — Sites secret |
 | `NEXT_PUBLIC_SITE_URL` | Canonical, sitemap, OG |
 | `TMDB_API_KEY`, `STREAMING_AVAILABILITY_API_KEY` | Ingest |
 | `ADMIN_USER`, `ADMIN_PASSWORD` | `/admin` (production) |
@@ -119,13 +123,13 @@ Loyiha qoidalari va qarorlar jurnali: **[`CLAUDE.md`](CLAUDE.md)** — yagona bi
 | 05 Qiymat funksiyalari | ✅ |
 | 06 Retention | ✅ UI + dispetcher — email provayder tanlanmagan, Telegram token kerak |
 | 07 Admin | ✅ |
-| 08 Ishga tushirish | ⏳ deploy, domen, Search Console, GA |
+| 08 Ishga tushirish | 🟡 Freebuff Sites production (demo) ✅ · domen, Search Console, GA, haqiqiy ingest ⏳ |
 
 ### Founder qiladigan ishlar
 
 - [ ] TMDB API kaliti (tijoriy litsenziya — TASK-005) → `.env.local` + GitHub secrets
 - [ ] Streaming Availability API kaliti (TR qamrovi — TASK-006)
-- [ ] Vercel + Postgres (Supabase/Neon) akkauntlari; `DATABASE_URL` → Vercel env va GitHub secrets
+- [ ] sofo.tv ni Freebuff Sites'ga ulash; `ADMIN_USER` / `ADMIN_PASSWORD` (Sites → Secrets)
 - [ ] sofo.tv (+ sub-brend domenlar) ro'yxatdan o'tkazish
 - [ ] Telegram bot (`@BotFather`) va email provayder
 - [ ] KVKK matnlari (yurist) — `/tr/gizlilik` hozir qoralama

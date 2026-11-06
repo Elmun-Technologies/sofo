@@ -1,9 +1,7 @@
 /**
- * Site search (PRD §7.2, data-model.md §6): pg_trgm + sofo_unaccent() over localized names
- * (edition language + English), original titles and alt names; plus people, franchises and lists.
- * Every name expression goes through sofo_unaccent(...) so the GIN trigram indexes can be used.
+ * Site search (PRD §7.2): trigram ranking over folded names — localized (edition language + English),
+ * original titles and alt names; plus people, franchises and lists. Runs in TypeScript on D1 (ADR 0002).
  */
-import { Prisma } from "@prisma/client";
 import { getCardsByIds, type TitleCard } from "./catalog";
 import { db } from "./db";
 import type { Edition } from "./editions";
@@ -32,7 +30,7 @@ export function normalizeQuery(input: string): string {
 }
 
 /**
- * Matching key, mirrors the SQL side (sofo_unaccent + lower + punctuation → space):
+ * Matching key (Turkish letters → Latin, lower, punctuation → space):
  * "Vahşi ROBOT" → "vahsi robot", "Ruhların Kaçışı" → "ruhlarin kacisi", "Nyong'o" → "nyongo".
  */
 export function foldQuery(input: string): string {
@@ -83,115 +81,194 @@ export function parseAudio(v: unknown): AudioFilter | undefined {
   return v === "dub" || v === "sub" ? v : undefined;
 }
 
-// ───────────────────────── SQL ─────────────────────────
+// ───────────────────────── Trigram matching (pure) ─────────────────────────
+// D1/SQLite has no pg_trgm/unaccent (ADR 0002): names are folded with foldQuery() and ranked with
+// pg_trgm-style trigrams in TypeScript over a small per-isolate index (thousands of names).
 
-/** Name as compared in SQL: unaccented, lowercase, apostrophes dropped, punctuation → space. */
-const norm = (col: Prisma.Sql) =>
-  Prisma.sql`btrim(regexp_replace(regexp_replace(lower(sofo_unaccent(${col})), '[''’ʻ]', '', 'g'), '[[:punct:][:space:]]+', ' ', 'g'))`;
+/** pg_trgm trigrams: each word padded as "  word " and cut into 3-grams. */
+export function trigrams(text: string): Set<string> {
+  const out = new Set<string>();
+  for (const w of text.split(/[^\p{L}\p{N}]+/u)) {
+    if (!w) continue;
+    const padded = `  ${w} `;
+    for (let i = 0; i + 3 <= padded.length; i++) out.add(padded.slice(i, i + 3));
+  }
+  return out;
+}
 
-/** Index-friendly candidate predicate (ILIKE / <% / % are all GIN gin_trgm_ops operators). */
-const matches = (col: Prisma.Sql, q: string, like: string, fuzzy: boolean) =>
-  fuzzy
-    ? Prisma.sql`(sofo_unaccent(${col}) ILIKE ${like} OR ${q} <% sofo_unaccent(${col}) OR sofo_unaccent(${col}) % ${q})`
-    : Prisma.sql`(sofo_unaccent(${col}) ILIKE ${like} OR ${q} <% sofo_unaccent(${col}))`;
+function overlap(a: Set<string>, b: Set<string>): number {
+  let n = 0;
+  for (const t of a) if (b.has(t)) n++;
+  return n;
+}
+
+/** pg_trgm similarity(): shared trigrams / all trigrams. */
+export function similarity(a: string, b: string): number {
+  const A = trigrams(a);
+  const B = trigrams(b);
+  if (A.size === 0 || B.size === 0) return 0;
+  const common = overlap(A, B);
+  return common / (A.size + B.size - common);
+}
+
+/** pg_trgm word_similarity() approximation: best similarity of `q` against any run of words in `text`. */
+export function wordSimilarity(q: string, text: string): number {
+  const Q = trigrams(q);
+  if (Q.size === 0) return 0;
+  const words = text.split(" ").filter(Boolean);
+  const span = Math.max(1, q.split(" ").filter(Boolean).length + 1);
+  let best = 0;
+  for (let i = 0; i < words.length; i++) {
+    for (let j = i + 1; j <= Math.min(words.length, i + span); j++) {
+      const E = trigrams(words.slice(i, j).join(" "));
+      const common = overlap(Q, E);
+      best = Math.max(best, common / (Q.size + E.size - common));
+      if (best === 1) return 1;
+    }
+  }
+  return best;
+}
 
 /**
  * Relevance: exact (3) > prefix (2) > word prefix (1.5) > contains (1), then trigram
- * word_similarity + ½·similarity. `strong` = a literal hit or a near-certain fuzzy one.
+ * word_similarity + ½·similarity. Returns 0 when the name is not a candidate at all.
  */
-const scoreSql = (n: Prisma.Sql, q: string, esc: string) => Prisma.sql`(
-  CASE WHEN ${n} = ${q} THEN 3
-       WHEN ${n} LIKE ${esc + "%"} THEN 2
-       WHEN ${n} LIKE ${"% " + esc + "%"} THEN 1.5
-       WHEN ${n} LIKE ${"%" + esc + "%"} THEN 1
-       ELSE 0 END
-  + word_similarity(${q}, ${n}) + 0.5 * similarity(${q}, ${n}))`;
+export function scoreName(q: string, name: string, fuzzy = true): number {
+  const ws = wordSimilarity(q, name);
+  const sim = similarity(q, name);
+  const tier = name === q ? 3 : name.startsWith(q) ? 2 : name.includes(` ${q}`) ? 1.5 : name.includes(q) ? 1 : 0;
+  const candidate = tier > 0 || ws >= 0.6 || (fuzzy && sim >= 0.3);
+  return candidate ? tier + ws + 0.5 * sim : 0;
+}
 
 const STRONG = 1.8; // ≥ contains (1) + decent similarity, or word_similarity ≈ 1 on a fuzzy hit
 
+// ───────────────────────── Index (per isolate, short TTL) ─────────────────────────
+
+type TitleEntry = { id: number; popularity: number; hasEditionName: boolean; names: string[]; editionName: string | null };
+type NamedEntry<T> = T & { folded: string };
+type SearchIndex = {
+  titles: TitleEntry[];
+  people: NamedEntry<PersonHit>[];
+  franchises: NamedEntry<FranchiseHit>[];
+  collections: NamedEntry<CollectionHit>[];
+};
+
+const INDEX_TTL_MS = 5 * 60_000;
+const indexCache = new Map<string, { at: number; index: Promise<SearchIndex> }>();
+
+async function buildIndex(e: Edition): Promise<SearchIndex> {
+  const langs = [...new Set([e.contentLang, "en"])];
+  const [titles, people, franchises, lists] = await Promise.all([
+    db.title.findMany({
+      select: { id: true, popularity: true, originalTitle: true, localizations: { where: { lang: { in: langs } }, select: { lang: true, name: true, altNames: true } } },
+    }),
+    db.person.findMany({ select: { id: true, name: true, slug: true, knownFor: true, credits: { select: { titleId: true } } } }),
+    db.franchise.findMany({ select: { id: true, name: true, slug: true, _count: { select: { items: true } } } }),
+    db.list.findMany({
+      where: { lang: e.contentLang, countryCode: e.country, isPublished: true },
+      select: { id: true, name: true, slug: true, _count: { select: { items: true } } },
+    }),
+  ]);
+  return {
+    titles: titles.map((t) => {
+      const local = t.localizations.find((l) => l.lang === e.contentLang);
+      return {
+        id: t.id,
+        popularity: t.popularity ?? 0,
+        hasEditionName: !!local,
+        editionName: local?.name ?? null,
+        names: [...new Set([t.originalTitle, ...t.localizations.flatMap((l) => [l.name, ...l.altNames])].map(foldQuery).filter(Boolean))],
+      };
+    }),
+    people: people.map((p) => ({
+      id: p.id, name: p.name, slug: p.slug, knownFor: p.knownFor, credits: new Set(p.credits.map((c) => c.titleId)).size, folded: foldQuery(p.name),
+    })),
+    franchises: franchises.map((f) => ({ id: f.id, name: f.name, slug: f.slug, count: f._count.items, folded: foldQuery(f.name) })),
+    collections: lists.map((l) => ({ id: l.id, name: l.name, slug: l.slug, count: l._count.items, folded: foldQuery(l.name) })),
+  };
+}
+
+function getIndex(e: Edition): Promise<SearchIndex> {
+  const hit = indexCache.get(e.code);
+  if (hit && Date.now() - hit.at < INDEX_TTL_MS) return hit.index;
+  const index = buildIndex(e);
+  index.catch(() => indexCache.delete(e.code));
+  indexCache.set(e.code, { at: Date.now(), index });
+  return index;
+}
+
 type TitleHitRow = { title_id: number; score: number };
 
-function audioSql(e: Edition, audio: AudioFilter | undefined): Prisma.Sql {
-  if (!audio) return Prisma.empty;
-  const kind = audio === "dub" ? "audio" : "subtitle";
-  return Prisma.sql`AND EXISTS (
-    SELECT 1 FROM offer o JOIN offer_language ol ON ol.offer_id = o.id
-    WHERE o.title_id = t.id AND o.country_code = ${e.country} AND o.is_active
-      AND ol.lang = ${e.contentLang} AND ol.kind = ${kind}::"LangKind" AND ol.status = 'confirmed_yes')`;
+/** Title ids with the edition language confirmed as audio (dub) or subtitles on an active offer. */
+async function audioTitleIds(e: Edition, audio: AudioFilter): Promise<Set<number>> {
+  const rows = await db.offer.findMany({
+    where: {
+      countryCode: e.country,
+      isActive: true,
+      languages: { some: { lang: e.contentLang, kind: audio === "dub" ? "audio" : "subtitle", status: "confirmed_yes" } },
+    },
+    select: { titleId: true },
+  });
+  return new Set(rows.map((r) => r.titleId));
 }
 
 async function searchTitleIds(e: Edition, q: string, limit: number, audio?: AudioFilter): Promise<TitleHitRow[]> {
-  const esc = likeEscape(q);
-  const like = `%${esc}%`;
-  const langs = [...new Set([e.contentLang, "en"])];
-  const n = Prisma.sql`n`;
-  return db.$queryRaw<TitleHitRow[]>`
-    WITH cand AS (
-      SELECT l.title_id, l.name AS n FROM title_localization l
-       WHERE l.lang = ANY(${langs}) AND ${matches(Prisma.sql`l.name`, q, like, true)}
-      UNION ALL
-      SELECT t.id, t.original_title FROM title t
-       WHERE ${matches(Prisma.sql`t.original_title`, q, like, true)}
-      UNION ALL
-      SELECT l.title_id, a FROM title_localization l, unnest(l.alt_names) a
-       WHERE l.lang = ANY(${langs})
-         -- index prefilter (title_loc_alt_names_trgm), then per-name match
-         AND (sofo_alt_names(l.alt_names) ILIKE ${like} OR ${q} <% sofo_alt_names(l.alt_names) OR sofo_alt_names(l.alt_names) % ${q})
-         AND ${matches(Prisma.sql`a`, q, like, true)}
-    ), scored AS (
-      SELECT title_id, max(${scoreSql(norm(n), q, esc)})::float8 AS score FROM cand GROUP BY title_id
-    )
-    SELECT s.title_id, s.score FROM scored s JOIN title t ON t.id = s.title_id
-     WHERE EXISTS (SELECT 1 FROM title_localization l WHERE l.title_id = t.id AND l.lang = ${e.contentLang})
-     ${audioSql(e, audio)}
-     ORDER BY s.score + 0.05 * ln(1 + greatest(coalesce(t.popularity, 0), 0)) DESC, t.id
-     LIMIT ${limit}`;
+  const [index, allowed] = await Promise.all([getIndex(e), audio ? audioTitleIds(e, audio) : null]);
+  const hits: (TitleHitRow & { rank: number })[] = [];
+  for (const t of index.titles) {
+    if (!t.hasEditionName || (allowed && !allowed.has(t.id))) continue;
+    const score = Math.max(...t.names.map((n) => scoreName(q, n)));
+    if (score > 0) hits.push({ title_id: t.id, score, rank: score + 0.05 * Math.log(1 + Math.max(t.popularity, 0)) });
+  }
+  return hits
+    .sort((a, b) => b.rank - a.rank || a.title_id - b.title_id)
+    .slice(0, limit)
+    .map(({ title_id, score }) => ({ title_id, score }));
 }
 
-/** Last resort for "Did you mean": closest localized name even below the trigram threshold. */
+/** Last resort for "Did you mean": closest edition-language name even below the candidate threshold. */
 async function closestTitleName(e: Edition, q: string): Promise<string | null> {
-  const rows = await db.$queryRaw<{ name: string }[]>`
-    SELECT l.name FROM title_localization l JOIN title t ON t.id = l.title_id
-     WHERE l.lang = ${e.contentLang} AND word_similarity(${q}, sofo_unaccent(l.name)) > 0.3
-     ORDER BY word_similarity(${q}, sofo_unaccent(l.name)) + similarity(${q}, sofo_unaccent(l.name)) DESC, t.popularity DESC NULLS LAST
-     LIMIT 1`;
-  return rows[0]?.name ?? null;
+  const index = await getIndex(e);
+  let best: { name: string; score: number; popularity: number } | null = null;
+  for (const t of index.titles) {
+    if (!t.editionName) continue;
+    const folded = foldQuery(t.editionName);
+    const ws = wordSimilarity(q, folded);
+    if (ws <= 0.3) continue;
+    const score = ws + similarity(q, folded);
+    if (!best || score > best.score || (score === best.score && t.popularity > best.popularity)) best = { name: t.editionName, score, popularity: t.popularity };
+  }
+  return best?.name ?? null;
 }
 
 export type PersonHit = { id: number; name: string; slug: string; knownFor: string | null; credits: number };
 export type FranchiseHit = { id: number; name: string; slug: string; count: number };
 export type CollectionHit = { id: number; name: string; slug: string; count: number };
 
-async function searchPeople(q: string, limit: number): Promise<PersonHit[]> {
-  const esc = likeEscape(q);
-  return db.$queryRaw<PersonHit[]>`
-    SELECT p.id, p.name, p.slug, p.known_for AS "knownFor",
-           (SELECT count(DISTINCT c.title_id)::int FROM credit c WHERE c.person_id = p.id) AS credits
-      FROM person p
-     WHERE ${matches(Prisma.sql`p.name`, q, `%${esc}%`, false)}
-     ORDER BY ${scoreSql(norm(Prisma.sql`p.name`), q, esc)} DESC, p.id
-     LIMIT ${limit}`;
+function rankNamed<T extends { id: number }>(items: NamedEntry<T>[], q: string, limit: number): T[] {
+  return items
+    .map((it) => ({ it, score: scoreName(q, it.folded, false) }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score || a.it.id - b.it.id)
+    .slice(0, limit)
+    .map(({ it }) => {
+      const rest: Partial<NamedEntry<T>> = { ...it };
+      delete rest.folded;
+      return rest as unknown as T;
+    });
 }
 
-async function searchFranchises(q: string, limit: number): Promise<FranchiseHit[]> {
-  const esc = likeEscape(q);
-  return db.$queryRaw<FranchiseHit[]>`
-    SELECT f.id, f.name, f.slug, (SELECT count(*)::int FROM franchise_item i WHERE i.franchise_id = f.id) AS count
-      FROM franchise f
-     WHERE ${matches(Prisma.sql`f.name`, q, `%${esc}%`, false)}
-     ORDER BY ${scoreSql(norm(Prisma.sql`f.name`), q, esc)} DESC, f.id
-     LIMIT ${limit}`;
+async function searchPeople(e: Edition, q: string, limit: number): Promise<PersonHit[]> {
+  return rankNamed((await getIndex(e)).people, q, limit);
+}
+
+async function searchFranchises(e: Edition, q: string, limit: number): Promise<FranchiseHit[]> {
+  return rankNamed((await getIndex(e)).franchises, q, limit);
 }
 
 async function searchCollections(e: Edition, q: string, limit: number): Promise<CollectionHit[]> {
-  const esc = likeEscape(q);
-  return db.$queryRaw<CollectionHit[]>`
-    SELECT li.id, li.name, li.slug, (SELECT count(*)::int FROM list_item i WHERE i.list_id = li.id) AS count
-      FROM list li
-     WHERE li.lang = ${e.contentLang} AND li.country_code = ${e.country} AND li.is_published
-       AND ${matches(Prisma.sql`li.name`, q, `%${esc}%`, false)}
-     ORDER BY ${scoreSql(norm(Prisma.sql`li.name`), q, esc)} DESC, li.id
-     LIMIT ${limit}`;
+  return rankNamed((await getIndex(e)).collections, q, limit);
 }
 
 // ───────────────────────── Public API ─────────────────────────
@@ -235,8 +312,8 @@ export async function searchAll(e: Edition, input: string, opts: SearchOpts = {}
 
   const [hits, people, franchises, collections] = await Promise.all([
     searchTitleIds(e, match, limit, opts.audio),
-    groupLimit ? searchPeople(match, groupLimit) : [],
-    groupLimit ? searchFranchises(match, groupLimit) : [],
+    groupLimit ? searchPeople(e, match, groupLimit) : [],
+    groupLimit ? searchFranchises(e, match, groupLimit) : [],
     groupLimit ? searchCollections(e, match, groupLimit) : [],
   ]);
   const titles = await getCardsByIds(e, hits.map((h) => h.title_id));
@@ -258,20 +335,23 @@ export async function searchAll(e: Edition, input: string, opts: SearchOpts = {}
 
 // ───────────────────────── SearchStat (aggregate, no personal data) ─────────────────────────
 
-/** Today's date (UTC) as a DATE value for the aggregate key. */
-function today(): string {
-  return new Date().toISOString().slice(0, 10);
+/** Today (UTC midnight) — the aggregate key's day. */
+function today(): Date {
+  const d = new Date();
+  d.setUTCHours(0, 0, 0, 0);
+  return d;
 }
 
 /** +1 for (day, country, normalized query). Called once per submitted search, never per keystroke. */
 export async function recordSearch(e: Edition, input: string, zeroResults: boolean): Promise<void> {
   const q = normalizeQuery(input);
   if (!q) return;
-  await db.$executeRaw`
-    INSERT INTO search_stat (day, country_code, query, count, zero_results)
-    VALUES (${today()}::date, ${e.country}, ${q}, 1, ${zeroResults})
-    ON CONFLICT (day, country_code, query)
-    DO UPDATE SET count = search_stat.count + 1, zero_results = EXCLUDED.zero_results`;
+  const day = today();
+  await db.searchStat.upsert({
+    where: { day_countryCode_query: { day, countryCode: e.country, query: q } },
+    create: { day, countryCode: e.country, query: q, count: 1, zeroResults },
+    update: { count: { increment: 1 }, zeroResults },
+  });
 }
 
 /** Top searches with results in the last `days` days (edition country). */

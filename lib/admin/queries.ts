@@ -235,7 +235,8 @@ export async function searchTitlesForList(e: Edition, q: string, excludeIds: num
     where: {
       lang: e.contentLang,
       titleId: { notIn: excludeIds },
-      OR: [{ name: { contains: term, mode: "insensitive" } }, { title: { originalTitle: { contains: term, mode: "insensitive" } } }],
+      // SQLite LIKE is case-insensitive for ASCII only.
+      OR: [{ name: { contains: term } }, { title: { originalTitle: { contains: term } } }],
     },
     select: { titleId: true, name: true, title: { select: { year: true, type: true, posterPath: true } } },
     take: 12,

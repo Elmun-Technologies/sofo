@@ -4,7 +4,7 @@
 import type { Prisma } from "@prisma/client";
 import { cache } from "react";
 import { availableWhere, cardInclude, getCards, getServices, langWhere, toCard, type TitleCard } from "../catalog";
-import { db } from "../db";
+import { db, listHas } from "../db";
 import { getEdition, type Edition } from "../editions";
 import { slugify } from "../slug";
 import { DECADES } from "@/components/catalog/catalog-url";
@@ -89,7 +89,7 @@ function catalogWhere(e: Edition, kind: CatalogKind, f: CatalogFilters, genre: s
   return {
     ...kindWhere(kind),
     ...decadeWhere(f.decade),
-    ...(genre ? { genres: { has: genre } } : {}),
+    ...(genre ? { genres: listHas(genre) } : {}),
     offers: { some: offerWhere(e, f) },
   };
 }

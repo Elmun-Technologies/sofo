@@ -61,7 +61,7 @@ export async function titleMetadata(params: Promise<Params>, type: "movie" | "tv
       description,
       type: type === "movie" ? "video.movie" : "video.tv_show",
       url: path,
-      images: [{ url: `/og/${edition.code}/${type}/${local.slug}`, width: 1200, height: 630 }],
+      images: [{ url: `/og/${edition.code}/${type}/${local.slug}` }],
     },
   };
 }

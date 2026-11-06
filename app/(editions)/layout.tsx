@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { Analytics } from "@/components/retention/analytics";
 import { CookieBanner } from "@/components/retention/cookie-banner";
 import { manrope, nunito } from "@/lib/fonts";
-import { SITE_NAME, siteUrl } from "@/lib/site";
+import { DEMO_DATA, SITE_NAME, siteUrl } from "@/lib/site";
 import "../globals.css";
 
 export const metadata: Metadata = {
   metadataBase: siteUrl(),
   title: SITE_NAME,
+  ...(DEMO_DATA ? { robots: { index: false, follow: false } } : {}),
 };
 
 /** Root layout for the edition picker at "/". No IP auto-redirect — the user chooses. */

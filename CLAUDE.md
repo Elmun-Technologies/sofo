@@ -30,13 +30,13 @@ Legal "qayerda ko'rish" gidi: film yoki serialni qaysi legal servisda, qaysi dav
 
 ## Tech stack
 
-Qaror va sabablar: `docs/adr/0001-tech-stack.md`.
+Qaror va sabablar: `docs/adr/0001-tech-stack.md`, **`docs/adr/0002-cloudflare-d1.md` (2026-11-06, ustun)**.
 
-- Next.js (App Router, SSG/ISR), TypeScript
-- PostgreSQL + Prisma
-- Hosting: Vercel (web), Postgres — Supabase yoki Neon (bepul tarif)
-- Ingest: Node/TypeScript skriptlar, rejalashtirilgan ishga tushirish (GitHub Actions cron)
-- Qidiruv: PostgreSQL `pg_trgm` + `unaccent` (alohida qidiruv dvigatelisiz)
+- Next.js (App Router, ISR), TypeScript
+- **Cloudflare D1 (SQLite) + Prisma 6 (`@prisma/adapter-d1`)** — ADR 0002
+- Hosting: **Freebuff Sites** (Cloudflare Workers, OpenNext) — `deploy/freebuff-site.json`
+- Ingest: Node/TypeScript skriptlar (hozircha lokal D1; production ingest endpoint — keyingi task)
+- Qidiruv: TypeScript trigram reyting (`lib/search.ts`), alohida dvigatelsiz
 - Analytics: GA4 + Google Search Console
 
 ## Data sources (TASK-004 qarori)
@@ -97,7 +97,7 @@ Canvas: https://claude.ai/artifact/QjjfE8kYPKjasiVwjSFEUS → sahifa "YAGONA USL
 ## Environment variables (qiymatlarsiz)
 
 ```
-DATABASE_URL=
+SETUP_TOKEN=            # Sites secret — /api/setup (D1 has no URL)
 STREAMING_AVAILABILITY_API_KEY=
 TMDB_API_KEY=
 NEXT_PUBLIC_SITE_URL=
@@ -145,12 +145,12 @@ URL hajmi: MVP ≈ 510 indekslanadigan (TR), 12 oyda ≈ 30 000 (TR+US+FR). Mobi
 ## Common commands
 
 ```
-docker compose up -d        # local Postgres 16
-pnpm dev                    # http://localhost:3000/tr
+pnpm db:migrate             # local D1 (.wrangler/state) ← migrations/*.sql
+pnpm db:seed                # sample data into local D1, idempotent
+pnpm dev                    # http://localhost:3000/tr (next dev + local D1 via initOpenNextCloudflareForDev)
 pnpm build
 pnpm lint && pnpm typecheck && pnpm test
-pnpm prisma migrate dev     # "prisma" script loads .env.local via dotenv-cli
-pnpm db:seed                # prisma/seed.ts — sample data, idempotent
+python3 scripts/d1/build-bundle.py   # after schema/seed changes: regenerate lib/generated/d1-bundle.ts
 pnpm ingest:metadata        # 04-ingest
 pnpm ingest:availability    # 04-ingest
 ```
@@ -158,10 +158,9 @@ pnpm ingest:availability    # 04-ingest
 ## Setup decisions (01-setup, 2026-11-05)
 
 - Next.js 16 (App Router) + React 19, Tailwind v4 (tokens → `@theme` in `app/globals.css`; source `design/tokens.css`), TypeScript strict + `noUncheckedIndexedAccess`.
-- Prisma pinned to **6.x**: schema keeps `url = env(...)` in datasource (Prisma 7 removes this). Upgrade = separate task.
-- Env: only `.env.local` (no `.env`). Prisma CLI reads it through the `prisma` / `db:seed` scripts (`dotenv -e .env.local`).
-- Search: `sofo_unaccent(text)` IMMUTABLE wrapper (search_path `public, extensions` for Supabase). GIN trgm indexes on `sofo_unaccent(title_localization.name)` and `sofo_unaccent(title.original_title)`. Queries **must** use `sofo_unaccent(...)` to hit them. `alt_names` not indexed yet.
-- `release_track` unique index is `NULLS NOT DISTINCT` (manual edit in init migration; Prisma sees no drift).
+- Prisma pinned to **6.x** (D1 adapter, `driverAdapters`). Upgrade = separate task.
+- Env: only `.env.local` (no `.env`); D1 needs no URL.
+- ~~Postgres search/`NULLS NOT DISTINCT`~~ — superseded by ADR 0002 (D1). `release_track` unique with NULL `lang` is not enforced by SQLite → check in app code.
 - Editions: `lib/editions.ts` (only `tr` live; `dynamicParams=false` → other codes 404). Two root layouts: `app/(editions)` for `/` (edition picker, no IP redirect) and `app/[lang]` (header, footer, mobile tab bar < 768px). `<html lang>` = edition hreflang (`tr`), UI copy English.
 - Edition routes (TR): `/tr/ara`, `/tr/katalog` (`?tip=film|dizi`, `?tur=anime` — provisional, revisit in 02 for SEO), `/tr/cocuk`, `/tr/turkce-dublaj`, `/tr/yeni-ve-ayrilanlar`, `/tr/listem`, `/tr/hakkinda`.
 - hreflang: `lib/seo/hreflang.ts#buildAlternates` → canonical + languages + `x-default` (EN page, else `/`).
@@ -173,7 +172,7 @@ pnpm ingest:availability    # 04-ingest
 - Routes (TR): `/tr` home · `/tr/film|dizi/{slug}` (+ `/sezon-{n}`, noindex) · `/tr/filmler|diziler|anime` (filters = URL params; filtered → noindex) · `/tr/cocuk` · `/tr/turkce-dublaj`, `/tr/turkce-altyazi`, `/tr/turkce-dublaj/{list}` · `/tr/{service}` (8) · `/tr/yeni-ve-ayrilanlar` · `/tr/fragmanlar` · `/tr/yakinda-dijitalde` · `/tr/seri/{slug}` · `/tr/kisi/{slug}` (noindex) · `/tr/ara` (noindex) · `/tr/listem` (noindex, localStorage) · `/tr/hakkinda`, `/tr/gizlilik` · `/admin` (Basic auth via `proxy.ts`) · `/sitemap.xml`, `/robots.txt` · `/og|story/{edition}/{movie|tv}/{slug}`.
 - Short answer: `lib/short-answer.ts` (unit-tested); offers ranked free < ads < subscription (by ServiceCountry.priceFrom) < rent < buy.
 - Quality gate: `lib/quality-gate.ts`; sitemap/inventory `lib/seo/pages.ts` (live) + `pnpm seo:sync-pages` → Page table.
-- Search: `lib/search.ts`, `pnpm search:bench` (50 queries, p95 ≈ 15 ms on seed). Extra trgm indexes: person/franchise/list names, `sofo_alt_names()`.
+- Search: `lib/search.ts`, `pnpm search:bench` (50 queries; D1/TypeScript trigram: 50/50, p95 ≈ 67 ms local).
 - Alerts: `lib/alerts/*`, `pnpm alerts:dispatch [--dry-run|--digest]` (Telegram only with `TELEGRAM_BOT_TOKEN`; email provider not chosen → dry-run). Telegram handle not stored: bot deep link `t.me/<bot>?start=<signed ref>` sets `telegram_id`.
 - KVKK: cookie banner, GA4 loads only after consent. Onboarding modal + "my services" in localStorage (`lib/client/*`).
 - `<html lang="tr">` + English UI: every `uppercase` English label needs `lang="en"` (else "i" → "İ").
@@ -190,6 +189,15 @@ pnpm ingest:availability    # 04-ingest
 - Language rule: languages the API lists become `confirmed_yes`; every other language gets **no row** (= `unknown`), never `confirmed_no`. The API's list is not treated as proof that a dub does not exist.
 - Idempotency: the same snapshot twice → 0 creates/updates/deactivations/events; only `checkedAt` is refreshed (that is the page's "checked" proof). `lib/ingest/diff.ts` is pure and unit-tested: `planDiff` → `applyPlanToState` → `planDiff` is empty.
 - TASK-006 (season/episode languages): the v4 schema does expose per-season and per-episode `streamingOptions` with their own `audios`/`subtitles` (`series_granularity=season|episode`), so the data exists. We still ingest title-level only (MVP pages read title-level offers); season-level dub rows are a follow-up. TR coverage/price of the API stays unverified without a live key.
+
+## Deploy (Freebuff Sites, ADR 0002)
+
+- Site `deploy/freebuff-site.json` (production: https://site-ba9127d751304bfab1b5d5927e2fbb88.freebuff.page). D1 binding `DB` (production), secret `SETUP_TOKEN`.
+- Flow: `sites_prepare_next` → `wrangler dev --config freebuff.wrangler.jsonc` (workerd) test → `sites_deploy` (manifest `freebuff-sites-build/manifest.json`) → `POST /api/setup {"action":"migrate"}` (or `"demo"` while `DEMO_DATA`) with `Authorization: Bearer $SETUP_TOKEN`.
+- Schema change: edit `prisma/schema.prisma` → new `migrations/000N_*.sql` (`prisma migrate diff --from-schema-datamodel … --script`) → `pnpm db:migrate` → rebuild bundle → deploy → `/api/setup migrate`.
+- No DB at build time: `[lang]` layout `generateStaticParams() → []`; pages reading `searchParams` must be `force-dynamic` (else `DYNAMIC_SERVER_USAGE` 500).
+- Workers limits: no fs (use ASSETS — `readPublic` in `app/og/_lib/share.tsx`), no interactive transactions, CPU budget too small for resvg PNG (`SHARE_CARD_RENDER = false`). `patches/next@16.4.5.patch` drops next/og's bundled fallback font (Sites rejects data modules) — always pass `fonts`.
+- `/admin` is 404 in production until `ADMIN_USER` / `ADMIN_PASSWORD` secrets are set.
 
 ## Glossary
 

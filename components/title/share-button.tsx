@@ -17,7 +17,9 @@ export function ShareButton({ edition, type, slug, name }: { edition: string; ty
     try {
       const res = await fetch(`/story/${edition}/${type}/${slug}`);
       if (res.ok && navigator.canShare) {
-        const file = new File([await res.blob()], `${slug}-sofo-story.png`, { type: "image/png" });
+        const blob = await res.blob();
+        const ext = blob.type === "image/png" ? "png" : "jpg";
+        const file = new File([blob], `${slug}-sofo-story.${ext}`, { type: blob.type || "image/jpeg" });
         if (navigator.canShare({ files: [file] })) {
           await navigator.clipboard?.writeText(url).catch(() => {});
           await navigator.share({ files: [file], title: name, text: url });

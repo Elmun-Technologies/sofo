@@ -14,7 +14,8 @@ import { getReleaseTracker } from "@/lib/queries/value-pages";
 import { buildAlternates } from "@/lib/seo/hreflang";
 import { siteUrl } from "@/lib/site";
 
-export const revalidate = 3600;
+// Reads searchParams → rendered per request (the [lang] segment is otherwise ISR-cached; ADR 0002).
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/yakinda-dijitalde">): Promise<Metadata> {
   const { lang } = await params;

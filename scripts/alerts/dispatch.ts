@@ -13,14 +13,16 @@
  */
 import type { Prisma } from "@prisma/client";
 import { digestEmail, telegramDigest, telegramMessage, type CopyCtx, type TelegramMessage } from "../../lib/alerts/format";
+import type { AlertKindName } from "../../lib/alerts/kinds";
 import type { AlertEvent } from "../../lib/alerts/match";
 import { planDigest, planTelegram, type PlanAlert, type PlanUser } from "../../lib/alerts/plan";
 import { isDigestWindow } from "../../lib/alerts/time";
 import { verifyUserRef } from "../../lib/alerts/token";
 import { mergeKinds } from "../../lib/alerts/validate";
-import { db } from "../../lib/db";
+import { db, toList } from "../../lib/db";
 import { EDITIONS, paths, type Edition } from "../../lib/editions";
 import { fetchJson, HttpError } from "../../lib/sources/http";
+import { withNodeDb } from "../../lib/db-node";
 
 const args = new Set(process.argv.slice(2).filter((a) => !a.startsWith("--now=")));
 const nowArg = process.argv.find((a) => a.startsWith("--now="))?.slice(6);
@@ -133,8 +135,8 @@ async function linkChat(userId: string, chatId: bigint) {
   const ops: Prisma.PrismaPromise<unknown>[] = user.alerts.map((a) => {
     const prev = owner.alerts.find((x) => x.titleId === a.titleId);
     return prev
-      ? db.alert.update({ where: { id: prev.id }, data: { kinds: mergeKinds(prev.kinds, a.kinds), channel: "telegram" } })
-      : db.alert.create({ data: { userId: owner.id, titleId: a.titleId, kinds: a.kinds, channel: "telegram" } });
+      ? db.alert.update({ where: { id: prev.id }, data: { kinds: toList(mergeKinds(prev.kinds as AlertKindName[], a.kinds as AlertKindName[])), channel: "telegram" } })
+      : db.alert.create({ data: { userId: owner.id, titleId: a.titleId, kinds: toList(a.kinds), channel: "telegram" } });
   });
   if (!user.email) ops.push(db.user.delete({ where: { id: user.id } }));
   await db.$transaction(ops);
@@ -191,10 +193,12 @@ async function main() {
     select: { id: true, email: true, telegramId: true, countryCode: true },
   });
   const users: PlanUser[] = userRows.map((u) => ({ ...u, telegramId: u.telegramId?.toString() ?? null }));
-  const alerts: PlanAlert[] = await db.alert.findMany({
-    where: { userId: { in: users.map((u) => u.id) } },
-    select: { id: true, userId: true, titleId: true, kinds: true, channel: true, lastSentAt: true, createdAt: true },
-  });
+  const alerts: PlanAlert[] = (
+    await db.alert.findMany({
+      where: { userId: { in: users.map((u) => u.id) } },
+      select: { id: true, userId: true, titleId: true, kinds: true, channel: true, lastSentAt: true, createdAt: true },
+    })
+  ).map((a) => ({ ...a, kinds: a.kinds as AlertKindName[] }));
   const events = await loadEvents();
   const langForCountry = (cc: string) => editionFor(cc)?.contentLang;
   const userCountry = new Map(users.map((u) => [u.id, u.countryCode]));
@@ -238,9 +242,8 @@ async function main() {
   }
 }
 
-main()
+withNodeDb(main)
   .catch((err) => {
     console.error("[alerts] failed:", err instanceof Error ? err.message : err);
     process.exitCode = 1;
   })
-  .finally(() => db.$disconnect());

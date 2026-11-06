@@ -15,7 +15,8 @@ import { dubTerm, langName } from "@/lib/lang";
 import { addDays, getNewLeaving, weekOf, type CalendarItem } from "@/lib/queries/value-pages";
 import { buildAlternates } from "@/lib/seo/hreflang";
 
-export const revalidate = 3600;
+// Reads searchParams → rendered per request (the [lang] segment is otherwise ISR-cached; ADR 0002).
+export const dynamic = "force-dynamic";
 
 const WEEKS = { onceki: -7, sonraki: 7 } as const;
 

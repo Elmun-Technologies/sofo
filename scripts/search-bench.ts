@@ -7,6 +7,7 @@
 import { db } from "../lib/db";
 import { getEdition } from "../lib/editions";
 import { searchAll } from "../lib/search";
+import { withNodeDb } from "../lib/db-node";
 
 type Case = {
   q: string;
@@ -129,7 +130,6 @@ async function main() {
   console.log(`Latency: p50 ${pct(sorted, 50).toFixed(1)} ms · p95 ${pct(sorted, 95).toFixed(1)} ms · max ${sorted.at(-1)!.toFixed(1)} ms`);
   console.log(pct(sorted, 95) < 150 ? "✓ p95 < 150 ms" : "✗ p95 ≥ 150 ms");
   if (misses.length) console.log(`\nMisses:\n${misses.join("\n")}`);
-  await db.$disconnect();
   process.exitCode = pct(sorted, 95) < 150 && hits / CASES.length >= 0.9 ? 0 : 1;
 }
 
@@ -140,8 +140,7 @@ function foldEq(suggestion: string, expect: string, idsByName: Map<string, Set<n
   return !!a && !!b && [...a].some((id) => b.has(id));
 }
 
-main().catch(async (e) => {
+withNodeDb(main).catch(async (e) => {
   console.error(e);
-  await db.$disconnect();
   process.exit(1);
 });

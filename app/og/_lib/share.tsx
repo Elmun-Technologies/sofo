@@ -4,8 +4,7 @@
  *   Story 1080×1920  /story/{edition}/{movie|tv}/{slug}   (text kept out of the top/bottom 250 px IG safe zones)
  * Availability line uses confirmed language data only (computeShortAnswer).
  */
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { ImageResponse } from "next/og";
 import { db } from "@/lib/db";
 import { getEdition, paths, type Edition } from "@/lib/editions";
@@ -26,27 +25,56 @@ const C = {
   available: "#4ADE80",
 };
 
-// ───────────────────────── Fonts (vendored TTF, OFL) ─────────────────────────
+// ───────────────────────── Static files ─────────────────────────
+
+/**
+ * Reads a file from /public. On Workers there is no filesystem: static files come from the ASSETS
+ * binding. `next dev` falls back to the local disk.
+ */
+async function readPublic(path: string): Promise<ArrayBuffer | null> {
+  try {
+    const assets = (getCloudflareContext().env as { ASSETS?: { fetch: (req: Request) => Promise<Response> } }).ASSETS;
+    if (assets) {
+      const res = await assets.fetch(new Request(new URL(path, "https://assets.local")));
+      if (res.ok) return await res.arrayBuffer();
+    }
+  } catch {
+    // No Cloudflare context (e.g. plain Node) — try the disk below.
+  }
+  try {
+    const { readFile } = await import("node:fs/promises");
+    const buf = await readFile(`${process.cwd()}/public${path}`);
+    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
+  } catch {
+    return null;
+  }
+}
+
+// ───────────────────────── Fonts (vendored TTF, OFL — public/fonts) ─────────────────────────
 
 type FontDef = { name: string; data: ArrayBuffer; weight: 700 | 800 | 900; style: "normal" };
 
 async function loadFont(file: string, name: string, weight: FontDef["weight"]): Promise<FontDef | null> {
-  try {
-    const buf = await readFile(join(process.cwd(), "app/og/_fonts", file));
-    return { name, weight, style: "normal", data: buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer };
-  } catch {
-    return null; // fall back to the ImageResponse default font
-  }
+  const data = await readPublic(`/fonts/${file}`);
+  // null → ImageResponse default font
+  return data ? { name, weight, style: "normal", data } : null;
 }
 
-let fontsPromise: Promise<FontDef[]> | null = null;
-function fonts(): Promise<FontDef[]> {
-  fontsPromise ??= Promise.all([
-    loadFont("Manrope-700.ttf", "Manrope", 700),
-    loadFont("Manrope-800.ttf", "Manrope", 800),
-    loadFont("Nunito-900.ttf", "Nunito", 900),
-  ]).then((list) => list.filter((f): f is FontDef => f !== null));
-  return fontsPromise;
+// Cache resolved bytes only — a pending promise must not cross Worker requests.
+let fontCache: FontDef[] | null = null;
+/** Brand fonts are required: the patched next/og has no bundled fallback font (ADR 0002). */
+async function fonts(): Promise<FontDef[]> {
+  if (fontCache) return fontCache;
+  const list = (
+    await Promise.all([
+      loadFont("Manrope-700.ttf", "Manrope", 700),
+      loadFont("Manrope-800.ttf", "Manrope", 800),
+      loadFont("Nunito-900.ttf", "Nunito", 900),
+    ])
+  ).filter((f): f is FontDef => f !== null);
+  if (list.length === 0) throw new Error("share image fonts missing (public/fonts)");
+  fontCache = list;
+  return list;
 }
 
 // ───────────────────────── Images ─────────────────────────
@@ -59,9 +87,10 @@ async function imageData(path: string | null, size: string): Promise<string | nu
   try {
     if (path.startsWith("/sample/")) {
       const safe = path.replace(/\.\.+/g, "");
-      const buf = await readFile(join(process.cwd(), "public", safe));
+      const data = await readPublic(safe);
+      if (!data) return null;
       const ext = safe.split(".").pop()?.toLowerCase() ?? "jpg";
-      return `data:${MIME[ext] ?? "image/jpeg"};base64,${buf.toString("base64")}`;
+      return `data:${MIME[ext] ?? "image/jpeg"};base64,${Buffer.from(data).toString("base64")}`;
     }
     const url = imageUrl(path, size);
     if (!url) return null;
@@ -91,6 +120,29 @@ export type ShareData = {
   availability: string;
   service: { name: string; slug: string } | null;
 };
+
+/**
+ * Lightweight share image for hosts whose CPU limit can't fit a resvg PNG render (Freebuff Sites /
+ * Workers — ADR 0002): the title's own key art (backdrop for OG, poster for Story), served as-is.
+ */
+export async function keyArtResponse(editionCode: string, type: string, rawSlug: string, prefer: "backdrop" | "poster"): Promise<Response> {
+  const e = getEdition(editionCode);
+  const slug = rawSlug.replace(/\.png$/i, "");
+  if (!e || (type !== "movie" && type !== "tv") || !/^[a-z0-9-]{1,200}$/.test(slug)) return new Response("Not found", { status: 404 });
+  const loc = await db.titleLocalization.findUnique({ where: { lang_slug: { lang: e.contentLang, slug } }, select: { titleId: true } });
+  const title = loc ? await db.title.findUnique({ where: { id: loc.titleId }, select: { type: true, posterPath: true, backdropPath: true } }) : null;
+  if (!title || title.type !== type) return new Response("Not found", { status: 404 });
+  const path = prefer === "backdrop" ? (title.backdropPath ?? title.posterPath) : (title.posterPath ?? title.backdropPath);
+  if (!path) return new Response("Not found", { status: 404 });
+  if (path.startsWith("/sample/")) {
+    const data = await readPublic(path.replace(/\.\.+/g, ""));
+    if (!data) return new Response("Not found", { status: 404 });
+    const ext = path.split(".").pop()?.toLowerCase() ?? "jpg";
+    return new Response(data, { headers: { "content-type": MIME[ext] ?? "image/jpeg", ...HEADERS } });
+  }
+  const url = imageUrl(path, prefer === "backdrop" ? "w1280" : "w780");
+  return url ? Response.redirect(url, 302) : new Response("Not found", { status: 404 });
+}
 
 export async function loadShareData(editionCode: string, type: string, rawSlug: string): Promise<ShareData | null> {
   const e = getEdition(editionCode);

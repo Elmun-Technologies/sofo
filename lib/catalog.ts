@@ -38,7 +38,9 @@ export const cardInclude = (e: Edition) =>
     },
   }) satisfies Prisma.TitleInclude;
 
-export type CardRow = Prisma.TitleGetPayload<{ include: ReturnType<typeof cardInclude> }>;
+// Row type from the extended client (list columns already parsed to string[]).
+type CardRows = (e: Edition) => ReturnType<typeof db.title.findMany<{ include: ReturnType<typeof cardInclude> }>>;
+export type CardRow = Awaited<ReturnType<CardRows>>[number];
 
 export function toCard(row: CardRow): TitleCard | null {
   const loc = row.localizations[0];

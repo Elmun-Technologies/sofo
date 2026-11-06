@@ -11,10 +11,10 @@ export async function getHomeData(e: Edition) {
   const [top, dubEvents, newEvents, leavingOffer, anime, kids, lists, dubCount, subCount, trending] = await Promise.all([
     getCards(e, availableWhere(e), { take: 10, orderBy: [{ popularity: "desc" }, { id: "asc" }] }),
     db.availabilityEvent.findMany({
-      where: { countryCode: e.country, type: "audio_added", occurredAt: { gte: since }, after: { path: ["lang"], equals: e.contentLang } },
+      where: { countryCode: e.country, type: "audio_added", occurredAt: { gte: since } },
       orderBy: { occurredAt: "desc" },
-      select: { titleId: true },
-      take: 20,
+      select: { titleId: true, after: true },
+      take: 60,
     }),
     db.availabilityEvent.findMany({
       where: { countryCode: e.country, type: "added", occurredAt: { gte: since } },
@@ -43,7 +43,8 @@ export async function getHomeData(e: Edition) {
 
   const uniq = (ids: number[]) => [...new Set(ids)];
   const [justDubbed, newThisWeek] = await Promise.all([
-    getCardsByIds(e, uniq(dubEvents.map((d) => d.titleId)).slice(0, 12)),
+    // Edition-language dubs only (JSON `after.lang`; filtered here — SQLite has no JSON path filter in Prisma).
+    getCardsByIds(e, uniq(dubEvents.filter((d) => (d.after as { lang?: string } | null)?.lang === e.contentLang).map((d) => d.titleId)).slice(0, 12)),
     getCardsByIds(e, uniq(newEvents.map((d) => d.titleId)).slice(0, 12)),
   ]);
 
