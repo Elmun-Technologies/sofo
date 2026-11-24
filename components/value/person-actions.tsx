@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { CheckIcon, PlusIcon, ShareIcon } from "@/components/icons";
+import { buttonClass } from "@/components/ui/button";
 import { track } from "@/lib/client/analytics";
 import { useLocalStore } from "@/lib/client/local-store";
-import { buttonClass } from "@/components/ui/button";
 
 const KEY = "sofo:follows:v1";
 const EMPTY: string[] = [];
@@ -16,13 +17,15 @@ export function FollowPersonButton({ slug, name, className = "" }: { slug: strin
     <button
       type="button"
       aria-pressed={on}
-      className={`${buttonClass("secondary")} ${className}`}
+      className={`${buttonClass(on ? "secondary" : "primary")} ${className}`}
       onClick={() => {
         setFollows((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
         if (!on) track("person_follow", { person: name });
       }}
     >
-      {on ? "✓ Following" : "+ Follow — get new releases"}
+      {on ? <CheckIcon className="size-4 text-available" /> : <PlusIcon className="size-4" />}
+      {on ? "Following" : "Follow"}
+      {on ? null : <span className="sr-only"> — get new releases</span>}
     </button>
   );
 }
@@ -49,7 +52,8 @@ export function ShareButton({ title, className = "" }: { title: string; classNam
         }
       }}
     >
-      {copied ? "Link copied" : "Share"}
+      {copied ? <CheckIcon className="size-4 text-available" /> : <ShareIcon className="size-4" />}
+      <span aria-live="polite">{copied ? "Link copied" : "Share"}</span>
     </button>
   );
 }

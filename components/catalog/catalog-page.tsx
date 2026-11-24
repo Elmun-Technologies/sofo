@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { FilterIcon, XIcon } from "@/components/icons";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PosterGrid } from "@/components/ui/poster-grid";
@@ -9,8 +10,8 @@ import { dubTerm, langName, subTerm } from "@/lib/lang";
 import { getCatalog, parseCatalogParams, type CatalogFilters, type CatalogKind, type CatalogResult } from "@/lib/queries/catalog-pages";
 import { buildAlternates } from "@/lib/seo/hreflang";
 import { cap, catalogHref, decadeLabel, isFiltered, OFFER_LABELS } from "./catalog-url";
+import { FilterBar } from "./filter-bar";
 import { FilterSheet } from "./filter-sheet";
-import { FilterSidebar } from "./filter-sidebar";
 import { Pagination } from "./pagination";
 import { SortMenu } from "./sort-menu";
 
@@ -66,8 +67,8 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
   const h1 = heading(e, kind, f, r);
   const to = (patch: Partial<CatalogFilters>) => catalogHref(base, { ...f, ...patch, page: 1 });
 
-  const active: { label: string; href: string }[] = [];
-  if (f.audio) active.push({ label: cap(f.audio === "dub" ? dubTerm(e.contentLang) : subTerm(e.contentLang)), href: to({ audio: undefined }) });
+  const active: { label: string; href: string; local?: boolean }[] = [];
+  if (f.audio) active.push({ label: cap(f.audio === "dub" ? dubTerm(e.contentLang) : subTerm(e.contentLang)), href: to({ audio: undefined }), local: true });
   if (f.service) active.push({ label: r.services.find((s) => s.slug === f.service)?.name ?? f.service, href: to({ service: undefined }) });
   if (r.genreName) active.push({ label: r.genreName, href: to({ genre: undefined }) });
   if (f.offer) active.push({ label: OFFER_LABELS[f.offer], href: to({ offer: undefined }) });
@@ -85,63 +86,74 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
         : `${n} ${noun} on ${r.serviceCount} service${r.serviceCount === 1 ? "" : "s"} in ${e.countryName}`;
 
   return (
-    <div className="mx-auto max-w-site px-4 pt-5 pb-10 md:px-7 md:pt-8">
-      <header>
-        <h1 className="text-[28px] leading-tight font-extrabold tracking-[-0.03em] md:text-[44px]">{h1}</h1>
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-3 md:mt-4">
-          <p className="text-sm text-text-2 md:text-[15px]">{countLine}</p>
-          {active.length ? (
-            <ul className="-mx-4 flex w-[calc(100%+2rem)] gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:w-auto md:flex-wrap md:px-0">
-              {active.map((a) => (
-                <li key={a.label}>
-                  <Link
-                    href={a.href}
-                    scroll={false}
-                    aria-label={`Remove filter ${a.label}`}
-                    className="inline-flex h-8 items-center gap-1.5 rounded-chip bg-white px-3 text-[13px] font-bold whitespace-nowrap text-ink hover:text-ink"
-                  >
-                    {a.label} <span aria-hidden="true">×</span>
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link href={clearHref} scroll={false} className="inline-flex h-8 items-center px-1 text-[13px] font-bold whitespace-nowrap text-text-2">
-                  Clear all
-                </Link>
-              </li>
-            </ul>
-          ) : null}
-          <SortMenu base={base} filters={f} className="ml-auto hidden lg:block" />
-        </div>
-        <div className="mt-4 flex gap-2.5 lg:hidden">
+    <div className="pb-14 md:pb-24">
+      <header className="wrap pt-8 pb-6 md:pt-14 md:pb-9">
+        <p lang="en" className="overline text-text-3">
+          Catalogue
+        </p>
+        <h1 className="text-h1 mt-3 max-w-4xl">{h1}</h1>
+        <p className="tnum mt-3 text-[15px] text-text-2 md:mt-4 md:text-base">{countLine}</p>
+      </header>
+
+      {/* Filters stay within reach while the grid scrolls (sits under the site header). */}
+      <div className="glass sticky top-14 z-30 border-y border-hairline md:top-16">
+        <div className="wrap flex items-center gap-2 py-2.5 lg:py-3">
+          <div className="hidden min-w-0 flex-1 lg:block">
+            <FilterBar edition={e} base={base} filters={f} result={r} />
+          </div>
           <FilterSheet
             base={base}
             filters={f}
             dubLabel={dubTerm(e.contentLang)}
             subLabel={subTerm(e.contentLang)}
+            localLang={e.hreflang}
             services={r.services}
             genres={r.genres}
             activeCount={active.length}
+            className="max-md:flex-1 lg:hidden"
           />
-          <SortMenu base={base} filters={f} className="grow [&>summary]:w-full" />
+          <SortMenu base={base} filters={f} className="max-md:flex-1 md:ml-auto" />
         </div>
-      </header>
+      </div>
 
-      <div className="mt-6 lg:mt-8 lg:grid lg:grid-cols-[250px_minmax(0,1fr)] lg:gap-8">
-        <aside className="hidden lg:block">
-          <FilterSidebar edition={e} base={base} filters={f} result={r} />
-        </aside>
-        <div>
+      <div className="wrap">
+        {active.length ? (
+          <ul aria-label="Active filters" className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 pt-4 md:mx-0 md:flex-wrap md:px-0 md:pt-5">
+            {active.map((a) => (
+              <li key={a.label} className="shrink-0">
+                <Link
+                  href={a.href}
+                  scroll={false}
+                  aria-label={`Remove filter ${a.label}`}
+                  className="group/x inline-flex h-9 items-center gap-1.5 rounded-full bg-white/8 pr-2 pl-3.5 text-[13px] font-medium whitespace-nowrap text-text transition duration-200 ease-out hover:bg-white/14"
+                >
+                  <span lang={a.local ? e.hreflang : undefined}>{a.label}</span>
+                  <span aria-hidden="true" className="flex size-5 items-center justify-center rounded-full text-text-3 transition-colors group-hover/x:bg-white/15 group-hover/x:text-text">
+                    <XIcon className="size-3.5" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+            <li className="shrink-0">
+              <Link href={clearHref} scroll={false} className="inline-flex h-9 items-center px-2 text-[13px] font-medium whitespace-nowrap text-text-2 underline decoration-hairline-strong underline-offset-4 hover:decoration-current">
+                Clear all
+              </Link>
+            </li>
+          </ul>
+        ) : null}
+
+        <div className="pt-6 md:pt-8">
           {r.cards.length ? (
             <>
-              <PosterGrid cards={r.cards} edition={e} dense />
+              <PosterGrid cards={r.cards} edition={e} />
               <Pagination page={f.page} pages={r.pages} href={(p) => catalogHref(base, { ...f, page: p })} />
             </>
           ) : (
             <EmptyState
+              icon={<FilterIcon className="size-5" />}
               title="Nothing matches these filters"
               action={
-                <ButtonLink href={base} variant="secondary">
+                <ButtonLink href={base} variant="primary">
                   Reset filters
                 </ButtonLink>
               }
@@ -150,8 +162,17 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
               carries today.
             </EmptyState>
           )}
-          <p className="mt-10 max-w-4xl text-[15px] leading-relaxed text-text-2">{ABOUT[kind].replace("{country}", e.countryName)}</p>
         </div>
+
+        <section aria-labelledby="about-catalog" className="mt-14 md:mt-24">
+          <div className="rule" />
+          <div className="grid gap-3 pt-5 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-10 md:pt-7">
+            <h2 id="about-catalog" className="text-h3">
+              About this catalogue
+            </h2>
+            <p className="max-w-3xl text-[15px] leading-relaxed text-text-2">{ABOUT[kind].replace("{country}", e.countryName)}</p>
+          </div>
+        </section>
       </div>
     </div>
   );
