@@ -68,17 +68,19 @@ export function CardLang({ dub, sub, edition, className = "" }: { dub: boolean; 
 }
 
 /** Service tile + name + offer type. */
-export function ServiceLine({ option, showType = true, size = 28 }: { option: WatchOption; showType?: boolean; size?: number }) {
+export function ServiceLine({ option, showType = true, size = 28, note }: { option: WatchOption; showType?: boolean; size?: number; note?: React.ReactNode }) {
   const price = option.type === "rent" || option.type === "buy" ? formatPrice(option.price, option.currency) : null;
   return (
     <span className="inline-flex min-w-0 items-center gap-2.5">
       <ServiceLogo slug={option.serviceSlug} name={option.serviceName} logoPath={option.logoPath} size={size} />
       <span className="min-w-0">
         <span className="block truncate text-sm leading-5 font-medium">{option.serviceName}</span>
-        {showType ? (
+        {showType || note ? (
           <span className="tnum block truncate text-xs leading-4 text-text-3">
-            {offerTypeLabel(option.type)}
-            {price ? ` · ${price}` : ""}
+            {showType ? offerTypeLabel(option.type) : null}
+            {showType && price ? ` · ${price}` : ""}
+            {showType && note ? " · " : null}
+            {note}
           </span>
         ) : null}
       </span>
@@ -122,6 +124,26 @@ export function WatchButton({
           {title} on {option.serviceName}
         </span>
       ) : null}
+    </OutboundLink>
+  );
+}
+
+/** Round icon-only outbound link for tight rows (phones). Same tracking as WatchButton. */
+export function WatchIconLink({ option, title, edition, className = "" }: { option: WatchOption; title: string; edition: Edition; className?: string }) {
+  return (
+    <OutboundLink
+      href={option.url}
+      service={option.serviceSlug}
+      title={title}
+      country={edition.country}
+      lang={edition.contentLang}
+      offerType={option.type}
+      className={`inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-white/6 hover:ring-white/30 active:scale-95 ${className}`}
+    >
+      <ArrowUpRightIcon className="size-4" />
+      <span className="sr-only">
+        {offerVerb(option.type)} {title} on {option.serviceName}
+      </span>
     </OutboundLink>
   );
 }

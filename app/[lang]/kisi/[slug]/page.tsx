@@ -2,15 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { DubBadge, MutedBadge } from "@/components/ui/badges";
+import { CheckedAt } from "@/components/ui/checked-at";
 import { ChipLink, ChipRow } from "@/components/ui/chip";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PosterCard } from "@/components/ui/poster-card";
 import { PosterImage } from "@/components/ui/poster-image";
 import { ServiceLogo } from "@/components/ui/service-logo";
+import { hrefWith, one, ToggleChip } from "@/components/value/filters";
+import { SectionHead, Stat, Stats } from "@/components/value/layout";
 import { FollowPersonButton, ShareButton } from "@/components/value/person-actions";
-import { hrefWith, one } from "@/components/value/filters";
-import { InitialsAvatar, LangBadges, WatchTextLink } from "@/components/value/watch";
+import { InitialsAvatar, LangBadges, ServiceLine, WatchButton, WatchIconLink } from "@/components/value/watch";
 import { getEdition, paths } from "@/lib/editions";
 import { formatDate } from "@/lib/format";
 import { langName } from "@/lib/lang";
@@ -61,7 +62,6 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/[
   const { edition: e, data } = r;
   const sp = await searchParams;
   const base = paths.person(e, data.slug);
-  const code = e.code.toUpperCase();
   const dubLabel = `${langName(e.contentLang)} dub`;
 
   // One row per title (a person can have several jobs on the same title).
@@ -87,49 +87,59 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/[
   const streaming = titles.filter((t) => t.best).length;
   const roles = [...new Set(titles.flatMap((t) => [...t.groups]))].map((g) => ROLE[g] ?? g);
   const knownFor = [...titles].sort((a, b) => b.popularity - a.popularity).slice(0, 6);
-  const pronoun = "their";
+  const checkedAt = titles
+    .map((t) => t.best?.checkedAt)
+    .filter((d): d is Date => !!d)
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+  const roleTags = roles.length ? roles : data.knownFor ? [data.knownFor] : [];
 
   return (
     <>
-      {/* ── Header ── */}
-      <header className="mx-auto flex max-w-site flex-col items-center gap-4 px-4 pt-6 text-center md:flex-row md:items-start md:gap-7 md:px-7 md:pt-10 md:text-left">
-        <span className="md:hidden">
-          <InitialsAvatar name={data.name} size={104} />
-        </span>
-        <span className="hidden md:block">
-          <InitialsAvatar name={data.name} size={160} />
-        </span>
-        <div className="min-w-0">
-          <h1 className="text-[30px] leading-tight font-extrabold tracking-[-0.03em] md:text-[52px]">{data.name}</h1>
-          <p className="mt-1.5 text-[15px] text-text-2 md:mt-2 md:text-base md:text-text">
-            {roles.join(" · ") || data.knownFor}
-            {data.birthday ? <span className="hidden md:inline"> · Born {formatDate(data.birthday, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })}</span> : null}
-          </p>
-          <div className="mt-3 flex flex-wrap justify-center gap-1.5 md:justify-start">
-            <MutedBadge>
-              {titles.length} {titles.length === 1 ? "title" : "titles"}
-            </MutedBadge>
-            <span className="hidden md:inline-flex">
-              <MutedBadge className="text-available!">{streaming} streaming in {e.countryName}</MutedBadge>
-            </span>
-            <DubBadge>
-              {dubCount} with {dubLabel}
-            </DubBadge>
+      {/* ── Header: initials, name, roles, the numbers that matter here ── */}
+      <header className="wrap pt-7 md:pt-14">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
+          <div className="flex min-w-0 items-start gap-4 md:items-center md:gap-9">
+            <InitialsAvatar name={data.name} size={72} className="md:hidden" />
+            <InitialsAvatar name={data.name} size={168} className="max-md:hidden" />
+            <div className="min-w-0">
+              {roleTags.length ? (
+                <p className="mb-3 flex flex-wrap gap-2 md:mb-5">
+                  {roleTags.map((r) => (
+                    <span key={r} className="tag">
+                      {r}
+                    </span>
+                  ))}
+                </p>
+              ) : null}
+              <h1 className="text-display">{data.name}</h1>
+              {data.birthday ? (
+                <p className="tnum mt-3 text-sm text-text-2 md:mt-4 md:text-[15px]">Born {formatDate(data.birthday, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })}</p>
+              ) : null}
+              <div className="mt-5 flex flex-wrap gap-2 max-md:hidden md:mt-7">
+                <FollowPersonButton slug={data.slug} name={data.name} />
+                <ShareButton title={data.name} />
+              </div>
+            </div>
           </div>
-          <div className="mt-4 hidden gap-2 md:flex">
-            <FollowPersonButton slug={data.slug} name={data.name} />
-            <ShareButton title={data.name} />
-          </div>
+
+          <Stats className="max-md:justify-between">
+            <Stat value={titles.length} label={titles.length === 1 ? "title" : "titles"} />
+            <Stat value={streaming} label={`streaming in ${e.countryName}`} dot="bg-available" />
+            <Stat value={dubCount} label={`with ${dubLabel}`} dot="bg-dub" />
+          </Stats>
+        </div>
+        <div className="mt-7 grid grid-cols-2 gap-2 md:hidden">
+          <FollowPersonButton slug={data.slug} name={data.name} />
+          <ShareButton title={data.name} />
         </div>
       </header>
 
-      {/* ── Known for (desktop) ── */}
-      {knownFor.length > 0 ? (
-        <section aria-labelledby="known" className="mx-auto hidden max-w-site px-7 pt-10 md:block">
-          <h2 id="known" className="mb-4 text-2xl font-extrabold tracking-[-0.02em]">
-            Known for
-          </h2>
-          <ul className="grid grid-cols-5 gap-4 lg:grid-cols-6">
+      {/* ── Known for ── */}
+      {/* With one or two credits the filmography below already says it all. */}
+      {titles.length >= 3 ? (
+        <section aria-labelledby="known" className="wrap pt-12 md:pt-20">
+          <SectionHead id="known" title="Known for" sub="Most popular titles on sofo" />
+          <ul className="grid grid-cols-3 gap-x-3 gap-y-6 md:grid-cols-6 md:gap-x-4">
             {knownFor.map((t) => (
               <li key={t.card.id}>
                 <PosterCard card={t.card} edition={e} meta={[t.jobs[0], t.card.year].filter(Boolean).join(" · ")} />
@@ -140,10 +150,19 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/[
       ) : null}
 
       {/* ── Filmography ── */}
-      <section aria-labelledby="filmography" className="mx-auto max-w-site px-4 pt-6 pb-10 md:px-7 md:pt-12">
-        <div className="flex flex-col">
-        <div className="order-1 flex flex-col gap-3 md:order-2 md:mb-4 md:flex-row md:items-center">
-          <ChipRow>
+      <section aria-labelledby="filmography" className="wrap pt-12 pb-14 md:pt-20 md:pb-24">
+        <SectionHead
+          id="filmography"
+          title="Filmography"
+          sub={`Where to watch in ${e.countryName}`}
+          action={
+            <span className="tag tnum">
+              {filtered.length} {filtered.length === 1 ? "title" : "titles"}
+            </span>
+          }
+        />
+        <div className="mb-3 flex items-center justify-between gap-3 md:mb-5">
+          <ChipRow className="min-w-0 max-md:flex-1">
             <ChipLink href={hrefWith(base, current, { is: null })} active={!group} scroll={false}>
               All
             </ChipLink>
@@ -153,77 +172,88 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/[
               </ChipLink>
             ))}
             <span className="md:hidden">
-              <ChipLink href={hrefWith(base, current, { dublaj: dubOnly ? null : "1" })} active={dubOnly} scroll={false}>
-                {code} dub only
-              </ChipLink>
+              <ToggleChip href={hrefWith(base, current, { dublaj: dubOnly ? null : "1" })} active={dubOnly} dot="bg-dub">
+                Only {dubLabel}
+              </ToggleChip>
             </span>
           </ChipRow>
-          <div className="ml-auto hidden md:block">
-            <ChipLink href={hrefWith(base, current, { dublaj: dubOnly ? null : "1" })} active={dubOnly} scroll={false}>
-              {dubOnly ? "✓ " : ""}Only {dubLabel}
-            </ChipLink>
+          <div className="shrink-0 max-md:hidden">
+            <ToggleChip href={hrefWith(base, current, { dublaj: dubOnly ? null : "1" })} active={dubOnly} dot="bg-dub">
+              Only {dubLabel}
+            </ToggleChip>
           </div>
-        </div>
-        <div className="order-2 mt-5 mb-3 flex items-baseline gap-3 md:order-1 md:mt-0 md:mb-4">
-          <h2 id="filmography" className="text-xl font-extrabold tracking-[-0.02em] md:text-2xl">
-            <span className="md:hidden">Where to watch {pronoun} work</span>
-            <span className="hidden md:inline">Filmography — where to watch</span>
-          </h2>
-          <span className="hidden text-sm text-text-2 md:inline">
-            {filtered.length} {filtered.length === 1 ? "title" : "titles"}
-          </span>
-        </div>
         </div>
 
         {filtered.length === 0 ? (
           <EmptyState title="No titles for this filter">Try “All” or remove the dub filter.</EmptyState>
         ) : (
-          <ul className="flex flex-col gap-2.5 md:gap-3">
+          <ul className="divide-y divide-hairline border-y border-hairline">
             {filtered.map((t) => {
               const href = paths.title(e, t.card.type, t.card.slug);
               const role = t.jobs.join(", ");
+              const rentPrefix = t.best && (t.best.type === "rent" || t.best.type === "buy") ? "Rent" : undefined;
               return (
-                <li key={t.card.id} className="flex items-center gap-3.5 rounded-card bg-surface p-2.5 md:gap-5 md:px-3.5 md:py-3">
-                  <span className="hidden w-12 shrink-0 text-[15px] font-bold text-text-2 tabular-nums md:block">{t.card.year ?? "—"}</span>
-                  <Link href={href} className="w-[50px] shrink-0 md:w-10">
-                    <PosterImage path={t.card.posterPath} alt={t.card.name} sizes="50px" className="rounded-[8px]!" />
+                <li
+                  key={t.card.id}
+                  className="grid grid-cols-[48px_minmax(0,1fr)_auto] items-center gap-x-3.5 py-3.5 md:grid-cols-[64px_48px_minmax(0,1.3fr)_minmax(0,1fr)_112px] md:gap-x-6 md:py-4 xl:grid-cols-[80px_48px_minmax(0,1.3fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_112px]"
+                >
+                  <span className="tnum text-[22px] leading-none font-normal tracking-[-0.04em] text-text-2 max-md:hidden">{t.card.year ?? "—"}</span>
+                  <Link href={href} tabIndex={-1} aria-hidden="true">
+                    <PosterImage path={t.card.posterPath} alt="" sizes="48px" className="rounded-[8px]" />
                   </Link>
-                  <div className="min-w-0 grow">
-                    <Link href={href} className="block truncate text-base font-extrabold">
+                  <div className="min-w-0">
+                    <Link href={href} className="block truncate text-[15px] leading-6 font-medium md:text-[17px]">
                       {t.card.name}
                     </Link>
-                    <p className="mt-0.5 truncate text-[13px] text-text-2 md:text-sm">
-                      <span className="md:hidden">{[t.card.year, role, t.best?.serviceName].filter(Boolean).join(" · ")}</span>
-                      <span className="hidden md:inline">{role}</span>
+                    <p className="tnum truncate text-[13px] leading-5 text-text-3">
+                      <span className="md:hidden">{t.card.year ? `${t.card.year} · ` : ""}</span>
+                      {role}
                     </p>
+                    {/* Below xl the language status sits under the name */}
+                    <div className="mt-1 flex min-w-0 items-center gap-2 xl:hidden">
+                      {t.best ? (
+                        <>
+                          <ServiceLogo slug={t.best.serviceSlug} name={t.best.serviceName} logoPath={t.best.logoPath} size={18} className="md:hidden" />
+                          <LangBadges audio={t.best.audio} subtitle={t.best.subtitle} edition={e} prefix={rentPrefix} className="min-w-0" />
+                        </>
+                      ) : (
+                        <span className="text-xs leading-5 text-text-3 md:hidden">Not streaming in {e.countryName}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 max-md:hidden">
                     {t.best ? (
-                      <div className="mt-1.5 md:hidden">
-                        <LangBadges audio={t.best.audio} subtitle={t.best.subtitle} edition={e} prefix={t.best.type === "rent" || t.best.type === "buy" ? "Rent" : undefined} />
-                      </div>
+                      <ServiceLine option={t.best} size={32} note={<CheckedAt at={t.best.checkedAt} className="!text-[inherit] lowercase" />} />
+                    ) : (
+                      <span className="text-sm text-text-3">Not streaming in {e.countryName}</span>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 max-xl:hidden">{t.best ? <LangBadges audio={t.best.audio} subtitle={t.best.subtitle} edition={e} prefix={rentPrefix} /> : null}</div>
+
+                  <div className="flex justify-end">
+                    {t.best ? (
+                      <>
+                        <WatchButton option={t.best} title={t.card.name} edition={e} label="Watch" variant="secondary" size="sm" className="max-md:hidden" />
+                        <WatchIconLink option={t.best} title={t.card.name} edition={e} className="md:hidden" />
+                      </>
                     ) : null}
                   </div>
-                  {t.best ? (
-                    <div className="hidden shrink-0 items-center gap-4 md:flex">
-                      <span className="inline-flex items-center gap-2">
-                        <ServiceLogo slug={t.best.serviceSlug} name={t.best.serviceName} logoPath={t.best.logoPath} size={24} />
-                        <span className="text-sm font-bold">{t.best.serviceName}</span>
-                      </span>
-                      <LangBadges audio={t.best.audio} subtitle={t.best.subtitle} edition={e} prefix={t.best.type === "rent" || t.best.type === "buy" ? "Rent" : undefined} />
-                      <WatchTextLink option={t.best} title={t.card.name} edition={e} />
-                    </div>
-                  ) : (
-                    <span className="hidden shrink-0 text-sm text-text-3 md:block">Not streaming in {e.countryName}</span>
-                  )}
                 </li>
               );
             })}
           </ul>
         )}
 
-        <div className="mt-5 md:hidden">
-          <FollowPersonButton slug={data.slug} name={data.name} className="h-12 w-full" />
-        </div>
-        <p className="mt-6 text-xs text-text-3">We don&apos;t show photos of people — initials only. Credits from TMDB.</p>
+        <p className="mt-6 text-xs leading-5 text-text-3">
+          {checkedAt ? (
+            <>
+              Availability <CheckedAt at={checkedAt} className="lowercase" /> ·{" "}
+            </>
+          ) : null}
+          We don&apos;t show photos of people — initials only. Credits from TMDB.
+        </p>
       </section>
     </>
   );

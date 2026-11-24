@@ -17,7 +17,7 @@ export function AlertButton({ title, kinds, label }: { title: Omit<SavedTitle, "
   if (following)
     return (
       <Link href={`/${lang}/listem#alerts`} className={`${buttonClass("glass", "lg")} max-sm:w-full`}>
-        <BellIcon className="size-[18px] fill-current text-orange" />
+        <BellIcon className="size-[18px] fill-current" />
         Following · manage
       </Link>
     );

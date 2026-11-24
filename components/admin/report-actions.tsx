@@ -6,7 +6,7 @@ import { ActionForm, SubmitButton } from "./action-form";
 export function ReportActions({ id, status }: { id: number; status: ReportStatus }) {
   const unresolved = status === "open" || status === "rechecking";
   return (
-    <ActionForm action={setReportStatus} className="flex flex-wrap items-center gap-2" messageClassName="basis-full">
+    <ActionForm action={setReportStatus} className="flex flex-wrap items-center justify-end gap-1.5" messageClassName="basis-full">
       <input type="hidden" name="id" value={id} />
       {status === "open" ? (
         <SubmitButton variant="primary" name="status" value="rechecking">

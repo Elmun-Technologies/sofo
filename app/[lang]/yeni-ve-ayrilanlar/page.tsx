@@ -181,13 +181,13 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
               if (items.length === 0) return null;
               const today = d === data.today;
               return (
-                <section key={d} id={`d-${d}`} aria-labelledby={`h-${d}`} className="scroll-mt-24 border-t border-hairline-strong pt-4 pb-6 md:grid md:grid-cols-[168px_minmax(0,1fr)] md:gap-x-8 md:pt-6 md:pb-10 lg:grid-cols-[220px_minmax(0,1fr)]">
-                  <h2 id={`h-${d}`} className="mb-2 flex items-center gap-3 md:mb-0 md:flex-col md:items-start md:gap-2">
+                <section key={d} id={`d-${d}`} aria-labelledby={`h-${d}`} className="scroll-mt-24 border-t border-hairline-strong pt-4 pb-6 md:pt-6 md:pb-10 lg:grid lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-x-8 xl:grid-cols-[220px_minmax(0,1fr)]">
+                  <h2 id={`h-${d}`} className="mb-2 flex items-center gap-3 lg:mb-0 lg:flex-col lg:items-start lg:gap-2">
                     <span className="sr-only">
                       {dayLabel(d, { weekday: "long", month: "short", day: "numeric" })}
                       {today ? " · Today" : ""}
                     </span>
-                    <span aria-hidden="true" className="tnum text-[40px] leading-none font-normal tracking-[-0.05em] md:text-[64px]">
+                    <span aria-hidden="true" className="text-[40px] leading-none font-normal tracking-[-0.05em] md:text-[48px] lg:text-[64px]">
                       {Number(d.slice(8))}
                     </span>
                     <span aria-hidden="true" className="text-sm leading-5 text-text-2 md:text-[15px]">
@@ -195,7 +195,7 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
                       <span className="text-text-3">, {dayLabel(d, { month: "short" })}</span>
                     </span>
                     {today ? (
-                      <span aria-hidden="true" className="tag ml-auto border-white/40 text-text md:mt-1 md:ml-0">
+                      <span aria-hidden="true" className="tag ml-auto border-white/40 text-text lg:mt-1 lg:ml-0">
                         Today
                       </span>
                     ) : null}

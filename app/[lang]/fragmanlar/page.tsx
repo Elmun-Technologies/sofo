@@ -225,7 +225,7 @@ function Featured({ item, edition }: { item: TrailerItem; edition: Edition }) {
   const facts = [item.name.toLowerCase().includes(kind.toLowerCase()) ? null : kind, item.lang ? langName(item.lang) : null, formatDuration(item.durationSec), "plays on YouTube"].filter(Boolean).join(" · ");
   const meta = [card.type === "tv" ? "Series" : "Movie", card.year, card.genres.slice(0, 2).join(", ")].filter(Boolean).join(" · ");
   return (
-    <div className="mt-5 flex flex-col gap-6 md:mt-7 md:flex-row md:items-start md:justify-between md:gap-10">
+    <div className="mt-5 flex flex-col gap-6 md:mt-7 md:max-lg:flex-row md:max-lg:items-start md:max-lg:justify-between md:max-lg:gap-10 xl:flex-row xl:items-start xl:justify-between xl:gap-10">
       <div className="min-w-0">
         <h2 className="text-h2">
           <Link href={href} className="hover:text-text">
@@ -238,7 +238,7 @@ function Featured({ item, edition }: { item: TrailerItem; edition: Edition }) {
         <p className="tnum mt-1 text-sm text-text-3">{meta}</p>
       </div>
 
-      <div className="shrink-0 md:w-[320px]">
+      <div className="shrink-0 md:max-lg:w-[320px] lg:max-xl:max-w-[400px] xl:w-[320px]">
         {best ? (
           <>
             <div className="flex items-center justify-between gap-4">

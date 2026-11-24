@@ -65,7 +65,7 @@ export function Pill({ tone = "muted", children, className = "" }: { tone?: "dub
 export function LangMark({ status }: { status: LangState | undefined }) {
   if (status === "confirmed_yes")
     return (
-      <span className="inline-flex size-6 items-center justify-center rounded-full bg-available/14 text-available" aria-label="Yes, confirmed by the service">
+      <span className="inline-flex size-6 items-center justify-center rounded-full text-available ring-1 ring-available/40 ring-inset" aria-label="Yes, confirmed by the service">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -73,12 +73,12 @@ export function LangMark({ status }: { status: LangState | undefined }) {
     );
   if (status === "confirmed_no")
     return (
-      <span className="text-text-3" aria-label="No">
-        —
+      <span className="inline-flex size-6 items-center justify-center text-text-3" aria-label="No">
+        <span aria-hidden="true" className="h-px w-3 bg-current" />
       </span>
     );
   return (
-    <span className="inline-flex items-center rounded-chip bg-leaving/10 px-2 py-0.5 text-[11px] font-bold whitespace-nowrap text-leaving" title="Not confirmed by the service">
+    <span className="inline-flex h-6 items-center rounded-full px-2.5 text-[11px] font-medium whitespace-nowrap text-leaving ring-1 ring-leaving/40 ring-inset" title="Not confirmed by the service">
       not confirmed
     </span>
   );

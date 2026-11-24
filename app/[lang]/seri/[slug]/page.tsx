@@ -101,14 +101,14 @@ export default async function FranchisePage({ params, searchParams }: PageProps<
     <>
       {/* ── Hero ── */}
       <header className="wrap pt-4 md:pt-6">
-        <div className="relative isolate overflow-hidden rounded-panel bg-surface md:rounded-hero">
+        <div className="relative isolate overflow-hidden rounded-panel bg-ink md:rounded-hero">
           {backdrop ? (
             <Image src={backdrop} alt="" fill priority sizes="(max-width: 768px) 100vw, 1360px" className="-z-10 object-cover object-[70%_20%] md:left-auto! md:w-[70%]!" />
           ) : null}
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-ink/75 to-ink/20 md:bg-gradient-to-r md:from-ink md:via-ink/85 md:via-40% md:to-transparent" />
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-ink from-30% via-ink/85 via-60% to-ink/30 md:bg-gradient-to-r md:from-ink md:from-30% md:via-ink/85 md:via-50% md:to-ink/10" />
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-hairline ring-inset" />
 
-          <div className="flex min-h-[340px] flex-col justify-end p-5 md:min-h-[460px] md:max-w-[780px] md:p-12">
+          <div className={`flex flex-col justify-end p-5 md:max-w-[780px] md:p-12 ${backdrop ? "min-h-[340px] md:min-h-[460px]" : "min-h-[280px] md:min-h-[380px]"}`}>
             <div className="mb-auto flex flex-wrap gap-2 pb-8">
               <span className="tag border-white/25 bg-black/30 text-text backdrop-blur-md">Franchise</span>
               {counts.map((c) => (
@@ -117,8 +117,9 @@ export default async function FranchisePage({ params, searchParams }: PageProps<
                 </span>
               ))}
             </div>
-            <h1 className="text-display">
-              {data.name}: watch order <span className="text-white/55 max-md:hidden">and where to stream every part</span>
+            <h1>
+              <span className="text-display block">{data.name}: watch order</span>
+              <span className="text-h2 mt-2 block text-white/60 max-md:hidden"> and where to stream every part</span>
             </h1>
             <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-text-2 md:mt-5 md:text-[17px]">{summary}</p>
             <div className="mt-6 flex flex-wrap items-center gap-2.5 md:mt-8">

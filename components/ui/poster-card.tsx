@@ -42,7 +42,7 @@ export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }
             <>
               <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-black via-black/70 to-transparent" />
               <span className="absolute bottom-1.5 left-2.5 flex items-end gap-1.5">
-                <span aria-hidden="true" className="tnum text-[56px] leading-[0.82] font-extrabold tracking-[-0.06em] text-white md:text-[68px]">
+                <span aria-hidden="true" className="tnum text-[60px] leading-[0.82] font-medium tracking-[-0.07em] text-white md:text-[72px]">
                   {rank}
                 </span>
                 <span lang="en" aria-hidden="true" className="mb-1 text-[9px] leading-[1.1] font-bold tracking-[0.12em] text-white/60 uppercase">
@@ -61,10 +61,10 @@ export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }
           {/* Hover facts (pointer devices only) */}
           <span
             aria-hidden="true"
-            className="absolute inset-0 hidden flex-col justify-end bg-[#0c0b11]/82 p-3 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100 [@media(hover:hover)]:flex"
+            className="absolute inset-0 hidden flex-col justify-end bg-ink/85 p-3 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100 [@media(hover:hover)]:flex"
           >
             {card.score ? (
-              <span className="tnum flex items-center gap-1.5 text-[22px] leading-none font-extrabold">
+              <span className="tnum flex items-center gap-1.5 text-[24px] leading-none font-medium tracking-[-0.03em]">
                 <StarIcon className="size-4 text-leaving" />
                 {card.score.toFixed(1)}
               </span>
@@ -82,7 +82,7 @@ export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }
               {card.services.slice(0, 2).map((s) => (
                 <ServiceLogo key={s.slug} {...s} size={22} className="ring-1 ring-black/50" />
               ))}
-              {extra > 0 ? <span className="tnum flex h-[22px] items-center rounded-[5px] bg-black/75 px-1 text-[10px] font-bold text-white ring-1 ring-white/15">+{extra}</span> : null}
+              {extra > 0 ? <span className="tnum flex h-[22px] items-center rounded-full bg-black/75 px-1.5 text-[10px] font-medium text-white ring-1 ring-white/15">+{extra}</span> : null}
             </span>
           ) : null}
         </div>

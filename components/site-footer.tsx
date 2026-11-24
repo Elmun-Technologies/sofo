@@ -15,7 +15,7 @@ export function SiteFooter({ edition }: { edition: Edition }) {
   const r = edition.routes;
   return (
     <footer className="mt-16 border-t border-hairline bg-ink-2 md:mt-24">
-      <div className="wrap grid gap-10 py-12 md:grid-cols-[minmax(0,1fr)_auto] md:gap-16 md:py-16">
+      <div className="wrap grid gap-10 py-12 md:py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
         <div className="max-w-sm">
           <Link href={r.home} aria-label="sofo — home" className="inline-block hover:text-text">
             <Logo className="text-[28px]" />

@@ -150,7 +150,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
           )}
         </div>
 
-        <aside className="grid min-w-0 gap-3 sm:grid-cols-2 xl:sticky xl:top-24 xl:h-fit xl:grid-cols-1">
+        <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 xl:sticky xl:top-24 xl:h-fit xl:grid-cols-[minmax(0,1fr)]">
           <section className="panel p-5 md:p-6">
             <h2 className="text-h3">This list in numbers</h2>
             <dl className="mt-5 grid grid-cols-3 gap-3">

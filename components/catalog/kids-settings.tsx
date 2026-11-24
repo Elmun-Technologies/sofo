@@ -58,10 +58,13 @@ export function ParentSettings({ langLabel, myListHref }: { langLabel: string; m
         <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/6 text-text-2">
           <ShieldCheckIcon className="size-5" />
         </span>
-        <h2 className="text-h3 min-w-0 flex-1">Parent settings</h2>
-        <span className={`tag max-w-[40%] ${on ? "!border-white/40 !text-text" : ""}`}>
+        <h2 className="text-h3 min-w-0 flex-1 truncate">Parent settings</h2>
+        <span className={`tag shrink-0 ${on ? "!border-white/40 !text-text" : ""}`}>
           {on ? <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-available" /> : null}
-          <span className="truncate">{summary}</span>
+          <span aria-hidden="true" className="sm:hidden">
+            {on ? "On" : "Off"}
+          </span>
+          <span className="max-sm:sr-only">{summary}</span>
         </span>
         <ChevronDownIcon className="size-5 shrink-0 text-text-3 transition-transform duration-200 group-open:rotate-180" />
       </summary>

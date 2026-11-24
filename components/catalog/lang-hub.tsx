@@ -117,7 +117,7 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
               <span className="text-text-3">
                 <span className="md:hidden">{fmt(hub.total)} titles.</span>
                 <span className="hidden md:inline">
-                  {fmt(hub.total)} movies &amp; series with {c.what}.
+                  {fmt(hub.total)} movies &amp; series{k === "dub" ? ` with ${c.what}` : ""}.
                 </span>
               </span>
             </h1>
@@ -131,6 +131,7 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
             <HeroSearch
               action={e.routes.search}
               label={`Search titles with ${c.what}`}
+              audio={k}
               placeholder={`Search only titles with ${c.short}…`}
               className="mt-6 max-w-[560px] md:mt-8"
             />
@@ -194,7 +195,7 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
             </h2>
             <p className="mt-3 max-w-sm text-[15px] text-text-2">Language data comes from each service, per title and per country. There are only three things we will ever tell you.</p>
           </div>
-          <ul className="grid gap-2.5 sm:grid-cols-3 md:gap-3">
+          <ul className="grid grid-cols-[minmax(0,1fr)] gap-2.5 sm:grid-cols-3 md:gap-3">
             {states.map((s, i) => (
               <li key={s.name} className="card flex flex-col p-5 md:min-h-[220px] md:p-6">
                 <span className="flex items-center justify-between gap-3">

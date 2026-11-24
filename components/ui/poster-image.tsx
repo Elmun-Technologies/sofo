@@ -11,11 +11,11 @@ export function PosterImage({ path, alt, sizes = "(max-width: 480px) 33vw, (max-
       {src ? (
         <Image src={src} alt={alt} fill sizes={sizes} priority={priority} className={`object-cover ${imgClassName}`} />
       ) : (
-        <div className="absolute inset-0 flex items-end bg-[radial-gradient(120%_90%_at_0%_0%,#3a1d10_0%,#1c1c24_60%)] p-3">
+        <div className="absolute inset-0 flex items-end bg-gradient-to-br from-surface-3 to-surface p-3">
           <span aria-hidden="true" className="absolute top-3 left-3 font-logo text-lg leading-none font-black text-white/15">
             s
           </span>
-          <span className="line-clamp-3 text-[13px] leading-snug font-extrabold text-white/90">{alt}</span>
+          <span className="line-clamp-3 text-[13px] leading-snug font-medium text-white/85">{alt}</span>
         </div>
       )}
       {/* Inner hairline keeps dark artwork from melting into the page. */}

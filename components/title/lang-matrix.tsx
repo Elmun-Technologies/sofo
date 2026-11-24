@@ -60,7 +60,20 @@ export function LangMatrix({ offers, editionLang, originalLang }: { offers: Offe
         </tbody>
       </table>
       <p className="border-t border-hairline bg-white/[0.02] px-5 py-3 text-xs text-text-3">
-        ✓ confirmed by the service · — not offered · <span className="text-leaving">not confirmed</span> = the service hasn&apos;t told us yet. We never guess.
+        <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-available" />
+            confirmed by the service
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true" className="h-px w-2.5 bg-text-3" />
+            not offered
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-leaving" />
+            <span className="text-leaving">not confirmed</span> — the service hasn&apos;t told us yet. We never guess.
+          </span>
+        </span>
       </p>
     </div>
   );

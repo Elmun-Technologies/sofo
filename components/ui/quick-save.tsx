@@ -26,7 +26,7 @@ export function QuickSave({ title }: { title: Omit<SavedTitle, "addedAt"> }) {
       }}
       className={`absolute top-2 right-2 z-10 hidden size-8 items-center justify-center rounded-full ring-1 ring-inset backdrop-blur-md transition duration-150 ease-out active:scale-90 [@media(hover:hover)]:inline-flex ${
         saved
-          ? "bg-orange text-ink ring-transparent"
+          ? "bg-white text-ink ring-transparent"
           : "bg-black/55 text-white opacity-0 ring-white/20 group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-black/80 focus-visible:opacity-100"
       }`}
     >

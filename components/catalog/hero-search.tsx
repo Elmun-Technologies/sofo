@@ -1,9 +1,10 @@
 import { ArrowRightIcon, SearchIcon } from "@/components/icons";
 
 /** Plain GET form into the search page — works without JS. */
-export function HeroSearch({ action, placeholder, label, className = "" }: { action: string; placeholder: string; label: string; className?: string }) {
+export function HeroSearch({ action, placeholder, label, audio, className = "" }: { action: string; placeholder: string; label: string; audio?: "dub" | "sub"; className?: string }) {
   return (
     <form action={action} role="search" className={`group/hs relative ${className}`}>
+      {audio ? <input type="hidden" name="audio" value={audio} /> : null}
       <SearchIcon className="pointer-events-none absolute top-1/2 left-5 size-[18px] -translate-y-1/2 text-text-3 transition-colors group-focus-within/hs:text-text" />
       <input
         type="search"
