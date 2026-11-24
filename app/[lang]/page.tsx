@@ -89,7 +89,7 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
       {/* Search — the one thing sofo does that others don't: where + which language */}
       <section className="wrap pt-8 pb-2 md:pt-12 md:pb-4">
         <div className="mx-auto max-w-[860px] text-center">
-          <h1 className="text-h1">Every movie. Every service. Your language.</h1>
+          <h1 className="text-display">Every movie. Every service. <span className="text-text-3">Your language.</span></h1>
           <p className="mx-auto mt-3 max-w-xl text-[15px] text-text-2 md:text-base">
             Search once — we check {services.length} legal services in {edition.countryName} and tell you where it streams, and whether it has{" "}
             <span lang={edition.hreflang}>{dubTerm(edition.contentLang)}</span> or subtitles.
@@ -138,11 +138,11 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
             <li key={s.slug} className="shrink-0">
               <Link
                 href={paths.service(edition, s.slug)}
-                className="card card-hover flex w-[132px] flex-col items-center gap-2.5 px-3 py-4 text-center md:w-auto md:py-5"
+                className="card card-hover flex w-[136px] flex-col items-center gap-3 px-3 py-5 text-center md:w-auto md:py-6"
               >
-                <ServiceLogo {...s} size={48} className="shadow-poster" />
+                <ServiceLogo {...s} size={52} />
                 <span className="min-w-0">
-                  <span className="block truncate text-sm font-extrabold">{s.name}</span>
+                  <span className="block truncate text-sm font-medium">{s.name}</span>
                   <span className="tnum block text-xs text-text-3">{s.priceFrom ? `from ${formatPrice(s.priceFrom, s.currency)}/mo` : s.hasAdsTier ? "Free with ads" : "Subscription"}</span>
                 </span>
               </Link>
@@ -157,25 +157,30 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
         <ul className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
           {langCards.map((c) => (
             <li key={c.key}>
-              <Link href={c.href} className="card card-hover group relative flex h-full min-h-[148px] flex-col justify-between overflow-hidden p-4 md:min-h-[176px] md:p-5">
-                <span aria-hidden="true" className={`absolute top-0 left-0 h-full w-[3px] ${ACCENT[c.key] ?? "bg-orange"}`} />
-                <span aria-hidden="true" className="absolute top-4 right-3 flex md:top-5 md:right-4">
+              <Link href={c.href} className="card card-hover group relative flex h-full min-h-[168px] flex-col justify-between overflow-hidden p-5 md:min-h-[220px] md:p-6">
+                <span aria-hidden="true" className="absolute top-4 right-4 flex md:top-5 md:right-5">
                   {c.cards.slice(0, 3).map((card, i) => (
                     <span
                       key={card.id}
-                      className="-ml-5 block w-[46px] transition duration-300 ease-out first:ml-0 group-hover:-translate-y-1 md:w-[58px]"
-                      style={{ zIndex: 3 - i, rotate: `${(i - 1) * 7}deg`, transitionDelay: `${i * 30}ms` }}
+                      className="-ml-6 block w-[44px] transition duration-300 ease-out first:ml-0 group-hover:-translate-y-1 md:w-[56px]"
+                      style={{ zIndex: 3 - i, rotate: `${(i - 1) * 6}deg`, transitionDelay: `${i * 30}ms` }}
                     >
-                      <PosterImage path={card.posterPath} alt="" sizes="58px" className="rounded-[8px] shadow-poster" />
+                      <PosterImage path={card.posterPath} alt="" sizes="56px" className="rounded-[8px] ring-2 ring-surface" />
                     </span>
                   ))}
                 </span>
-                <span className="tnum relative text-[28px] leading-none font-extrabold tracking-[-0.04em] md:text-[36px]">{c.count}</span>
-                <span className="relative mt-auto block pt-6">
-                  <span lang={c.local ? edition.hreflang : undefined} className="block text-[15px] leading-tight font-extrabold md:text-lg">
+                <span className="numeral relative">{c.count}</span>
+                <span className="relative mt-auto block pt-8">
+                  <span className="mb-2 flex items-center gap-2">
+                    <span aria-hidden="true" className={`size-1.5 rounded-full ${ACCENT[c.key] ?? "bg-white"}`} />
+                    <span lang="en" className="overline text-text-3">
+                      titles
+                    </span>
+                  </span>
+                  <span lang={c.local ? edition.hreflang : undefined} className="block text-base leading-tight font-medium md:text-lg">
                     {c.name}
                   </span>
-                  <span className="mt-1 block text-xs text-text-2 md:text-[13px]">{c.sub}</span>
+                  <span className="mt-1 block text-xs text-text-3 md:text-[13px]">{c.sub}</span>
                 </span>
               </Link>
             </li>
@@ -196,21 +201,21 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
         <section className="wrap py-3">
           <Link
             href={paths.title(edition, data.leaving.type, data.leaving.slug)}
-            className="group relative flex items-center gap-4 overflow-hidden rounded-panel border border-leaving/25 bg-[linear-gradient(100deg,#2a2110_0%,#17140f_45%,var(--color-surface)_100%)] p-4 transition-colors hover:border-leaving/50 hover:text-text md:gap-6 md:p-5"
+            className="panel card-hover group relative flex items-center gap-4 p-4 hover:text-text md:gap-6 md:p-5"
           >
             <span className="w-14 shrink-0 md:w-[68px]">
-              <PosterImage path={data.leaving.posterPath} alt="" sizes="68px" className="rounded-[8px] shadow-poster" />
+              <PosterImage path={data.leaving.posterPath} alt="" sizes="68px" className="rounded-[8px]" />
             </span>
             <span className="min-w-0 flex-1">
               <LeavingBadge>
                 <span lang="en">LEAVING IN {daysUntil(data.leaving.leavingAt)} DAYS</span>
               </LeavingBadge>
-              <span className="mt-2 block text-base leading-snug font-extrabold md:text-[22px]">
+              <span className="mt-2 block text-lg leading-snug font-medium md:text-[26px] md:tracking-[-0.03em]">
                 {data.leaving.name} leaves {data.leaving.service}
               </span>
               <span className="mt-0.5 hidden text-sm text-text-2 sm:block">Last chance to watch it with your subscription.</span>
             </span>
-            <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-extrabold text-leaving">
+            <span className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-medium text-text transition-colors group-hover:bg-white group-hover:text-ink">
               <span className="max-sm:sr-only">Watch now</span>
               <ArrowRightIcon className="size-5 transition-transform duration-200 group-hover:translate-x-1" />
             </span>

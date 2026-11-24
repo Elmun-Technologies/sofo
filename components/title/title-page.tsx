@@ -151,7 +151,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
               {title.originalTitle !== local.name ? <p className="mt-1.5 text-sm text-text-2 md:text-[15px]">{title.originalTitle}</p> : null}
               <p className="tnum mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[13px] font-semibold text-text-2 md:text-sm">
                 {title.tmdbScore ? (
-                  <span className="inline-flex items-center gap-1 rounded-[6px] bg-white/10 px-1.5 py-0.5 font-bold text-white" title="TMDB score">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 font-medium text-white" title="TMDB score">
                     <StarIcon className="size-3 text-leaving" />
                     {Number(title.tmdbScore).toFixed(1)}
                   </span>
@@ -335,7 +335,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
             country={edition.country}
             lang={data.shortAnswer.kind === "yes_audio" ? lang : undefined}
             offerType={primary.type}
-            className={`${buttonClass("primary")} w-full`}
+            className={`${buttonClass("accent")} w-full`}
           >
             {primary.type === "rent" ? "Rent" : primary.type === "buy" ? "Buy" : "Watch"} on {primary.serviceName}
             <ArrowUpRightIcon className="size-[18px]" />

@@ -41,8 +41,8 @@ export function ShortAnswerBlock({ data, edition }: { data: TitlePageData; editi
   return (
     <section aria-labelledby="short-answer">
       <p lang="en" id="short-answer" className="overline flex items-center gap-2 text-text-3">
-        <span aria-hidden="true" className={`inline-flex size-[18px] items-center justify-center rounded-full ${yes ? "bg-available text-ink" : "bg-white/12 text-text-2"}`}>
-          {yes ? <CheckIcon className="size-3 stroke-[3.5]" /> : <span className="h-0.5 w-2 rounded-full bg-current" />}
+        <span aria-hidden="true" className={`inline-flex size-[18px] items-center justify-center rounded-full ring-1 ring-inset ${yes ? "text-available ring-available/60" : "text-text-2 ring-white/25"}`}>
+          {yes ? <CheckIcon className="size-3 stroke-[3]" /> : <span className="h-0.5 w-2 rounded-full bg-current" />}
         </span>
         The short answer
       </p>
@@ -57,7 +57,7 @@ export function ShortAnswerBlock({ data, edition }: { data: TitlePageData; editi
             country={edition.country}
             lang={a.kind === "yes_audio" ? lang : undefined}
             offerType={a.offer.type}
-            className={`${buttonClass("primary", "lg")} max-sm:w-full`}
+            className={`${buttonClass("accent", "lg")} max-sm:w-full`}
           >
             {a.offer.type === "rent" ? "Rent" : a.offer.type === "buy" ? "Buy" : "Watch"} on {a.offer.serviceName}
             <ArrowUpRightIcon className="size-[18px]" />

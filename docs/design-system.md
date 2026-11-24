@@ -1,54 +1,60 @@
 # Sofo design system — DS3 "cinema" (2026-11-24)
 
-Founder brief (2026-11-24): the DS2 build read as "cartoonish and simple". Direction: the calm, dense,
-cinema-grade look of IVI / Kinopoisk — imagery first, restrained colour, quiet type, facts on demand.
-Brand stays (Sofo Orange, Manrope, Nunito Black logo). Tokens live in `app/globals.css` (`@theme`).
+Founder brief (2026-11-24): the DS2 build read as "cartoonish and simple". Brand stays (Sofo Orange, Manrope, Nunito Black logo). Tokens live in `app/globals.css` (`@theme`).
+
+## Direction (2026-11-24, revised): "clean"
+
+The first DS3 pass (violet-tinted, tight radii, heavy weights) still felt toy-like. Founder references:
+the QClay agency deck (airy, oversized light type, pill controls, big rounded bento surfaces, generous
+whitespace, thin hairline rules, outlined pill tags) and ivi.ru (imagery-led dark catalogue). Product
+remains a dark cinema UI, but typography, radii and chrome now follow that clean, editorial language.
 
 ## Principles
 
-1. **Imagery carries the page, chrome stays quiet.** Dark violet-tinted neutrals, alpha hairlines, no decorative gradients or glow blobs. One accent.
-2. **Orange is for the action.** Primary CTA, active nav underline, focus ring, the logo. Never for headings, body text or decoration.
-3. **Semantic colour = meaning.** dub `#3B82F6` (blue dot / pill), available `#4ADE80`, leaving `#FBBF24`, free `#A78BFA`. Prefer a 6 px dot + text or a soft `Pill` over solid blocks; solid `DubBadge` only on posters.
-4. **Calm type.** Headings 700, UI labels 600, body 500. No all-caps except `overline`. Sentence case everywhere.
-5. **Facts on demand.** Resting cards are quiet; hover (pointer devices) reveals score, year, genres, languages.
-6. **Never guess.** Unknown language = "not confirmed" in `leaving` tone. Every availability shows `checked_at`.
+1. **Imagery carries the page, chrome is almost invisible.** Near-black neutral surfaces (no tint), 1 px alpha hairlines, no shadows on panels, no glow blobs, no gradients behind text.
+2. **Type does the design.** Large, light, tightly-tracked headlines (weight 500, -0.04em). Body 400/500. Small labels 500. Never bold-heavy. Numerals can be oversized and light (`numeral`).
+3. **Pills and bento.** Every control is a pill (`rounded-full`): buttons, chips, tags, inputs-with-search. Containers are big soft rounded blocks (card 20, panel 24, hero 28) separated by 8–16 px gaps, like a bento grid; use them to group content rather than lines.
+4. **Colour is meaning, used sparingly.** White is the primary action (white pill, black text). Sofo Orange is reserved for the **outbound "Watch on <service>" action**, the logo and nothing else. Semantic colours (dub `#3B82F6`, available `#4ADE80`, leaving `#FBBF24`, free `#A78BFA`) appear only as 6 px dots, thin outlines and text — never solid fills (exception: none).
+5. **Whitespace is a feature.** Section rhythm 56–96 px on desktop (`section-y` is the minimum). Fewer elements per screen, each with room.
+6. **Facts on demand.** Resting cards are quiet; hover reveals score/year/genres/languages.
+7. **Never guess.** Unknown language = "not confirmed" (leaving tone). Every availability shows `checked_at`.
+8. **Editorial details.** Thin `rule` dividers with a heading beneath, section counters ("01."), outlined `tag` labels, arrow-in-circle links, a one-line intro paragraph per section.
 
 ## Tokens
 
-- Neutrals: `ink #0C0B11` (page), `ink-2 #100F16` (footer, inputs), `surface #17161F`, `surface-2 #1F1D2A`, `surface-3 #2B2938`; borders `hairline` (white 8%) and `hairline-strong` (white 14%). Text `text` / `text-2 #AEACBC` / `text-3 #787589`.
-- Radii: poster 8 · button/input/chip 10 · card 12 · panel/hero 16. Circles only for avatars, dots, round icon buttons.
-- Weights are remapped: `font-bold` = 600, `font-extrabold` = 700 (800 is the logo only). `font-semibold` = 600, `font-medium` = 500.
-- Shadows: `shadow-card`, `shadow-pop` (menus, dialogs, floating panels), `shadow-poster`, `shadow-cta` (primary button only).
-- Motion: `ease-out` 150–300 ms. `animate-fade-up`, `animate-pop-in`, `animate-sheet-up`. Reduced motion is honoured globally.
+- Neutrals: `ink #09090B` (page), `ink-2 #0D0D0F`, `surface #131316`, `surface-2 #1B1B1F`, `surface-3 #26262B`; borders `hairline` (white 7%) and `hairline-strong` (white 14%). Text `text` / `text-2 #A3A3AD` / `text-3 #70707A`.
+- Radii: poster 12 · input 14 · card 20 · panel 24 · hero 28 · chip/button/tag `rounded-full`.
+- Weights are remapped: `font-medium` 500, `font-semibold` 500, `font-bold` 600, `font-extrabold` 600 (700+ never; 800 is the logo only). Prefer `font-medium` for UI and `font-semibold` for emphasis.
+- Type scale utilities: `text-display` (500, up to 76 px), `text-h1`, `text-h2`, `text-h3`, `overline`, `numeral`.
+- Focus ring: 2 px white. Selection: white on black.
+- Motion: `ease-out` 150–300 ms. `animate-fade-up`, `animate-pop-in`, `animate-sheet-up`. Reduced motion honoured globally.
 
 ## Utilities (`app/globals.css`)
 
 | Utility | Use |
 | --- | --- |
-| `wrap` | Page container (max 1360, gutters 16 / 28). Replaces `mx-auto max-w-site px-4 md:px-7`. |
-| `section-y` | Vertical rhythm between page sections. |
-| `text-display` `text-h1` `text-h2` `text-h3` | Fluid type scale. One `text-h1` per page. |
+| `wrap` | Page container (max 1360, gutters 16 / 28). |
+| `section-y` | Minimum vertical rhythm; prefer `py-10 md:py-20` between major sections. |
+| `text-display` `text-h1` `text-h2` `text-h3` `numeral` | Type scale. One `text-h1` (or `text-display`) per page. |
 | `overline` | Small caps label; always with `lang="en"` (html lang is `tr`: "i" → "İ"). |
-| `tnum` | Tabular numbers: prices, dates, counts, scores. |
-| `panel` / `card` / `card-hover` | Raised panel (16 r, shadow) / flat card (12 r) / interactive hover. |
-| `glass` | Sticky bars over content (header, tab bar, mobile CTA). |
-| `field` | Inputs, selects, textareas. |
+| `tnum` | Tabular numbers for prices, dates, counts. |
+| `panel` / `card` / `card-hover` | Big bento surface (24 r) / card (20 r) / interactive hover. No shadow. |
+| `rule` | 1 px divider. |
+| `tag` | Outlined pill label (non-interactive). |
+| `glass` | Sticky bars over content. |
+| `field` | Inputs, selects, textareas (14 r, white focus ring). |
 | `link` | Inline text link. |
 | `no-scrollbar` | Horizontal scrollers. |
-| `prose-sofo` | Long-form copy (about, privacy). |
+| `prose-sofo` | Long-form copy. |
 
 ## Components
 
-- `components/ui/button.tsx` — `buttonClass(variant, size)`: `primary` (black on orange, 6.4:1), `secondary`, `ghost`, `glass` (on imagery), `quiet`; sizes `lg` 48 / `md` 44 / `sm` 36. `iconButtonClass`.
-- `components/ui/chip.tsx` — `ChipLink`, `Chip`, `ChipRow` (swipe on phones, wrap from md). Active chip = white.
-- `components/ui/badges.tsx` — poster badges (`DubBadge`, `SubBadge`, `NewBadge`, `LeavingBadge`, `FreeBadge`, `MutedBadge`), soft `Pill tone=…`, `LangMark` (✓ / — / not confirmed).
-- `components/ui/section-header.tsx` — the title is the link (chevron) when `href` is set; optional `sub`, `action`.
-- `components/ui/poster-card.tsx`, `poster-row.tsx` (`Rail` with paging arrows), `poster-grid.tsx`, `poster-image.tsx`, `quick-save.tsx`.
-- `components/ui/page-hero.tsx` — hub/listing header: `eyebrow`, `title`, `intro`, `aside`, children.
-- `components/ui/empty-state.tsx`, `breadcrumbs.tsx`, `checked-at.tsx`, `service-logo.tsx`.
-- `components/icons.tsx` — one stroke icon set (24 grid, 2 px). No emoji, no text glyph arrows (`→ ↗ ▸ ✓`) in UI: use icons.
-- `components/home/promo-slider.tsx` — centred promo carousel with dimmed neighbours.
-- `components/retention/dialog.tsx` — modal on md+, bottom sheet on phones.
+- `components/ui/button.tsx` — `buttonClass(variant, size)`: `primary` (white pill), `accent` (orange — outbound only), `secondary` (white/10), `ghost` (outline), `glass` (on imagery), `quiet`; sizes `lg` 52 / `md` 44 / `sm` 36. `iconButtonClass(size, tone)` is a round icon button.
+- `components/ui/chip.tsx` — outlined pill chips; active = white fill.
+- `components/ui/badges.tsx` — poster badges are monochrome glass pills with one semantic dot (`DubBadge`, `SubBadge`, `NewBadge` = white, `LeavingBadge`, `FreeBadge`, `MutedBadge`); `Pill tone=…` is an outlined pill; `LangMark`.
+- `components/ui/section-header.tsx`, `poster-card.tsx`, `poster-row.tsx` (`Rail`), `poster-grid.tsx`, `poster-image.tsx`, `quick-save.tsx`, `page-hero.tsx`, `empty-state.tsx`, `breadcrumbs.tsx`, `checked-at.tsx`, `service-logo.tsx`.
+- `components/icons.tsx` — one stroke icon set. No emoji, no glyph arrows in UI.
+- `components/home/promo-slider.tsx`, `components/retention/dialog.tsx` (modal / bottom sheet).
 
 ## Layout
 

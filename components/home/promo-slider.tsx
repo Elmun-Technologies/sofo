@@ -155,7 +155,7 @@ function Slide({ slide: s, index, total, current, localLang, onSelect }: { slide
       <div className="absolute inset-0 flex flex-col justify-end p-5 md:max-w-[620px] md:justify-center md:p-10 lg:p-14">
         <p className="tnum flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-white/70">
           {s.score ? (
-            <span className="inline-flex items-center gap-1 rounded-[6px] bg-white/12 px-1.5 py-0.5 font-bold text-white backdrop-blur">
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/14 px-2 py-0.5 font-medium text-white backdrop-blur">
               <StarIcon className="size-3 text-leaving" />
               {s.score.toFixed(1)}
             </span>
@@ -167,7 +167,7 @@ function Slide({ slide: s, index, total, current, localLang, onSelect }: { slide
             </span>
           ))}
         </p>
-        <h2 className="mt-2.5 line-clamp-2 text-[28px] leading-[1.08] font-extrabold tracking-[-0.03em] md:text-[44px] lg:text-[52px]">
+        <h2 className="mt-2.5 line-clamp-2 text-[32px] leading-[1.04] font-medium tracking-[-0.045em] md:text-[52px] lg:text-[64px]">
           <Link href={s.href} className="hover:text-white">
             {s.name}
           </Link>

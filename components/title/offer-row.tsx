@@ -42,7 +42,7 @@ export function OfferRow({ offer, lang, titleName, country, primary }: { offer: 
         country={country}
         lang={audio === "confirmed_yes" ? lang : undefined}
         offerType={offer.type}
-        className={buttonClass(primary ? "primary" : "secondary", "sm")}
+        className={buttonClass(primary ? "accent" : "secondary", "sm")}
       >
         {offerVerb(offer.type)}
         <ArrowUpRightIcon className="size-3.5" />

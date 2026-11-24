@@ -211,3 +211,42 @@ export const LayersIcon = (p: IconProps) => (
     <path d="m3 13 9 5 9-5" />
   </svg>
 );
+
+export const PersonIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M4.5 20.500c.8-3.600 3.800-5.500 7.500-5.500s6.700 1.900 7.500 5.500" />
+  </svg>
+);
+
+export const ListIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M9 6h11M9 12h11M9 18h11M4 6h.5M4 12h.5M4 18h.5" />
+  </svg>
+);
+
+export const TrendingIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="m3 17 6-6 4 4 8-8M15 7h6v6" />
+  </svg>
+);
+
+/** Return key hint (keyboard "Enter"). */
+export const EnterIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M19 5v7a3 3 0 0 1-3 3H5m0 0 4-4m-4 4 4 4" />
+  </svg>
+);
+
+export const ArrowLeftIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M19 12H5m6 6-6-6 6-6" />
+  </svg>
+);
+
+export const EyeIcon = (p: IconProps) => (
+  <svg {...base} {...p}>
+    <path d="M2.5 12S6 5.500 12 5.500 21.500 12 21.500 12 18 18.500 12 18.500 2.500 12 2.500 12Z" />
+    <circle cx="12" cy="12" r="2.750" />
+  </svg>
+);
