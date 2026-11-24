@@ -1,5 +1,5 @@
+import { ArrowUpRightIcon, StarIcon } from "@/components/icons";
 import { OutboundLink } from "@/components/outbound-link";
-import { DubBadge, MutedBadge, SubBadge } from "@/components/ui/badges";
 import { buttonClass } from "@/components/ui/button";
 import { ServiceLogo } from "@/components/ui/service-logo";
 import type { Edition } from "@/lib/editions";
@@ -9,50 +9,62 @@ import type { WatchOption } from "@/lib/queries/value-pages";
 import { offerTypeLabel, offerVerb } from "@/lib/services";
 import type { LangState } from "@/lib/short-answer";
 
-const Check = () => (
-  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true" className="ml-0.5">
-    <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
 /**
- * Edition-language audio / subtitle badges for one offer. Only confirmed_yes renders a positive badge;
- * unknown audio says so — never a guess (business rule 3).
+ * Edition-language audio / subtitle status for one offer, as quiet dot + text marks.
+ * Only confirmed_yes reads as positive; unknown audio says so — never a guess (business rule 3).
  */
-export function LangBadges({ audio, subtitle, edition, size = "short", prefix }: { audio: LangState; subtitle: LangState; edition: Edition; size?: "short" | "long"; prefix?: string }) {
+export function LangBadges({
+  audio,
+  subtitle,
+  edition,
+  size = "short",
+  prefix,
+  className = "",
+}: {
+  audio: LangState;
+  subtitle: LangState;
+  edition: Edition;
+  size?: "short" | "long";
+  prefix?: string;
+  className?: string;
+}) {
   const code = edition.code.toUpperCase();
-  const dub = size === "short" ? `${code} dub` : dubTerm(edition.contentLang);
-  const sub = size === "short" ? `${code} sub` : subTerm(edition.contentLang);
+  const long = size === "long";
+  const dub = long ? dubTerm(edition.contentLang) : `${code} dub`;
+  const sub = long ? subTerm(edition.contentLang) : `${code} sub`;
   return (
-    <span className="inline-flex flex-wrap items-center gap-1.5">
+    <span className={`inline-flex flex-wrap items-center gap-x-3 gap-y-1 text-xs leading-5 font-medium ${className}`}>
       {audio === "confirmed_yes" ? (
-        <DubBadge>
-          {prefix ? `${prefix} · ` : ""}
-          {dub}
-          <Check />
-        </DubBadge>
+        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-text">
+          <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-dub" />
+          <span lang={long ? edition.hreflang : undefined}>
+            {prefix ? `${prefix} · ` : ""}
+            {dub}
+          </span>
+          <span className="sr-only"> confirmed</span>
+        </span>
       ) : null}
       {subtitle === "confirmed_yes" ? (
-        size === "short" ? (
-          <MutedBadge>
-            {sub}
-            <Check />
-          </MutedBadge>
-        ) : (
-          <SubBadge>
-            {sub}
-            <Check />
-          </SubBadge>
-        )
+        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-text-2">
+          <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-white/70" />
+          <span lang={long ? edition.hreflang : undefined}>{sub}</span>
+          <span className="sr-only"> confirmed</span>
+        </span>
       ) : null}
       {audio === "unknown" ? (
-        <span className="text-[11px] font-semibold text-leaving" title="Not confirmed by the service">
+        <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-leaving" title="Not confirmed by the service">
+          <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full ring-1 ring-leaving ring-inset" />
           {code} audio not confirmed
         </span>
       ) : null}
-      {audio === "confirmed_no" && subtitle !== "confirmed_yes" ? <MutedBadge>No {code} audio</MutedBadge> : null}
+      {audio === "confirmed_no" && subtitle !== "confirmed_yes" ? <span className="whitespace-nowrap text-text-3">No {code} audio</span> : null}
     </span>
   );
+}
+
+/** Title-level language mark from a card (dub / subtitles confirmed on any active offer, otherwise "not confirmed"). */
+export function CardLang({ dub, sub, edition, className = "" }: { dub: boolean; sub: boolean; edition: Edition; className?: string }) {
+  return <LangBadges audio={dub ? "confirmed_yes" : "unknown"} subtitle={sub ? "confirmed_yes" : "unknown"} edition={edition} size="long" className={className} />;
 }
 
 /** Service tile + name + offer type. */
@@ -61,24 +73,26 @@ export function ServiceLine({ option, showType = true, size = 28 }: { option: Wa
   return (
     <span className="inline-flex min-w-0 items-center gap-2.5">
       <ServiceLogo slug={option.serviceSlug} name={option.serviceName} logoPath={option.logoPath} size={size} />
-      <span className="truncate text-sm font-extrabold">{option.serviceName}</span>
-      {showType ? (
-        <span className="hidden truncate text-xs text-text-2 sm:inline">
-          {offerTypeLabel(option.type)}
-          {price ? ` · ${price}` : ""}
-        </span>
-      ) : null}
+      <span className="min-w-0">
+        <span className="block truncate text-sm leading-5 font-medium">{option.serviceName}</span>
+        {showType ? (
+          <span className="tnum block truncate text-xs leading-4 text-text-3">
+            {offerTypeLabel(option.type)}
+            {price ? ` · ${price}` : ""}
+          </span>
+        ) : null}
+      </span>
     </span>
   );
 }
 
-/** Outbound CTA to the legal service (tracked). */
+/** Outbound CTA to the legal service (tracked). Orange is reserved for exactly this action. */
 export function WatchButton({
   option,
   title,
   edition,
   label,
-  variant = "primary",
+  variant = "accent",
   size = "md",
   className = "",
 }: {
@@ -86,8 +100,8 @@ export function WatchButton({
   title: string;
   edition: Edition;
   label?: React.ReactNode;
-  variant?: "primary" | "secondary" | "ghost";
-  size?: "md" | "sm";
+  variant?: "accent" | "secondary" | "ghost";
+  size?: "lg" | "md" | "sm";
   className?: string;
 }) {
   return (
@@ -100,12 +114,19 @@ export function WatchButton({
       offerType={option.type}
       className={`${buttonClass(variant, size)} ${className}`}
     >
-      {label ?? `${offerVerb(option.type)} on ${option.serviceName}`} <span aria-hidden="true">↗</span>
+      {label ?? `${offerVerb(option.type)} on ${option.serviceName}`}
+      <ArrowUpRightIcon className={size === "sm" ? "size-3.5" : "size-[18px]"} />
+      {label ? (
+        <span className="sr-only">
+          {" "}
+          {title} on {option.serviceName}
+        </span>
+      ) : null}
     </OutboundLink>
   );
 }
 
-/** Text-only outbound link ("Watch ↗"). */
+/** Text-only outbound link ("Watch" + arrow). */
 export function WatchTextLink({ option, title, edition, label = "Watch", className = "" }: { option: WatchOption; title: string; edition: Edition; label?: string; className?: string }) {
   return (
     <OutboundLink
@@ -115,9 +136,10 @@ export function WatchTextLink({ option, title, edition, label = "Watch", classNa
       country={edition.country}
       lang={edition.contentLang}
       offerType={option.type}
-      className={`text-sm font-extrabold whitespace-nowrap text-orange ${className}`}
+      className={`inline-flex items-center gap-1 text-[13px] font-medium whitespace-nowrap text-text-2 underline decoration-hairline-strong underline-offset-4 hover:text-text hover:decoration-current ${className}`}
     >
-      {label} <span aria-hidden="true">↗</span>
+      {label}
+      <ArrowUpRightIcon className="size-3.5" />
     </OutboundLink>
   );
 }
@@ -127,27 +149,27 @@ export function InitialsAvatar({ name, size = 160, className = "" }: { name: str
   return (
     <span
       aria-hidden="true"
-      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-orange-deep font-extrabold tracking-[-0.03em] text-orange ${className}`}
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.32) }}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-surface font-normal tracking-[-0.05em] text-text ring-1 ring-hairline-strong ring-inset ${className}`}
+      style={{ width: size, height: size, fontSize: Math.round(size * 0.34) }}
     >
       {initials(name)}
     </span>
   );
 }
 
-/** TMDB score as a 10-step bar. */
+/** TMDB score: star + number (tabular). */
 export function RatingBar({ score, className = "" }: { score: number | null; className?: string }) {
-  if (score == null) return <span className="text-xs text-text-3">No rating</span>;
-  const pct = Math.max(0, Math.min(100, score * 10));
+  if (score == null)
+    return (
+      <span className={`text-xs text-text-3 ${className}`} aria-label="No rating">
+        —
+      </span>
+    );
   return (
-    <span className={`inline-flex items-center gap-2 ${className}`} title={`TMDB ${score.toFixed(1)} / 10`}>
-      <span className="relative h-1.5 w-16 overflow-hidden rounded-chip bg-line md:w-20" aria-hidden="true">
-        <span className={`absolute inset-y-0 left-0 rounded-chip ${score >= 8 ? "bg-available" : score >= 7 ? "bg-orange" : "bg-leaving"}`} style={{ width: `${pct}%` }} />
-      </span>
-      <span className="text-xs font-bold text-text-2 tabular-nums">
-        <span className="sr-only">TMDB </span>
-        {score.toFixed(1)}
-      </span>
+    <span className={`tnum inline-flex items-center gap-1 text-[13px] font-medium text-text-2 ${className}`} title={`TMDB ${score.toFixed(1)} / 10`}>
+      <StarIcon className="size-3 text-text-3" />
+      <span className="sr-only">TMDB </span>
+      {score.toFixed(1)}
     </span>
   );
 }
