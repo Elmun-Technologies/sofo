@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { DubBadge, MutedBadge } from "@/components/ui/badges";
+import { ArrowRightIcon, InfoIcon } from "@/components/icons";
 import { ButtonLink } from "@/components/ui/button";
+import { CheckedAt } from "@/components/ui/checked-at";
 import { ChipLink, ChipRow } from "@/components/ui/chip";
 import { EmptyState } from "@/components/ui/empty-state";
 import { JsonLd } from "@/components/ui/json-ld";
-import { SectionHeader } from "@/components/ui/section-header";
 import { ServiceLogo } from "@/components/ui/service-logo";
 import { hrefWith, one } from "@/components/value/filters";
-import { TrailerPlayer } from "@/components/value/trailer-player";
-import { WatchTextLink, formatDuration } from "@/components/value/watch";
+import { SectionHead, ValueHero } from "@/components/value/layout";
+import { TrailerPlayer, TrailerThumb } from "@/components/value/trailer-player";
+import { LangBadges, ServiceLine, WatchButton, WatchTextLink, formatDuration } from "@/components/value/watch";
 import { getEdition, paths, type Edition } from "@/lib/editions";
 import { dubTerm, langName, localLangName } from "@/lib/lang";
 import { getTrailers, type TrailerItem } from "@/lib/queries/value-pages";
@@ -53,27 +54,47 @@ export default async function TrailersPage({ params, searchParams }: PageProps<"
   const shorts = items.filter((v) => v.isVertical);
   const featured = horizontal.find((v) => v.key === one(sp.v)) ?? horizontal[0];
   const rest = horizontal.filter((v) => v !== featured);
-  const upNext = rest.slice(0, 4);
+  const upNext = rest.slice(0, 5);
   const site = siteUrl();
+  const checkedAt = items
+    .map((v) => v.title.best?.checkedAt)
+    .filter((d): d is Date => !!d)
+    .sort((a, b) => b.getTime() - a.getTime())[0];
 
   return (
     <>
-      <header className="mx-auto max-w-site px-4 pt-5 md:px-7 md:pt-8">
-        <h1 className="text-[30px] leading-tight font-extrabold tracking-[-0.03em] md:text-[48px]">Trailers</h1>
-        <ChipRow className="mt-4 md:mt-5">
+      <ValueHero
+        tags={
+          <>
+            <span className="tag">Official videos only</span>
+            <span className="tag tnum">
+              {items.length} {items.length === 1 ? "video" : "videos"}
+            </span>
+          </>
+        }
+        title="Trailers"
+        intro={
+          <>
+            Straight from studio and service channels — each with the legal place to watch the full title in {e.countryName} and its{" "}
+            <span lang={e.hreflang}>{dubTerm(e.contentLang)}</span> status.
+          </>
+        }
+      >
+        <ChipRow>
           <ChipLink href={hrefWith(base, {}, {})} active={!filterLang} scroll={false}>
             All languages
           </ChipLink>
           {langs.map((l) => (
             <ChipLink key={l} href={hrefWith(base, current, { dil: l, v: null })} active={filterLang === l} scroll={false}>
+              {l === e.contentLang ? <span aria-hidden="true" className="size-1.5 rounded-full bg-dub" /> : null}
               {l === e.contentLang ? `${localLangName(l)} trailers` : `${langName(l)}`}
             </ChipLink>
           ))}
         </ChipRow>
-      </header>
+      </ValueHero>
 
       {!featured ? (
-        <div className="mx-auto max-w-site px-4 py-10 md:px-7">
+        <div className="wrap py-10 md:py-16">
           <EmptyState title="No official trailers in this language yet" action={<ButtonLink href={base} variant="secondary">Show all trailers</ButtonLink>}>
             We only embed official videos from studio and service channels.
           </EmptyState>
@@ -81,52 +102,37 @@ export default async function TrailersPage({ params, searchParams }: PageProps<"
       ) : (
         <>
           {/* ── Featured + up next ── */}
-          <section aria-label="Featured trailer" className="mx-auto grid max-w-site grid-cols-1 gap-5 px-4 pt-5 md:px-7 md:pt-8 lg:grid-cols-[minmax(0,1fr)_316px] lg:gap-4">
+          <section aria-label="Featured trailer" className="wrap grid grid-cols-1 gap-x-8 gap-y-6 pt-7 md:pt-10 lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_340px] xl:gap-x-10">
             <div className="min-w-0">
               <TrailerPlayer
                 key={featured.key}
                 videoKey={featured.key}
                 title={`${featured.title.card.name} — ${featured.name}`}
+                fallbackLabel={featured.title.card.name}
+                lang={featured.lang}
+                highlightLang={e.contentLang}
+                duration={formatDuration(featured.durationSec)}
                 playPosition="bottom-left"
-                aspect="aspect-video lg:aspect-[16/9]"
-                className="rounded-[18px] md:rounded-hero"
+                playSize="lg"
+                className="rounded-panel md:rounded-hero"
                 priority
-                overlay={
-                  <div className="absolute inset-x-0 bottom-0 py-4 pr-4 pl-[88px] md:pr-6 md:pb-6 md:pl-[104px]">
-                    <div className="flex flex-wrap gap-1.5">
-                      {featured.title.card.dub ? <DubBadge>{dubTerm(e.contentLang).toLocaleUpperCase("tr")}</DubBadge> : null}
-                      <span className="hidden md:inline-flex"><MutedBadge className="bg-black/70!">OFFICIAL · {(featured.lang ?? "").toUpperCase() || "YOUTUBE"}</MutedBadge></span>
-                    </div>
-                    <p className="mt-2 line-clamp-2 text-lg leading-tight font-extrabold md:text-[28px]">
-                      {featured.title.card.name} — {featured.name}
-                    </p>
-                  </div>
-                }
               />
-              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-                <p className="text-sm text-text-2">
-                  {[formatDuration(featured.durationSec), "Plays on YouTube", featured.title.best ? `full ${featured.title.card.type === "tv" ? "series" : "movie"} on ${featured.title.best.serviceName}` : "not streaming in " + e.countryName].filter(Boolean).join(" · ")}
-                </p>
-                <ButtonLink href={paths.title(e, featured.title.card.type, featured.title.card.slug)} size="sm" className="ml-auto">
-                  Where to watch →
-                </ButtonLink>
-              </div>
+              <Featured item={featured} edition={e} />
             </div>
 
             {upNext.length > 0 ? (
-              <aside className="hidden lg:block">
-                <h2 className="mb-2.5 text-[15px] font-extrabold">Up next</h2>
-                <ul className="flex flex-col gap-2.5">
-                  {upNext.map((v) => (
-                    <li key={v.key}>
-                      <Link href={hrefWith(base, current, { v: v.key })} scroll={false} className="flex items-center gap-3 rounded-[14px] bg-surface p-2 hover:bg-surface-2 hover:text-text">
-                        <span className="relative aspect-video w-[112px] shrink-0 overflow-hidden rounded-[10px] bg-surface-2">
-                          {/* eslint-disable-next-line @next/next/no-img-element -- YouTube thumbnail */}
-                          <img src={`https://i.ytimg.com/vi/${v.key}/mqdefault.jpg`} alt="" loading="lazy" className="absolute inset-0 size-full object-cover" />
-                        </span>
+              <aside className="max-lg:hidden">
+                <h2 lang="en" className="overline pb-3 text-text-3">
+                  Up next
+                </h2>
+                <ul className="divide-y divide-hairline border-t border-hairline-strong">
+                  {upNext.map((v, i) => (
+                    <li key={v.key} className={i > 3 ? "max-xl:hidden" : undefined}>
+                      <Link href={hrefWith(base, current, { v: v.key })} scroll={false} className="group flex items-center gap-3.5 py-3 hover:text-text">
+                        <TrailerThumb videoKey={v.key} className="w-[112px] xl:w-[128px]" />
                         <span className="min-w-0">
-                          <span className="block truncate text-sm font-extrabold">{v.title.card.name}</span>
-                          <span className="block truncate text-xs text-text-2">
+                          <span className="block truncate text-sm leading-5 font-medium text-text-2 transition-colors group-hover:text-text">{v.title.card.name}</span>
+                          <span className="tnum mt-0.5 block truncate text-xs leading-4 text-text-3">
                             {[KIND[v.kind] ?? v.kind, v.lang?.toUpperCase(), formatDuration(v.durationSec)].filter(Boolean).join(" · ")}
                           </span>
                         </span>
@@ -140,9 +146,22 @@ export default async function TrailersPage({ params, searchParams }: PageProps<"
 
           {/* ── Grid ── */}
           {rest.length > 0 ? (
-            <section className="mx-auto max-w-site px-4 pt-8 pb-4 md:px-7 md:pt-12">
-              <SectionHeader title="Trending trailers" sub="Official videos only" />
-              <ul className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <section aria-labelledby="trending" className="wrap pt-12 md:pt-20">
+              <SectionHead
+                id="trending"
+                title="Trending trailers"
+                sub={
+                  <>
+                    Official videos only
+                    {checkedAt ? (
+                      <>
+                        {" · "}availability <CheckedAt at={checkedAt} className="!text-[inherit] lowercase" />
+                      </>
+                    ) : null}
+                  </>
+                }
+              />
+              <ul className="grid grid-cols-1 gap-x-5 gap-y-9 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-y-12">
                 {rest.map((v) => (
                   <li key={v.key} className="min-w-0">
                     <TrailerCard item={v} edition={e} />
@@ -153,24 +172,22 @@ export default async function TrailersPage({ params, searchParams }: PageProps<"
           ) : null}
 
           {shorts.length > 0 ? (
-            <section className="mx-auto max-w-site px-4 pt-8 pb-4 md:px-7 md:pt-10">
-              <SectionHeader title="Shorts" sub="Vertical clips from studio channels" />
-              <ul className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:px-0">
+            <section aria-labelledby="shorts" className="wrap pt-12 md:pt-20">
+              <SectionHead id="shorts" title="Shorts" sub="Vertical clips from studio channels" />
+              <ul className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:gap-4 md:px-0">
                 {shorts.map((v) => (
-                  <li key={v.key} className="w-[150px] shrink-0 md:w-[170px]">
-                    <TrailerPlayer
-                      videoKey={v.key}
-                      title={`${v.title.card.name} — ${v.name}`}
-                      aspect="aspect-[9/16]"
-                      overlay={<span className="absolute inset-x-2.5 bottom-2.5 line-clamp-2 text-sm font-extrabold">{v.name}</span>}
-                    />
+                  <li key={v.key} className="w-[156px] shrink-0 md:w-[188px]">
+                    <TrailerPlayer videoKey={v.key} title={`${v.title.card.name} — ${v.name}`} fallbackLabel={v.name} highlightLang={e.contentLang} aspect="aspect-[9/16]" />
+                    <p className="mt-2.5 truncate text-sm font-medium">{v.title.card.name}</p>
                   </li>
                 ))}
               </ul>
             </section>
           ) : null}
-          <p className="mx-auto max-w-site px-4 pt-4 pb-12 text-xs text-text-3 md:px-7">
-            Official videos are embedded from YouTube (privacy-enhanced mode) and load only when you press play. We never download or re-edit them.
+
+          <p className="wrap flex items-start gap-2 pt-10 pb-14 text-xs leading-5 text-text-3 md:pt-14 md:pb-24">
+            <InfoIcon className="mt-0.5 size-4 shrink-0" />
+            <span className="max-w-2xl">Official videos are embedded from YouTube (privacy-enhanced mode) and load only when you press play. We never download or re-edit them.</span>
           </p>
         </>
       )}
@@ -199,26 +216,86 @@ export default async function TrailersPage({ params, searchParams }: PageProps<"
   );
 }
 
+/** Title, facts and the legal place to watch — under the featured player, never on top of it. */
+function Featured({ item, edition }: { item: TrailerItem; edition: Edition }) {
+  const { card, best } = item.title;
+  const href = paths.title(edition, card.type, card.slug);
+  const noun = card.type === "tv" ? "series" : "movie";
+  const facts = [KIND[item.kind] ?? "Video", item.lang ? langName(item.lang) : null, formatDuration(item.durationSec), "plays on YouTube"].filter(Boolean).join(" · ");
+  const meta = [card.type === "tv" ? "Series" : "Movie", card.year, card.genres.slice(0, 2).join(", ")].filter(Boolean).join(" · ");
+  return (
+    <div className="mt-5 flex flex-col gap-6 md:mt-7 md:flex-row md:items-start md:justify-between md:gap-10">
+      <div className="min-w-0">
+        <h2 className="text-h2">
+          <Link href={href} className="hover:text-text">
+            {card.name}
+          </Link>
+        </h2>
+        <p className="tnum mt-2 text-sm text-text-2">
+          {item.name} <span className="text-text-3">· {facts}</span>
+        </p>
+        <p className="tnum mt-1 text-sm text-text-3">{meta}</p>
+      </div>
+
+      <div className="shrink-0 md:w-[320px]">
+        {best ? (
+          <>
+            <div className="flex items-center justify-between gap-4">
+              <ServiceLine option={best} size={36} />
+              <LangBadges audio={best.audio} subtitle={best.subtitle} edition={edition} className="justify-end" />
+            </div>
+            <div className="mt-4 flex gap-2">
+              <WatchButton option={best} title={card.name} edition={edition} label={`Watch the full ${noun}`} className="min-w-0 flex-1" />
+              <Link
+                href={href}
+                aria-label={`Where to watch ${card.name}`}
+                title="Where to watch"
+                className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-white/6 hover:ring-white/30"
+              >
+                <ArrowRightIcon className="size-4" />
+              </Link>
+            </div>
+            <CheckedAt at={best.checkedAt} className="mt-3 block" />
+          </>
+        ) : (
+          <>
+            <p className="text-sm text-text-2">Not streaming in {edition.countryName} yet.</p>
+            <ButtonLink href={href} variant="ghost" className="mt-4 max-md:w-full">
+              Where to watch
+              <ArrowRightIcon className="size-4" />
+            </ButtonLink>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function TrailerCard({ item, edition }: { item: TrailerItem; edition: Edition }) {
   const { card, best } = item.title;
   const href = paths.title(edition, card.type, card.slug);
+  const tag = [KIND[item.kind] ?? "Video", formatDuration(item.durationSec)].filter(Boolean).join(" · ");
   return (
     <>
-      <TrailerPlayer videoKey={item.key} title={`${card.name} — ${item.name}`} lang={item.lang} duration={`${KIND[item.kind] ?? "Video"}${formatDuration(item.durationSec) ? ` ${formatDuration(item.durationSec)}` : ""}`} />
-      <Link href={href} className="mt-2.5 block truncate text-[15px] font-extrabold">
-        {card.name} — {item.name}
+      <TrailerPlayer videoKey={item.key} title={`${card.name} — ${item.name}`} fallbackLabel={card.name} lang={item.lang} highlightLang={edition.contentLang} duration={tag} />
+      <Link href={href} className="mt-3.5 block truncate text-[15px] leading-6 font-medium md:text-base">
+        {card.name}
+        <span className="sr-only"> — {item.name}</span>
       </Link>
-      <p className="mt-1 flex min-w-0 items-center gap-1.5 text-xs text-text-2">
+      <p className="tnum truncate text-[13px] leading-5 text-text-3" aria-hidden="true">
+        {[item.name, card.year].filter(Boolean).join(" · ")}
+      </p>
+      <div className="mt-2.5 flex min-w-0 items-center gap-2 text-[13px] leading-5 text-text-2">
         {best ? (
           <>
-            <ServiceLogo slug={best.serviceSlug} name={best.serviceName} logoPath={best.logoPath} size={16} />
-            <span className="truncate">{best.serviceName} ·</span>
-            <WatchTextLink option={best} title={card.name} edition={edition} label={`Watch the full ${card.type === "tv" ? "series" : "movie"}`} className="text-xs! font-bold! text-text-2!" />
+            <ServiceLogo slug={best.serviceSlug} name={best.serviceName} logoPath={best.logoPath} size={20} />
+            <span className="truncate">{best.serviceName}</span>
+            <WatchTextLink option={best} title={card.name} edition={edition} label={`Watch the full ${card.type === "tv" ? "series" : "movie"}`} className="ml-auto shrink-0" />
           </>
         ) : (
-          <span>Not streaming in {edition.countryName} yet</span>
+          <span className="text-text-3">Not streaming in {edition.countryName} yet</span>
         )}
-      </p>
+      </div>
     </>
   );
 }

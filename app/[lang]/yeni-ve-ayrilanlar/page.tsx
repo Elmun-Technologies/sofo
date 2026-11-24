@@ -247,7 +247,10 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
                         </span>
                       </p>
                     </div>
-                    <AlertButton title={saved} alert="leaving" label="Remind me" activeLabel="Reminding" variant="ghost" size="sm" className="hidden shrink-0 sm:inline-flex" />
+                    <div className="w-[220px] shrink-0 max-xl:hidden">
+                      <CardLang dub={it.card.dub} sub={it.card.sub} edition={e} />
+                    </div>
+                    <AlertButton title={saved} alert="leaving" label="Remind me" activeLabel="Reminding" variant="ghost" size="sm" className="max-sm:hidden" />
                     <AlertButton title={saved} alert="leaving" label="Remind me" activeLabel="Reminding" iconOnly className="sm:hidden" />
                   </li>
                 );
@@ -310,7 +313,7 @@ function ScheduleRow({ item, edition, today }: { item: CalendarItem; edition: Ed
   const countdown = left <= 0 ? "Last day" : left === 1 ? "Tomorrow" : `${left} days left`;
 
   return (
-    <div className="grid grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-x-3.5 py-3.5 md:grid-cols-[56px_minmax(0,1.5fr)_minmax(0,1.2fr)_auto] md:gap-x-5 md:py-4 xl:grid-cols-[56px_minmax(0,1.5fr)_minmax(0,1.1fr)_minmax(0,0.9fr)_168px]">
+    <div className="grid grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-x-3.5 py-3.5 md:grid-cols-[56px_minmax(0,1.5fr)_minmax(0,1.2fr)_auto] md:gap-x-5 md:py-4 xl:grid-cols-[56px_minmax(0,1.4fr)_minmax(0,1.1fr)_minmax(0,1fr)_160px]">
       <Link href={href} tabIndex={-1} aria-hidden="true">
         <PosterImage path={card.posterPath} alt="" sizes="56px" className="rounded-[8px]" />
       </Link>
@@ -337,7 +340,10 @@ function ScheduleRow({ item, edition, today }: { item: CalendarItem; edition: Ed
         <div className="min-w-0">
           <p className="flex items-center gap-1.5 text-sm leading-5 font-medium">
             <span aria-hidden="true" className={`size-1.5 shrink-0 rounded-full ${gone ? "bg-text-3" : KIND_DOT[kind]}`} />
-            <span className={`truncate ${upcoming ? "text-leaving" : gone ? "text-text-2" : ""}`}>{what}</span>
+            <span className={`truncate ${upcoming ? "text-leaving" : gone ? "text-text-2" : ""}`}>
+              {what}
+              {upcoming ? <span className="tnum font-normal"> · {countdown.toLowerCase()}</span> : null}
+            </span>
           </p>
           <p className="tnum truncate text-[13px] leading-5 text-text-3">
             {service.name} · {when}
@@ -352,7 +358,6 @@ function ScheduleRow({ item, edition, today }: { item: CalendarItem; edition: Ed
       <div className="flex items-center justify-end gap-3">
         {upcoming ? (
           <>
-            <span className="tnum text-[13px] whitespace-nowrap text-leaving max-lg:hidden">{countdown}</span>
             <AlertButton title={saved} alert="leaving" label="Remind me" activeLabel="Reminding" variant="ghost" size="sm" className="max-md:hidden" />
             <AlertButton title={saved} alert="leaving" label="Remind me" activeLabel="Reminding" iconOnly className="md:hidden" />
           </>

@@ -120,3 +120,30 @@ export function TrailerPlayer({
     </div>
   );
 }
+
+/** Small non-interactive thumbnail (lists that link to a trailer). Shows a quiet play mark when the thumbnail is unavailable. */
+export function TrailerThumb({ videoKey, className = "" }: { videoKey: string; className?: string }) {
+  const [thumb, setThumb] = useState(false);
+  return (
+    <span className={`relative block aspect-video shrink-0 overflow-hidden rounded-[10px] bg-surface-2 ${className}`}>
+      <span aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(135deg,rgb(255_255_255/0.07)_0%,transparent_60%)]" />
+      {/* eslint-disable-next-line @next/next/no-img-element -- YouTube thumbnail, not re-hosted or optimised by us */}
+      <img
+        ref={(el) => {
+          if (el?.complete && el.naturalWidth > 0) setThumb(true);
+        }}
+        src={`https://i.ytimg.com/vi/${encodeURIComponent(videoKey)}/mqdefault.jpg`}
+        alt=""
+        loading="lazy"
+        onLoad={() => setThumb(true)}
+        className={`absolute inset-0 size-full object-cover ${thumb ? "opacity-100" : "opacity-0"}`}
+      />
+      <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
+        <span className="inline-flex size-7 items-center justify-center rounded-full bg-black/55 text-white ring-1 ring-white/15 backdrop-blur-sm ring-inset">
+          <PlayIcon className="ml-px size-3" />
+        </span>
+      </span>
+      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-white/8 ring-inset" />
+    </span>
+  );
+}

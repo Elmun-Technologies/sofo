@@ -333,9 +333,7 @@ function OptionRow({
         {heading}
         <li {...handlers} className={`${base} py-2.5 text-[15px] font-medium`}>
           {o.group === "Recent" ? <ClockIcon className="size-4 shrink-0 text-text-3" /> : <TrendingIcon className="size-4 shrink-0 text-text-3" />}
-          <span lang={lang} className="min-w-0 flex-1 truncate">
-            {o.label}
-          </span>
+          <span className="min-w-0 flex-1 truncate">{o.label}</span>
           {o.rank ? <span className="tnum text-xs text-text-3">{String(o.rank).padStart(2, "0")}</span> : null}
         </li>
       </>

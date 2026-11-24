@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Faq } from "@/components/title/faq";
+import { LangMark } from "@/components/ui/badges";
+import { ChipLink } from "@/components/ui/chip";
 import { PosterRow } from "@/components/ui/poster-row";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getPublishedLists } from "@/lib/catalog";
@@ -8,6 +11,7 @@ import { checkedLabel } from "@/lib/format";
 import { dubTerm, langName, subTerm } from "@/lib/lang";
 import { getLangHub, type LangKindKey } from "@/lib/queries/catalog-pages";
 import { buildAlternates } from "@/lib/seo/hreflang";
+import type { LangState } from "@/lib/short-answer";
 import { cap, catalogHref } from "./catalog-url";
 import { CollectionCard } from "./collection-card";
 import { HeroSearch } from "./hero-search";
@@ -80,57 +84,74 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
   const c = copy(e, k);
   const [hub, lists] = await Promise.all([getLangHub(e, k), getPublishedLists(e)]);
   const audio = k === "dub" ? "dub" : "sub";
+  const lang = langName(e.contentLang);
   const heroCards = (hub.recent.length >= 3 ? hub.recent : hub.movies.concat(hub.series)).filter((x) => x.posterPath);
+  const liveServices = hub.services.filter((s) => s.count > 0).length;
   const tab = (active: boolean) =>
-    `inline-flex h-8 items-center rounded-chip px-3.5 text-[13px] font-bold md:h-9 md:text-sm ${active ? "bg-white text-ink hover:text-ink" : "border border-line bg-surface/70 text-text hover:text-text"}`;
+    `inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium whitespace-nowrap transition duration-200 ease-out ${
+      active ? "bg-white text-ink hover:text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text hover:ring-white/30"
+    }`;
+  const states: { status: LangState; name: string; text: string }[] = [
+    { status: "confirmed_yes", name: "Confirmed", text: `The service itself lists ${c.what} for this title in ${e.countryName}. Only then do we say yes.` },
+    { status: "confirmed_no", name: "Not offered", text: `The service tells us the title comes without ${c.what}. A dash, nothing more.` },
+    { status: "unknown", name: "Not confirmed", text: "The service hasn't said either way yet. We show exactly that — never a guess." },
+  ];
 
   return (
     <>
-      <section className="mx-auto max-w-site px-4 pt-4 md:px-7 md:pt-6">
-        <div className="relative flex items-center gap-8 overflow-hidden rounded-hero border border-line bg-[radial-gradient(120%_140%_at_85%_0%,#1b2a44_0%,#121826_40%,#0d0f15_75%)] px-5 py-6 md:px-10 md:py-11">
-          <div className="min-w-0 grow">
+      <header className="wrap pt-6 pb-8 md:pt-12 md:pb-14">
+        <div className="flex items-end justify-between gap-12">
+          <div className="min-w-0 flex-1">
             <nav aria-label="Language" className="flex flex-wrap gap-2">
               <Link href={e.routes.dubHub} aria-current={k === "dub" ? "page" : undefined} className={tab(k === "dub")}>
-                {cap(dubTerm(e.contentLang))}
+                <span aria-hidden="true" className="size-1.5 rounded-full bg-dub" />
+                <span lang={e.hreflang}>{cap(dubTerm(e.contentLang))}</span>
               </Link>
               <Link href={e.routes.subHub} aria-current={k === "sub" ? "page" : undefined} className={tab(k === "sub")}>
-                {cap(subTerm(e.contentLang))}
+                <span aria-hidden="true" className={`size-1.5 rounded-full ${k === "sub" ? "bg-ink/50" : "bg-white/70"}`} />
+                <span lang={e.hreflang}>{cap(subTerm(e.contentLang))}</span>
               </Link>
             </nav>
-            <h1 className="mt-4 text-[32px] leading-[1.06] font-extrabold tracking-[-0.03em] md:mt-5 md:text-[52px]">
-              {c.lead}
-              <br />
-              <span className="md:hidden">{fmt(hub.total)} titles.</span>
-              <span className="hidden md:inline">
-                {fmt(hub.total)} movies &amp; series with {c.what}.
+            <h1 className="text-display mt-6 max-w-[15ch] md:mt-8 lg:max-w-[18ch]">
+              {c.lead}{" "}
+              <span className="text-text-3">
+                <span className="md:hidden">{fmt(hub.total)} titles.</span>
+                <span className="hidden md:inline">
+                  {fmt(hub.total)} movies &amp; series with {c.what}.
+                </span>
               </span>
             </h1>
-            <p className="mt-3 text-[13px] text-text-2 md:text-[15px]">
-              On {hub.services.filter((s) => s.count > 0).length} services in {e.countryName} · checked every day
-              {hub.lastCheckedAt ? ` · ${checkedLabel(hub.lastCheckedAt).replace(/^Checked/, "last check")}` : ""}
+            <p className="tnum mt-5 flex items-start gap-2 text-[13px] text-text-2 md:mt-6 md:text-sm">
+              <span aria-hidden="true" className="mt-[7px] size-1.5 shrink-0 rounded-full bg-available md:mt-2" />
+              <span>
+                On {liveServices} services in {e.countryName} · checked every day
+                {hub.lastCheckedAt ? ` · ${checkedLabel(hub.lastCheckedAt).replace(/^Checked/, "last check")}` : ""}
+              </span>
             </p>
             <HeroSearch
               action={e.routes.search}
               label={`Search titles with ${c.what}`}
               placeholder={`Search only titles with ${c.short}…`}
-              className="mt-5 max-w-xl"
+              className="mt-6 max-w-[560px] md:mt-8"
             />
           </div>
           <PosterStack cards={heroCards} />
         </div>
-      </section>
+      </header>
 
-      <section className="mx-auto max-w-site px-4 pt-7 md:px-7 md:pt-10" aria-labelledby="by-service">
-        <SectionHeader id="by-service" title="By service" />
+      <section className="wrap py-6 md:py-10" aria-labelledby="by-service">
+        <div className="rule mb-6 md:mb-8" />
+        <SectionHeader id="by-service" title="By service" sub={`Titles with ${c.what} confirmed on each platform`} />
         <ul className="grid grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-3">
-          {hub.services.map((s, i) => (
-            <li key={s.slug} className={i >= 4 ? "hidden md:block" : undefined}>
+          {hub.services.map((s) => (
+            <li key={s.slug}>
               <ServiceTile
                 href={catalogHref(e.routes.movies, { service: s.slug, audio })}
                 slug={s.slug}
                 name={s.name}
                 logoPath={s.logoPath}
-                line={`${fmt(s.count)} title${s.count === 1 ? "" : "s"}`}
+                count={s.count}
+                label={`${k === "dub" ? "dubbed" : "subtitled"} title${s.count === 1 ? "" : "s"}`}
               />
             </li>
           ))}
@@ -151,9 +172,9 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
       <PosterRow title={`For kids — ${c.short}`} cards={hub.kids} edition={e} href={e.routes.kids} />
 
       {lists.length ? (
-        <section id="collections" className="mx-auto max-w-site scroll-mt-20 px-4 py-5 md:px-7 md:py-7" aria-labelledby="collections-title">
+        <section id="collections" className="wrap scroll-mt-24 py-6 md:py-10" aria-labelledby="collections-title">
           <SectionHeader id="collections-title" title="Collections" sub="Picked by our editors" />
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 md:gap-4">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
             {lists.map((l) => (
               <li key={l.id}>
                 <CollectionCard edition={e} list={l} />
@@ -163,40 +184,57 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
         </section>
       ) : null}
 
-      <section className="mx-auto grid max-w-site gap-6 px-4 pt-5 pb-12 md:px-7 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:gap-8">
-        <div>
-          <h2 className="mb-4 text-xl font-extrabold tracking-[-0.02em] md:text-2xl">About {c.short} on streaming</h2>
-          <div className="space-y-3">
-            {c.faq.map((f, i) => (
-              <details key={f.q} open={i === 0} className="group rounded-card border border-line bg-surface px-4 py-3.5">
-                <summary className="flex cursor-pointer list-none items-center gap-2 text-[15px] font-extrabold [&::-webkit-details-marker]:hidden">
-                  <span aria-hidden="true" className="text-[11px] transition group-open:rotate-90">
-                    ▶
-                  </span>
-                  {f.q}
-                </summary>
-                <p className="mt-2 text-sm leading-relaxed text-text-2">{f.a}</p>
-              </details>
-            ))}
+      {/* The wedge, explained: three states, never a guess. */}
+      <section className="wrap py-8 md:py-14" aria-labelledby="lang-states">
+        <div className="rule" />
+        <div className="grid gap-x-10 gap-y-6 pt-6 md:pt-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.2fr)]">
+          <div>
+            <h2 id="lang-states" className="text-h2">
+              How we show {lang} {k === "dub" ? "audio" : "subtitles"}
+            </h2>
+            <p className="mt-3 max-w-sm text-[15px] text-text-2">Language data comes from each service, per title and per country. There are only three things we will ever tell you.</p>
           </div>
+          <ul className="grid gap-2.5 sm:grid-cols-3 md:gap-3">
+            {states.map((s, i) => (
+              <li key={s.name} className="card flex flex-col p-5 md:min-h-[220px] md:p-6">
+                <span className="flex items-center justify-between gap-3">
+                  <span className="flex h-7 items-center">
+                    <LangMark status={s.status} />
+                  </span>
+                  <span aria-hidden="true" className="tnum text-xs text-text-3">
+                    0{i + 1}
+                  </span>
+                </span>
+                <h3 className="text-h3 mt-5 md:mt-auto md:pt-8">{s.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-2">{s.text}</p>
+              </li>
+            ))}
+          </ul>
         </div>
-        <aside className="h-fit rounded-panel border border-line bg-surface p-5">
-          <h2 className="text-[15px] font-extrabold">Keep exploring</h2>
-          <ul className="mt-3 flex flex-wrap gap-2">
+      </section>
+
+      <section className="wrap grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-8 pt-4 pb-14 md:pt-6 md:pb-24 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="min-w-0">
+          <SectionHeader title={`About ${c.short} on streaming`} />
+          <Faq items={c.faq} />
+        </div>
+        <aside className="panel h-fit p-5 md:p-6 lg:mt-[52px]">
+          <h2 className="text-h3">Keep exploring</h2>
+          <ul className="mt-4 flex flex-wrap gap-2">
             {[
-              { href: k === "dub" ? e.routes.subHub : e.routes.dubHub, label: cap(k === "dub" ? subTerm(e.contentLang) : dubTerm(e.contentLang)) },
+              { href: k === "dub" ? e.routes.subHub : e.routes.dubHub, label: cap(k === "dub" ? subTerm(e.contentLang) : dubTerm(e.contentLang)), local: true },
               { href: e.routes.kids, label: "Kids" },
               { href: e.routes.newLeaving, label: "New & leaving" },
               ...hub.services.slice(0, 4).map((s) => ({ href: paths.service(e, s.slug), label: s.name })),
             ].map((l) => (
               <li key={l.href}>
-                <Link href={l.href} className="inline-flex h-8 items-center rounded-chip border border-line px-3 text-[13px] font-bold text-text">
-                  {l.label}
-                </Link>
+                <ChipLink href={l.href}>
+                  <span lang={"local" in l && l.local ? e.hreflang : undefined}>{l.label}</span>
+                </ChipLink>
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-xs leading-relaxed text-text-3">
+          <p className="mt-5 border-t border-hairline pt-4 text-xs leading-relaxed text-text-3">
             Language data comes from each service. When a service doesn&apos;t say, we show &ldquo;Not confirmed by the service&rdquo; — never a
             guess.
           </p>

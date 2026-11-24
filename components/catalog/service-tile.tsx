@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRightIcon } from "@/components/icons";
+import { ArrowRightIcon } from "@/components/icons";
 import { ServiceLogo } from "@/components/ui/service-logo";
 
 type Props = { href: string; slug: string; name: string; logoPath: string | null; count: number; label: string };
@@ -15,7 +15,7 @@ export function ServiceTile({ href, slug, name, logoPath, count, label }: Props)
           aria-hidden="true"
           className="flex size-8 items-center justify-center rounded-full text-text-3 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset group-hover:bg-white group-hover:text-ink group-hover:ring-transparent"
         >
-          <ArrowUpRightIcon className="size-4 rotate-45" />
+          <ArrowRightIcon className="size-4" />
         </span>
       </span>
       <span className="flex items-end justify-between gap-2">
@@ -23,7 +23,7 @@ export function ServiceTile({ href, slug, name, logoPath, count, label }: Props)
           <span className={`block truncate text-[15px] font-semibold ${none ? "text-text-2" : ""}`}>{name}</span>
           <span className="block truncate text-xs text-text-3">{label}</span>
         </span>
-        <span className={`tnum shrink-0 text-[40px] leading-[0.9] font-normal tracking-[-0.05em] md:text-[52px] ${none ? "text-text-3/60" : ""}`}>{count.toLocaleString("en-US")}</span>
+        <span className={`shrink-0 text-[40px] leading-[0.9] font-normal tracking-[-0.05em] md:text-[52px] ${none ? "text-text-3/60" : ""}`}>{count.toLocaleString("en-US")}</span>
       </span>
     </Link>
   );
