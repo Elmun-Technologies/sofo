@@ -19,10 +19,10 @@ export function History({ data, editionLang, countryName }: { data: TitlePageDat
   const ticks = Array.from({ length: 5 }, (_, i) => new Date(start.getTime() + (total * i) / 4));
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.45fr_1fr]">
-      <section aria-labelledby="history" className="rounded-panel border border-line bg-surface p-5 md:p-6">
+    <div className="grid gap-4 xl:grid-cols-[1.45fr_1fr]">
+      <section aria-labelledby="history" className="panel p-5 md:p-6">
         <div className="mb-5 flex flex-wrap items-baseline gap-x-3">
-          <h2 id="history" className="text-xl font-extrabold md:text-2xl">
+          <h2 id="history" className="text-h2">
             Availability history
           </h2>
           <span className="text-sm text-text-2">Where it has been in {countryName}</span>
@@ -35,14 +35,14 @@ export function History({ data, editionLang, countryName }: { data: TitlePageDat
                 <span className="truncate">{l.label}</span>
               </span>
               <div className="relative h-7">
-                <div className="absolute inset-x-0 bottom-0 h-2 rounded-chip bg-surface-2" />
+                <div className="absolute inset-x-0 bottom-0 h-1.5 rounded-full bg-white/8" />
                 {l.spans.map((s, i) => (
                   <div key={i} className="absolute bottom-0" style={{ left: `${pct(s.from)}%`, width: `${Math.max(1.5, pct(s.to) - pct(s.from))}%` }}>
                     <span className={`absolute bottom-3 text-[11px] whitespace-nowrap text-text-2 ${pct(s.from) > 60 ? "right-0" : "left-0"}`}>
                       {s.kind === "theater" ? "In theaters" : s.kind === "paid" ? "Rent / buy" : "Subscription"} · {formatMonth(s.from)}
                       {s.open ? "" : ` – ${formatMonth(s.to)}`}
                     </span>
-                    <div className={`h-2 rounded-chip ${s.kind === "sub" ? (s.open ? "bg-orange" : "bg-leaving/80") : s.kind === "paid" ? "bg-text-3" : "bg-text-3/60"}`} />
+                    <div className={`h-1.5 rounded-full ${s.kind === "sub" ? (s.open ? "bg-orange" : "bg-leaving/80") : s.kind === "paid" ? "bg-text-3" : "bg-text-3/60"}`} />
                   </div>
                 ))}
               </div>
@@ -54,24 +54,24 @@ export function History({ data, editionLang, countryName }: { data: TitlePageDat
             <span key={t.getTime()}>{formatMonth(t)}</span>
           ))}
         </div>
-        <p className="mt-4 text-sm text-text-2">We record every change since launch. Titles often move between services every 6–12 months.</p>
+        <p className="mt-5 text-[13px] text-text-3">We record every change since launch. Titles often move between services every 6–12 months.</p>
       </section>
 
-      <section aria-labelledby="changelog" className="rounded-panel border border-line bg-surface p-5 md:p-6">
-        <h2 id="changelog" className="mb-4 text-xl font-extrabold md:text-2xl">
+      <section aria-labelledby="changelog" className="panel p-5 md:p-6">
+        <h2 id="changelog" className="text-h2 mb-5">
           Change log
         </h2>
         <ol className="space-y-4">
           {log.map((e) => {
             const v = describe(e, editionLang);
             return (
-              <li key={e.id} className="grid grid-cols-[88px_1fr] gap-3 text-sm">
-                <time dateTime={e.occurredAt.toISOString()} className="text-text-3">
+              <li key={e.id} className="grid grid-cols-[92px_1fr] gap-3 text-sm">
+                <time dateTime={e.occurredAt.toISOString()} className="tnum text-[13px] text-text-3">
                   {formatDate(e.occurredAt)}
                 </time>
                 <div>
-                  <span className={`inline-block rounded-chip px-2 py-0.5 text-[11px] font-extrabold ${v.tone}`}>{v.badge}</span>
-                  <p className="mt-1">{v.text}</p>
+                  <span className={`inline-block rounded-[5px] px-1.5 py-0.5 text-[11px] leading-4 font-bold ${v.tone}`}>{v.badge}</span>
+                  <p className="mt-1 text-text-2">{v.text}</p>
                 </div>
               </li>
             );

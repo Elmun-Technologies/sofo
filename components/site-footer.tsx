@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { EDITIONS, PLANNED_EDITIONS, paths, type Edition } from "@/lib/editions";
+import { dubTerm, subTerm } from "@/lib/lang";
+import { ShieldCheckIcon } from "./icons";
 import { Logo } from "./logo";
 
 const SERVICE_NAMES: Record<string, string> = {
@@ -7,19 +9,27 @@ const SERVICE_NAMES: Record<string, string> = {
   tod: "TOD", tabii: "tabii", exxen: "Exxen", gain: "Gain",
 };
 
+const cap = (s: string, locale: string) => s.replace(/^./, (c) => c.toLocaleUpperCase(locale));
+
 export function SiteFooter({ edition }: { edition: Edition }) {
   const r = edition.routes;
   return (
-    <footer className="mt-10 border-t border-line-soft">
-      <div className="mx-auto grid max-w-site gap-8 px-4 py-10 text-sm md:grid-cols-[1fr_auto] md:px-7">
-        <div className="max-w-xs">
-          <Logo className="text-[24px]" />
-          <p className="mt-3 text-text-2">
+    <footer className="mt-16 border-t border-hairline bg-ink-2 md:mt-24">
+      <div className="wrap grid gap-10 py-12 md:grid-cols-[minmax(0,1fr)_auto] md:gap-16 md:py-16">
+        <div className="max-w-sm">
+          <Link href={r.home} aria-label="sofo — home" className="inline-block hover:text-text">
+            <Logo className="text-[28px]" />
+          </Link>
+          <p className="mt-4 text-sm leading-relaxed text-text-2">
             Find where to watch any movie or series — in your language. sofo doesn&apos;t host video: every title plays on the
             official service.
           </p>
+          <p className="mt-5 inline-flex items-center gap-2 rounded-chip bg-white/5 py-1.5 pr-3.5 pl-2.5 text-xs font-bold text-text-2 ring-1 ring-hairline ring-inset">
+            <ShieldCheckIcon className="size-4 text-available" />
+            Legal services only · checked daily
+          </p>
         </div>
-        <div className="grid grid-cols-2 gap-x-12 gap-y-8 sm:grid-cols-4">
+        <nav aria-label="Footer" className="grid grid-cols-2 gap-x-10 gap-y-10 text-sm sm:grid-cols-4 lg:gap-x-16">
           <FooterCol heading="Browse">
             <Link href={r.movies}>Movies</Link>
             <Link href={r.series}>Series</Link>
@@ -30,8 +40,8 @@ export function SiteFooter({ edition }: { edition: Edition }) {
             <Link href={r.releases}>Coming to digital</Link>
           </FooterCol>
           <FooterCol heading="Languages">
-            <Link href={r.dubHub}>Türkçe dublaj</Link>
-            <Link href={r.subHub}>Türkçe altyazı</Link>
+            <Link href={r.dubHub} lang={edition.hreflang}>{cap(dubTerm(edition.contentLang), edition.hreflang)}</Link>
+            <Link href={r.subHub} lang={edition.hreflang}>{cap(subTerm(edition.contentLang), edition.hreflang)}</Link>
             <Link href={r.collections}>Collections</Link>
           </FooterCol>
           <FooterCol heading="Services">
@@ -49,19 +59,30 @@ export function SiteFooter({ edition }: { edition: Edition }) {
             <Link href={r.privacy}>Privacy</Link>
             <Link href={`${r.privacy}#terms`}>Terms</Link>
           </FooterCol>
-        </div>
+        </nav>
       </div>
-      <div className="mx-auto flex max-w-site flex-wrap items-center gap-x-6 gap-y-2 border-t border-line-soft px-4 py-5 text-xs text-text-3 md:px-7">
-        <span>
-          Editions:{" "}
-          {Object.values(EDITIONS).map((e) => (
-            <Link key={e.code} href={e.routes.home} className="text-text-2">
-              {e.countryName}
-            </Link>
-          ))}
-          {PLANNED_EDITIONS.map((n) => ` · ${n}`)}
-        </span>
-        <span className="md:ml-auto">sofo.tv · We never host video · Metadata &amp; images: TMDB · availability checked daily</span>
+      <div className="border-t border-hairline">
+        <div className="wrap flex flex-col gap-4 py-6 text-xs text-text-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
+            <span lang="en" className="overline mr-1 text-text-3">
+              Editions
+            </span>
+            {Object.values(EDITIONS).map((e) => (
+              <Link key={e.code} href={e.routes.home} className="inline-flex h-7 items-center gap-1.5 rounded-chip bg-white/8 px-2.5 font-bold text-text hover:text-text">
+                <span aria-hidden="true" className="size-1.5 rounded-full bg-available" />
+                {e.countryName}
+              </Link>
+            ))}
+            {PLANNED_EDITIONS.map((n) => (
+              <span key={n} title="Coming soon" className="inline-flex h-7 items-center rounded-chip px-2.5 ring-1 ring-hairline ring-inset">
+                {n}
+              </span>
+            ))}
+          </div>
+          <p className="md:text-right">
+            © {new Date().getFullYear()} sofo.tv · We never host video · Metadata &amp; images: TMDB
+          </p>
+        </div>
       </div>
     </footer>
   );
@@ -69,8 +90,10 @@ export function SiteFooter({ edition }: { edition: Edition }) {
 
 function FooterCol({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2 [&_a]:text-text-2 [&_a:hover]:text-orange-tint">
-      <span className="font-extrabold text-text">{heading}</span>
+    <div className="flex flex-col items-start gap-2.5 [&_a]:text-text-2 [&_a:hover]:text-text">
+      <span lang="en" className="overline mb-1.5 text-text-3">
+        {heading}
+      </span>
       {children}
     </div>
   );

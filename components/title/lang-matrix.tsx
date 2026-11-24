@@ -30,15 +30,15 @@ export function LangMatrix({ offers, editionLang, originalLang }: { offers: Offe
   ];
 
   return (
-    <div className="overflow-x-auto rounded-panel border border-line bg-surface">
-      <table className="w-full min-w-[420px] text-sm">
+    <div className="overflow-x-auto rounded-panel border border-hairline bg-surface">
+      <table className="w-full min-w-[340px] text-sm">
         <thead>
-          <tr className="border-b border-line text-left text-xs text-text-2">
-            <th scope="col" className="px-4 py-3 font-semibold">
+          <tr className="border-b border-hairline text-left text-xs text-text-3">
+            <th scope="col" className="px-5 py-3 font-semibold">
               Language
             </th>
             {cols.map((c) => (
-              <th key={c.name} scope="col" className="px-3 py-3 text-center font-semibold">
+              <th key={c.name} scope="col" className="px-3 py-3 text-center font-semibold text-text-2">
                 {c.name}
               </th>
             ))}
@@ -46,12 +46,12 @@ export function LangMatrix({ offers, editionLang, originalLang }: { offers: Offe
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.label} className="border-b border-line-soft last:border-0">
-              <th scope="row" className="px-4 py-3 text-left font-bold">
+            <tr key={r.label} className="border-b border-hairline transition-colors last:border-0 hover:bg-white/[0.025]">
+              <th scope="row" className="px-5 py-3.5 text-left font-semibold">
                 {r.label}
               </th>
               {cols.map((c) => (
-                <td key={c.name} className="px-3 py-3 text-center">
+                <td key={c.name} className="px-3 py-3 text-center align-middle">
                   <LangMark status={r.get(c)} />
                 </td>
               ))}
@@ -59,7 +59,7 @@ export function LangMatrix({ offers, editionLang, originalLang }: { offers: Offe
           ))}
         </tbody>
       </table>
-      <p className="border-t border-line-soft px-4 py-2.5 text-xs text-text-3">
+      <p className="border-t border-hairline bg-white/[0.02] px-5 py-3 text-xs text-text-3">
         ✓ confirmed by the service · — not offered · <span className="text-leaving">not confirmed</span> = the service hasn&apos;t told us yet. We never guess.
       </p>
     </div>

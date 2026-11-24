@@ -1,4 +1,4 @@
-import { availableWhere, getCards, getCardsByIds, getPublishedLists, langWhere, type TitleCard } from "../catalog";
+import { availableWhere, cardInclude, getCards, getCardsByIds, getPublishedLists, langWhere, toCard, type TitleCard } from "../catalog";
 import { db } from "../db";
 import type { Edition } from "../editions";
 
@@ -41,6 +41,18 @@ export async function getHomeData(e: Edition) {
     }),
   ]);
 
+  // Promo slider: popular available titles that have wide key art.
+  const spotlightRows = await db.title.findMany({
+    where: { localizations: { some: { lang: e.contentLang } }, backdropPath: { not: null }, ...availableWhere(e) },
+    include: cardInclude(e),
+    orderBy: [{ popularity: "desc" }, { id: "asc" }],
+    take: 7,
+  });
+  const spotlight = spotlightRows.flatMap((row) => {
+    const card = toCard(row);
+    return card ? [{ card, overview: row.localizations[0]?.overview ?? null, runtimeMin: row.runtimeMin }] : [];
+  });
+
   const uniq = (ids: number[]) => [...new Set(ids)];
   const [justDubbed, newThisWeek] = await Promise.all([
     // Edition-language dubs only (JSON `after.lang`; filtered here — SQLite has no JSON path filter in Prisma).
@@ -67,6 +79,7 @@ export async function getHomeData(e: Edition) {
     : null;
 
   return {
+    spotlight,
     top,
     justDubbed,
     newThisWeek,

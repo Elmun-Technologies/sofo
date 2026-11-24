@@ -15,7 +15,7 @@ type Props = {
 export function PosterGrid({ cards, edition, badge, meta, dense }: Props) {
   return (
     <ul
-      className={`grid grid-cols-3 gap-x-3 gap-y-5 sm:grid-cols-4 md:grid-cols-5 md:gap-x-4 ${dense ? "lg:grid-cols-5" : "lg:grid-cols-6 xl:grid-cols-7"}`}
+      className={`grid grid-cols-3 gap-x-3 gap-y-6 sm:grid-cols-4 md:grid-cols-5 md:gap-x-4 md:gap-y-8 ${dense ? "lg:grid-cols-4 xl:grid-cols-5" : "lg:grid-cols-6 xl:grid-cols-7"}`}
     >
       {cards.map((c, i) => (
         <li key={c.id}>

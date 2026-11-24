@@ -3,7 +3,9 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { SubscribeForm } from "@/components/retention/subscribe-form";
 import { WatchlistButton } from "@/components/watchlist-button";
-import { DubBadge, MutedBadge, SubBadge } from "@/components/ui/badges";
+import { ArrowUpRightIcon, CaptionsIcon, PlayIcon, StarIcon, VolumeIcon } from "@/components/icons";
+import { OutboundLink } from "@/components/outbound-link";
+import { Pill } from "@/components/ui/badges";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { buttonClass } from "@/components/ui/button";
 import { CheckedAt } from "@/components/ui/checked-at";
@@ -26,7 +28,7 @@ import { LangMatrix } from "./lang-matrix";
 import { OfferRow } from "./offer-row";
 import { Seasons } from "./seasons";
 import { ShareButton } from "./share-button";
-import { ShortAnswerBlock } from "./short-answer";
+import { ShortAnswerBlock, ShortAnswerFacts } from "./short-answer";
 import { WhereToWatchTabs } from "./where-to-watch";
 
 type Params = { lang: string; slug: string };
@@ -93,7 +95,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
   const firstPrimary = offers[0]?.id;
   const list = (xs: typeof offers) =>
     xs.length ? (
-      <ul className="space-y-2">
+      <ul className="divide-y divide-hairline">
         {xs.map((o) => (
           <OfferRow key={o.id} offer={o} lang={lang} titleName={local.name} country={edition.country} primary={o.id === firstPrimary} />
         ))}
@@ -101,158 +103,245 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
     ) : null;
   const faq = buildFaq(data, edition);
 
+  const primary = data.shortAnswer.kind !== "none" ? data.shortAnswer.offer : null;
+  const facts: [string, React.ReactNode][] = [
+    ["Original title", title.originalTitle],
+    ...(en && en.name !== local.name && en.name !== title.originalTitle ? ([["International title", en.name]] as [string, React.ReactNode][]) : []),
+    ["Type", type === "movie" ? "Movie" : "Series"],
+    ...(title.year ? ([["Year", String(title.year)]] as [string, React.ReactNode][]) : []),
+    ...(type === "movie" && title.runtimeMin ? ([["Runtime", formatRuntime(title.runtimeMin)]] as [string, React.ReactNode][]) : []),
+    ...(type === "tv" && seasonsCount ? ([["Seasons", String(seasonsCount)]] as [string, React.ReactNode][]) : []),
+    ...(title.genres.length ? ([["Genres", title.genres.join(", ")]] as [string, React.ReactNode][]) : []),
+    ["Original language", langName(title.originalLang)],
+  ];
+
   return (
-    <article>
-      <Breadcrumbs
-        items={[
-          { name: "Home", href: routes.home },
-          { name: type === "movie" ? "Movies" : "Series", href: listRoute },
-          { name: local.name },
-        ]}
-      />
-
-      <div className="mx-auto max-w-site px-4 pt-4 md:px-7 md:pt-5">
-        <ShortAnswerBlock data={data} edition={edition} />
-      </div>
-
-      {/* Hero: poster · details · where to watch */}
-      <section className="relative mx-auto mt-5 max-w-site px-4 md:px-7">
-        <div className="relative overflow-hidden rounded-hero border border-line-soft bg-surface">
-          {backdrop ? (
-            <>
-              <Image src={backdrop} alt="" fill priority sizes="(max-width: 1360px) 100vw, 1360px" className="object-cover opacity-40" />
-              <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/85 to-ink/40" />
-            </>
-          ) : null}
-          <div className="relative grid grid-cols-[minmax(0,1fr)] gap-6 p-4 md:p-7 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-start">
-            <div className="flex flex-col gap-5 sm:flex-row">
-              <div className="w-[132px] shrink-0 sm:w-[180px] lg:w-[200px]">
-                <PosterImage path={title.posterPath} alt={`${local.name} poster`} priority sizes="200px" className="shadow-2xl shadow-black/60" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-text-2">
-                  {title.originalTitle !== local.name ? `${title.originalTitle} · original title` : `${edition.countryName} title`}
-                </p>
-                <h1 className="mt-1 text-[32px] leading-[1.05] font-extrabold tracking-[-0.03em] md:text-[52px]">{local.name}</h1>
-                <p className="mt-3 text-sm text-text-2">
-                  {meta.join(" · ")}
-                  {title.tmdbScore ? <span className="font-extrabold text-orange"> · TMDB {Number(title.tmdbScore).toFixed(1)}</span> : null}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
-                  {hasDub ? <DubBadge>{dubTerm(lang)}</DubBadge> : null}
-                  {hasSub ? <SubBadge>{subTerm(lang)}</SubBadge> : null}
-                  {uhd ? <MutedBadge>4K</MutedBadge> : null}
-                  {audioLangs.size > 1 ? <MutedBadge>+{audioLangs.size - (hasDub ? 1 : 0)} audio languages</MutedBadge> : null}
-                  {!hasDub && offers.length ? <MutedBadge className="text-leaving">{langName(lang)} dub not confirmed</MutedBadge> : null}
-                </div>
-                {local.overview ? <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-text md:text-base">{local.overview}</p> : null}
-                <div className="mt-5 flex flex-wrap gap-2">
-                  {title.videos[0] ? (
-                    <a href="#trailers" className={buttonClass("ghost")}>
-                      ▶ Trailer
-                    </a>
-                  ) : null}
-                  <WatchlistButton title={saved} variant="ghost" />
-                  <ShareButton edition={edition.code} type={type} slug={local.slug} name={local.name} />
-                </div>
-              </div>
-            </div>
-
-            <WhereToWatchTabs
-              heading={`Where to watch in ${edition.countryName}`}
-              tabs={[
-                { key: "stream", label: "Stream", count: stream.length, content: list(stream) ?? <NoOption /> },
-                { key: "rent", label: "Rent", count: rent.length, content: list(rent) },
-                { key: "buy", label: "Buy", count: buy.length, content: list(buy) },
-              ]}
-              footer={
-                data.checkedAt ? (
-                  <p className="text-xs text-text-3">
-                    <CheckedAt at={data.checkedAt} /> · prices are set by the service
-                  </p>
-                ) : (
-                  <p className="text-xs text-text-3">No legal option found in {edition.countryName} yet.</p>
-                )
-              }
-            />
+    <article className="pb-4 max-md:pb-20">
+      {/* Hero: backdrop · poster · the answer · where to watch */}
+      <div className="relative isolate">
+        {backdrop ? (
+          <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
+            <Image src={backdrop} alt="" fill priority sizes="100vw" className="object-cover object-[50%_20%] opacity-70" />
+            <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-ink/25" />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-ink/55" />
           </div>
-        </div>
-      </section>
+        ) : (
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(60%_100%_at_20%_0%,rgb(255_90_31/0.12),transparent_70%)]" />
+        )}
 
-      <div className="mx-auto mt-10 grid max-w-site gap-10 px-4 md:px-7 lg:grid-cols-2 lg:gap-8">
-        {offers.length ? (
-          <section aria-labelledby="langs">
-            <SectionHeader id="langs" title="Audio & subtitles by service" sub="Only what the service confirms" />
-            <LangMatrix offers={offers} editionLang={lang} originalLang={title.originalLang} />
-          </section>
-        ) : null}
-        {title.videos.length ? (
-          <section aria-labelledby="trailers" id="trailers" className="scroll-mt-24">
-            <SectionHeader id="trailers-h" title="Trailers" sub={`${title.videos.length} video${title.videos.length > 1 ? "s" : ""}`} href={routes.trailers} linkLabel="All videos" />
-            <div className="grid gap-4 sm:grid-cols-2">
-              {title.videos.slice(0, 2).map((v) => (
-                <figure key={v.id}>
-                  <TrailerPlayer videoKey={v.key} title={`${local.name} — ${v.name}`} lang={v.lang} />
-                  <figcaption className="mt-2 text-sm font-bold">
-                    {v.name} — {v.lang ? langName(v.lang) : "Original"}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          </section>
-        ) : null}
-      </div>
-
-      {type === "tv" && title.seasons.length ? (
-        <section className="mx-auto mt-10 max-w-site px-4 md:px-7">
-          <SectionHeader title="Seasons & episodes" sub={`${dubTerm(lang)} status per season`} />
-          <Seasons data={data} edition={edition} />
-        </section>
-      ) : null}
-
-      <div className="mx-auto mt-10 max-w-site px-4 md:px-7">
-        <History data={data} editionLang={lang} countryName={edition.countryName} />
-      </div>
-
-      {title.credits.length ? (
-        <section className="mx-auto mt-10 max-w-site px-4 md:px-7">
-          <SectionHeader title="Cast & crew" />
-          <Cast data={data} edition={edition} />
-        </section>
-      ) : null}
-
-      {data.franchiseCards.length > 1 && title.franchise ? (
-        <PosterRow
-          title={`${title.franchise.name}: watch order`}
-          cards={data.franchiseCards}
-          edition={edition}
-          href={paths.franchise(edition, title.franchise.slug)}
+        <Breadcrumbs
+          items={[
+            { name: "Home", href: routes.home },
+            { name: type === "movie" ? "Movies" : "Series", href: listRoute },
+            { name: local.name },
+          ]}
         />
-      ) : null}
 
-      <PosterRow title={`If you liked ${local.name}`} sub={hasDub ? "Also with Turkish dub" : undefined} cards={similar} edition={edition} href={listRoute} />
+        <div className="wrap grid grid-cols-[minmax(0,1fr)] gap-8 pt-5 pb-8 md:pt-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_420px]">
+          <div className="flex min-w-0 gap-4 md:gap-8">
+            <div className="w-[104px] shrink-0 sm:w-[168px] xl:w-[216px]">
+              <PosterImage path={title.posterPath} alt={`${local.name} poster`} priority sizes="(max-width: 480px) 104px, 216px" className="shadow-poster" />
+              <div className="mt-3 hidden gap-2 sm:grid">
+                <WatchlistButton title={saved} variant="secondary" />
+                <ShareButton edition={edition.code} type={type} slug={local.slug} name={local.name} />
+              </div>
+            </div>
+            <div className="min-w-0 flex-1">
+              <h1 className="text-[26px] leading-[1.08] font-extrabold tracking-[-0.03em] sm:text-[36px] xl:text-[46px]">{local.name}</h1>
+              {title.originalTitle !== local.name ? <p className="mt-1.5 text-sm text-text-2 md:text-[15px]">{title.originalTitle}</p> : null}
+              <p className="tnum mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[13px] font-semibold text-text-2 md:text-sm">
+                {title.tmdbScore ? (
+                  <span className="inline-flex items-center gap-1 rounded-[6px] bg-white/10 px-1.5 py-0.5 font-bold text-white" title="TMDB score">
+                    <StarIcon className="size-3 text-leaving" />
+                    {Number(title.tmdbScore).toFixed(1)}
+                  </span>
+                ) : null}
+                {meta.map((m, i) => (
+                  <span key={i}>
+                    {i > 0 ? <span aria-hidden="true" className="mr-2 text-text-3">•</span> : null}
+                    {m}
+                  </span>
+                ))}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {hasDub ? (
+                  <Pill tone="dub">
+                    <VolumeIcon className="size-3.5" />
+                    <span lang={edition.hreflang}>{dubTerm(lang)}</span>
+                  </Pill>
+                ) : null}
+                {hasSub ? (
+                  <Pill>
+                    <CaptionsIcon className="size-3.5" />
+                    <span lang={edition.hreflang} className="text-text">{subTerm(lang)}</span>
+                  </Pill>
+                ) : null}
+                {uhd ? <Pill>4K</Pill> : null}
+                {audioLangs.size > 1 ? <Pill>+{audioLangs.size - (hasDub ? 1 : 0)} audio languages</Pill> : null}
+                {!hasDub && offers.length ? <Pill tone="leaving">{langName(lang)} dub not confirmed</Pill> : null}
+              </div>
 
-      <div className="mx-auto mt-6 grid max-w-site gap-6 px-4 md:px-7 lg:grid-cols-[1.25fr_1fr]">
-        <section aria-labelledby="faq">
-          <SectionHeader id="faq" title="Questions people ask" />
-          <Faq items={faq} />
-        </section>
-        <aside className="h-fit rounded-panel border border-line bg-surface p-5">
-          <h2 className="text-[15px] font-extrabold">In other countries</h2>
-          <p className="mt-2 text-sm text-text-2">
-            sofo currently checks the {edition.countryName} catalogue. United States, Deutschland, France and more editions are on the way.
-          </p>
-          <p className="mt-3 text-xs text-text-3">Travelling? Availability depends on the country you watch from.</p>
-          {en && en.name !== local.name ? <p className="mt-3 text-xs text-text-3">International title: {en.name}</p> : null}
-          <div id="alerts" className="mt-5 scroll-mt-24 border-t border-line pt-5">
-            <h2 className="text-[15px] font-extrabold">Follow {local.name}</h2>
-            <p className="mt-1 mb-3 text-sm text-text-2">
+              <div className="mt-6 hidden sm:block md:mt-8">
+                <ShortAnswerBlock data={data} edition={edition} />
+              </div>
+            </div>
+          </div>
+
+          <div className="sm:hidden">
+            <ShortAnswerBlock data={data} edition={edition} />
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <WatchlistButton title={saved} variant="secondary" />
+              <ShareButton edition={edition.code} type={type} slug={local.slug} name={local.name} />
+            </div>
+          </div>
+
+          <WhereToWatchTabs
+            heading={`Where to watch in ${edition.countryName}`}
+            tabs={[
+              { key: "stream", label: "Stream", count: stream.length, content: list(stream) ?? <NoOption /> },
+              { key: "rent", label: "Rent", count: rent.length, content: list(rent) },
+              { key: "buy", label: "Buy", count: buy.length, content: list(buy) },
+            ]}
+            footer={
+              data.checkedAt ? (
+                <p className="text-xs text-text-3">
+                  <CheckedAt at={data.checkedAt} /> · prices are set by the service
+                </p>
+              ) : (
+                <p className="text-xs text-text-3">No legal option found in {edition.countryName} yet.</p>
+              )
+            }
+          />
+        </div>
+
+        <div className="wrap pb-2">
+          <ShortAnswerFacts data={data} edition={edition} />
+        </div>
+      </div>
+
+      <div className="wrap mt-10 grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-12 md:mt-14 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
+        <div className="min-w-0 space-y-12 md:space-y-14">
+          {local.overview ? (
+            <section aria-labelledby="story">
+              <SectionHeader id="story" title="Storyline" />
+              <p lang={edition.hreflang} className="max-w-3xl text-[15px] leading-relaxed text-text-2 md:text-base">
+                {local.overview}
+              </p>
+              {title.videos[0] ? (
+                <a href="#trailers" className={`${buttonClass("ghost", "sm")} mt-4`}>
+                  <PlayIcon className="size-3.5" />
+                  Watch trailer
+                </a>
+              ) : null}
+            </section>
+          ) : null}
+
+          {offers.length ? (
+            <section aria-labelledby="langs">
+              <SectionHeader id="langs" title="Audio & subtitles by service" sub="Only what the service confirms — we never guess" />
+              <LangMatrix offers={offers} editionLang={lang} originalLang={title.originalLang} />
+            </section>
+          ) : null}
+
+          {type === "tv" && title.seasons.length ? (
+            <section aria-labelledby="seasons">
+              <SectionHeader id="seasons" title="Seasons & episodes" sub={`${dubTerm(lang)} status per season`} />
+              <Seasons data={data} edition={edition} />
+            </section>
+          ) : null}
+
+          {title.videos.length ? (
+            <section aria-labelledby="trailers-h" id="trailers" className="scroll-mt-24">
+              <SectionHeader id="trailers-h" title="Trailers" href={routes.trailers} linkLabel="All trailers" />
+              <div className="grid gap-4 sm:grid-cols-2">
+                {title.videos.slice(0, 2).map((v) => (
+                  <figure key={v.id}>
+                    <TrailerPlayer videoKey={v.key} title={`${local.name} — ${v.name}`} lang={v.lang} />
+                    <figcaption className="mt-2.5 text-sm font-semibold">
+                      {v.name} <span className="font-medium text-text-3">· {v.lang ? langName(v.lang) : "Original"}</span>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          <History data={data} editionLang={lang} countryName={edition.countryName} />
+
+          {title.credits.length ? (
+            <section aria-labelledby="cast">
+              <SectionHeader id="cast" title="Cast & crew" />
+              <Cast data={data} edition={edition} />
+            </section>
+          ) : null}
+
+          <section aria-labelledby="faq">
+            <SectionHeader id="faq" title="Questions people ask" />
+            <Faq items={faq} />
+          </section>
+        </div>
+
+        <aside className="min-w-0 space-y-4 lg:sticky lg:top-24 lg:h-fit">
+          <div id="alerts" className="panel scroll-mt-24 p-5">
+            <h2 className="text-h3">Follow {local.name}</h2>
+            <p className="mt-1.5 mb-4 text-sm text-text-2">
               {hasDub ? "We'll tell you if it leaves or gets cheaper." : `We'll tell you when ${langName(lang)} dub arrives.`} Email or Telegram.
             </p>
             <SubscribeForm titleId={title.id} kinds={hasDub ? ["leaving", "price_drop"] : ["dub_available", "leaving"]} variant="compact" />
           </div>
+
+          <div className="panel p-5">
+            <h2 className="text-h3">Details</h2>
+            <dl className="mt-3 divide-y divide-hairline text-sm">
+              {facts.map(([k, v]) => (
+                <div key={k} className="flex gap-4 py-2.5">
+                  <dt className="w-[42%] shrink-0 text-text-3">{k}</dt>
+                  <dd className="min-w-0 flex-1 font-semibold">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <div className="panel p-5">
+            <h2 className="text-h3">In other countries</h2>
+            <p className="mt-2 text-sm text-text-2">
+              sofo currently checks the {edition.countryName} catalogue. United States, Deutschland, France and more editions are on the way.
+            </p>
+            <p className="mt-2 text-xs text-text-3">Travelling? Availability depends on the country you watch from.</p>
+          </div>
         </aside>
       </div>
+
+      <div className="mt-8 md:mt-12">
+        {data.franchiseCards.length > 1 && title.franchise ? (
+          <PosterRow
+            title={`${title.franchise.name}: watch order`}
+            cards={data.franchiseCards}
+            edition={edition}
+            href={paths.franchise(edition, title.franchise.slug)}
+          />
+        ) : null}
+
+        <PosterRow title={`If you liked ${local.name}`} sub={hasDub ? `Also with ${langName(lang)} dub` : undefined} cards={similar} edition={edition} href={listRoute} />
+      </div>
+
+      {/* Phones: the answer's action stays one thumb away. */}
+      {primary ? (
+        <div className="glass fixed inset-x-0 bottom-[calc(58px+env(safe-area-inset-bottom))] z-30 border-t border-hairline px-4 py-2.5 md:hidden">
+          <OutboundLink
+            href={primary.url}
+            service={primary.serviceSlug}
+            title={local.name}
+            country={edition.country}
+            lang={data.shortAnswer.kind === "yes_audio" ? lang : undefined}
+            offerType={primary.type}
+            className={`${buttonClass("primary")} w-full`}
+          >
+            {primary.type === "rent" ? "Rent" : primary.type === "buy" ? "Buy" : "Watch"} on {primary.serviceName}
+            <ArrowUpRightIcon className="size-[18px]" />
+          </OutboundLink>
+        </div>
+      ) : null}
 
       <TitleJsonLd data={data} edition={edition} type={type} faq={faq} />
     </article>
@@ -260,7 +349,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
 }
 
 function NoOption() {
-  return <p className="rounded-card bg-surface-2/60 p-4 text-sm text-text-2">Not on any subscription or free service here right now.</p>;
+  return <p className="rounded-card bg-white/5 p-4 text-sm text-text-2">Not on any subscription or free service here right now.</p>;
 }
 
 function TitleJsonLd({ data, edition, type, faq }: { data: TitlePageData; edition: Edition; type: "movie" | "tv"; faq: { q: string; a: string }[] }) {

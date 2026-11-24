@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HeroSearch } from "@/components/home/hero-search";
 import { MyServices } from "@/components/home/my-services";
 import { SubscribeSection } from "@/components/home/subscribe-section";
-import { LeavingBadge } from "@/components/ui/badges";
+import { ArrowRightIcon } from "@/components/icons";
+import { CollectionCard } from "@/components/catalog/collection-card";
+import { PromoSlider, type PromoSlide } from "@/components/home/promo-slider";
+import { DubBadge, LeavingBadge } from "@/components/ui/badges";
+import { ServiceLogo } from "@/components/ui/service-logo";
 import { ChipLink, ChipRow } from "@/components/ui/chip";
 import { JsonLd } from "@/components/ui/json-ld";
 import { PosterImage } from "@/components/ui/poster-image";
@@ -13,7 +16,7 @@ import { PosterRow } from "@/components/ui/poster-row";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getServices } from "@/lib/catalog";
 import { getEdition, paths } from "@/lib/editions";
-import { daysUntil } from "@/lib/format";
+import { daysUntil, formatPrice, formatRuntime } from "@/lib/format";
 import { imageUrl } from "@/lib/images";
 import { dubTerm, langName, localLangName, subTerm } from "@/lib/lang";
 import { getHomeData } from "@/lib/queries/home";
@@ -21,6 +24,8 @@ import { buildAlternates } from "@/lib/seo/hreflang";
 import { siteUrl } from "@/lib/site";
 
 export const revalidate = 3600;
+
+const ACCENT: Record<string, string> = { dub: "bg-dub", sub: "bg-white/80", anime: "bg-free", kids: "bg-available" };
 
 export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
@@ -41,56 +46,79 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
   const [data, services] = await Promise.all([getHomeData(edition), getServices(edition)]);
   const r = edition.routes;
   const L = localLangName(edition.contentLang);
-  const wall = [...data.top, ...data.anime, ...data.kids].filter((c) => c.posterPath).slice(0, 20);
 
   const langCards = data.langCards.map((c) => ({
     ...c,
     ...{
-      dub: { name: dubTerm(edition.contentLang), sub: "Dubbed on legal services", href: r.dubHub },
-      sub: { name: subTerm(edition.contentLang), sub: "Original audio + subtitles", href: r.subHub },
-      anime: { name: "Anime — sub or dub", sub: "Japanese & Korean animation", href: r.anime },
-      kids: { name: "Kids, dubbed", sub: "Safe picks for children", href: r.kids },
+      dub: { name: dubTerm(edition.contentLang), sub: "Dubbed on legal services", href: r.dubHub, local: true },
+      sub: { name: subTerm(edition.contentLang), sub: "Original audio + subtitles", href: r.subHub, local: true },
+      anime: { name: "Anime — sub or dub", sub: "Japanese & Korean animation", href: r.anime, local: false },
+      kids: { name: "Kids, dubbed", sub: "Safe picks for children", href: r.kids, local: false },
     }[c.key as "dub" | "sub" | "anime" | "kids"],
   }));
 
+  const slides: PromoSlide[] = data.spotlight.map(({ card: c, overview, runtimeMin }) => ({
+    id: c.id,
+    type: c.type,
+    slug: c.slug,
+    href: paths.title(edition, c.type, c.slug),
+    name: c.name,
+    year: c.year,
+    posterPath: c.posterPath,
+    backdrop: imageUrl(c.backdropPath, "w1280")!,
+    overview,
+    meta: [c.type === "movie" ? "Movie" : "Series", c.year ? String(c.year) : null, c.type === "movie" ? formatRuntime(runtimeMin) : null, c.genres.slice(0, 2).join(", ") || null].filter(
+      (m): m is string => !!m,
+    ),
+    score: c.score,
+    services: c.services,
+    langLabel: c.dub ? dubTerm(edition.contentLang) : c.sub ? subTerm(edition.contentLang) : null,
+    langKind: c.dub ? "dub" : c.sub ? "sub" : null,
+    free: c.hasFree,
+  }));
+  const cap = (t: string) => t.replace(/^./, (c) => c.toLocaleUpperCase(edition.hreflang));
+
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div aria-hidden="true" className="absolute -inset-x-16 -top-32 hidden rotate-[-8deg] grid-cols-10 gap-2.5 opacity-[0.16] md:grid">
-          {[...wall, ...wall].slice(0, 40).map((c, i) => (
-            <div key={i} className="relative aspect-[2/3] overflow-hidden rounded-poster">
-              <Image src={imageUrl(c.posterPath)!} alt="" fill sizes="10vw" className="object-cover" />
-            </div>
-          ))}
+      {slides.length > 1 ? (
+        <div className="pt-4 md:pt-6">
+          <PromoSlider slides={slides} localLang={edition.hreflang} />
         </div>
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(10,10,13,0.75)_0%,#0A0A0D_70%)]" />
-        <div className="relative mx-auto max-w-site px-4 pt-6 pb-4 md:px-7 md:pt-24 md:pb-20 md:text-center">
-          <h1 className="text-[32px] leading-[1.06] font-extrabold tracking-[-0.035em] md:text-[76px]">
-            Every movie. Every service.
-            <br className="hidden md:block" /> <span className="text-orange max-md:text-text">Your language.</span>
-          </h1>
-          <p className="mx-auto mt-4 hidden max-w-2xl text-lg font-medium text-text-2 md:block">
-            Search once — we check Netflix, Disney+, Prime Video and 40+ legal services to find the version you can actually understand.
+      ) : null}
+
+      {/* Search — the one thing sofo does that others don't: where + which language */}
+      <section className="wrap pt-8 pb-2 md:pt-12 md:pb-4">
+        <div className="mx-auto max-w-[860px] text-center">
+          <h1 className="text-h1">Every movie. Every service. Your language.</h1>
+          <p className="mx-auto mt-3 max-w-xl text-[15px] text-text-2 md:text-base">
+            Search once — we check {services.length} legal services in {edition.countryName} and tell you where it streams, and whether it has{" "}
+            <span lang={edition.hreflang}>{dubTerm(edition.contentLang)}</span> or subtitles.
           </p>
           <HeroSearch action={r.search} langLabel={L} />
           <ChipRow className="mt-4 md:justify-center">
-            <ChipLink href={r.dubHub} active>
-              {dubTerm(edition.contentLang).replace(/^./, (c) => c.toUpperCase())}
+            <ChipLink href={r.dubHub}>
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-dub" />
+              <span lang={edition.hreflang}>{cap(dubTerm(edition.contentLang))}</span>
             </ChipLink>
             <ChipLink href={r.anime}>Anime</ChipLink>
             <ChipLink href={r.kids}>Kids</ChipLink>
-            <ChipLink href={r.newLeaving}>Leaving</ChipLink>
-            <ChipLink href={`${r.movies}?offer=free`}>Free</ChipLink>
+            <ChipLink href={r.newLeaving}>
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-leaving" />
+              Leaving soon
+            </ChipLink>
+            <ChipLink href={`${r.movies}?offer=free`}>
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-free" />
+              Free
+            </ChipLink>
             <ChipLink href={r.releases}>Coming soon</ChipLink>
           </ChipRow>
           {data.trending.length ? (
-            <p className="mt-4 hidden text-sm text-text-3 md:block">
-              Trending in {edition.countryName}:{" "}
+            <p className="mx-auto mt-4 hidden max-w-3xl text-[13px] text-text-3 md:block">
+              Trending:{" "}
               {data.trending.map((q, i) => (
                 <span key={q}>
-                  {i > 0 ? " · " : ""}
-                  <Link href={paths.search(edition, q)} className="font-semibold text-text-2">
+                  {i > 0 ? <span aria-hidden="true"> · </span> : null}
+                  <Link href={paths.search(edition, q)} className="text-text-2 hover:text-text">
                     {q}
                   </Link>
                 </span>
@@ -102,25 +130,52 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
 
       <PosterRow title={`Top 10 in ${edition.countryName} this week`} cards={data.top} edition={edition} href={r.movies} ranked />
 
+      {/* Browse by service */}
+      <section className="wrap section-y" aria-labelledby="by-service">
+        <SectionHeader id="by-service" title="Browse by service" sub={`What's on each platform in ${edition.countryName} — with language info`} />
+        <ul className="no-scrollbar -mx-4 flex gap-2.5 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-4 md:gap-3 md:overflow-visible md:px-0 xl:grid-cols-8">
+          {services.map((s) => (
+            <li key={s.slug} className="shrink-0">
+              <Link
+                href={paths.service(edition, s.slug)}
+                className="card card-hover flex w-[132px] flex-col items-center gap-2.5 px-3 py-4 text-center md:w-auto md:py-5"
+              >
+                <ServiceLogo {...s} size={48} className="shadow-poster" />
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-extrabold">{s.name}</span>
+                  <span className="tnum block text-xs text-text-3">{s.priceFrom ? `from ${formatPrice(s.priceFrom, s.currency)}/mo` : s.hasAdsTier ? "Free with ads" : "Subscription"}</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {/* Watch in your language */}
-      <section className="mx-auto max-w-site px-4 py-5 md:px-7 md:py-7">
+      <section className="wrap section-y">
         <SectionHeader title="Watch in your language" sub={`Dubbed and subtitled, on legal services in ${edition.countryName}`} />
-        <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
           {langCards.map((c) => (
             <li key={c.key}>
-              <Link href={c.href} className="group flex h-full items-center gap-3 rounded-panel border border-line bg-surface p-4 hover:border-orange hover:text-text md:p-5">
-                <span className="min-w-0 flex-1">
-                  <span className="block text-base font-extrabold md:text-lg">{c.name}</span>
-                  <span className="block text-xs text-text-2 md:text-sm">
-                    {c.count} titles · {c.sub}
-                  </span>
-                </span>
-                <span className="relative hidden h-[72px] w-[92px] shrink-0 sm:block">
+              <Link href={c.href} className="card card-hover group relative flex h-full min-h-[148px] flex-col justify-between overflow-hidden p-4 md:min-h-[176px] md:p-5">
+                <span aria-hidden="true" className={`absolute top-0 left-0 h-full w-[3px] ${ACCENT[c.key] ?? "bg-orange"}`} />
+                <span aria-hidden="true" className="absolute top-4 right-3 flex md:top-5 md:right-4">
                   {c.cards.slice(0, 3).map((card, i) => (
-                    <span key={card.id} className="absolute top-0 w-12 transition group-hover:-translate-y-0.5" style={{ left: i * 22, zIndex: 3 - i, rotate: `${(i - 1) * 6}deg` }}>
-                      <PosterImage path={card.posterPath} alt="" sizes="48px" className="rounded-[8px] ring-2 ring-surface" />
+                    <span
+                      key={card.id}
+                      className="-ml-5 block w-[46px] transition duration-300 ease-out first:ml-0 group-hover:-translate-y-1 md:w-[58px]"
+                      style={{ zIndex: 3 - i, rotate: `${(i - 1) * 7}deg`, transitionDelay: `${i * 30}ms` }}
+                    >
+                      <PosterImage path={card.posterPath} alt="" sizes="58px" className="rounded-[8px] shadow-poster" />
                     </span>
                   ))}
+                </span>
+                <span className="tnum relative text-[28px] leading-none font-extrabold tracking-[-0.04em] md:text-[36px]">{c.count}</span>
+                <span className="relative mt-auto block pt-6">
+                  <span lang={c.local ? edition.hreflang : undefined} className="block text-[15px] leading-tight font-extrabold md:text-lg">
+                    {c.name}
+                  </span>
+                  <span className="mt-1 block text-xs text-text-2 md:text-[13px]">{c.sub}</span>
                 </span>
               </Link>
             </li>
@@ -130,6 +185,7 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
 
       <PosterRow
         title={`Just dubbed into ${langName(edition.contentLang)}`}
+        sub="Dub tracks confirmed in the last two weeks"
         cards={data.justDubbed}
         edition={edition}
         href={r.newLeaving}
@@ -137,55 +193,51 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
       />
 
       {data.leaving ? (
-        <section className="mx-auto max-w-site px-4 py-3 md:px-7">
+        <section className="wrap py-3">
           <Link
             href={paths.title(edition, data.leaving.type, data.leaving.slug)}
-            className="flex items-center gap-4 rounded-panel border border-leaving/30 bg-gradient-to-r from-[#2A2210] to-surface p-4 hover:text-text md:p-5"
+            className="group relative flex items-center gap-4 overflow-hidden rounded-panel border border-leaving/25 bg-[linear-gradient(100deg,#2a2110_0%,#17140f_45%,var(--color-surface)_100%)] p-4 transition-colors hover:border-leaving/50 hover:text-text md:gap-6 md:p-5"
           >
-            <span className="w-14 shrink-0 md:w-16">
-              <PosterImage path={data.leaving.posterPath} alt="" sizes="64px" className="rounded-[8px]" />
+            <span className="w-14 shrink-0 md:w-[68px]">
+              <PosterImage path={data.leaving.posterPath} alt="" sizes="68px" className="rounded-[8px] shadow-poster" />
             </span>
             <span className="min-w-0 flex-1">
-              <LeavingBadge>LEAVING IN {daysUntil(data.leaving.leavingAt)} DAYS</LeavingBadge>
-              <span className="mt-1.5 block text-base font-extrabold md:text-xl">
+              <LeavingBadge>
+                <span lang="en">LEAVING IN {daysUntil(data.leaving.leavingAt)} DAYS</span>
+              </LeavingBadge>
+              <span className="mt-2 block text-base leading-snug font-extrabold md:text-[22px]">
                 {data.leaving.name} leaves {data.leaving.service}
               </span>
+              <span className="mt-0.5 hidden text-sm text-text-2 sm:block">Last chance to watch it with your subscription.</span>
             </span>
-            <span className="shrink-0 text-sm font-extrabold text-leaving">Watch now →</span>
+            <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-extrabold text-leaving">
+              <span className="max-sm:sr-only">Watch now</span>
+              <ArrowRightIcon className="size-5 transition-transform duration-200 group-hover:translate-x-1" />
+            </span>
           </Link>
         </section>
       ) : null}
 
-      <PosterRow title="New this week" cards={data.newThisWeek} edition={edition} href={r.newLeaving} />
+      <PosterRow title="New this week" sub={`Just added to services in ${edition.countryName}`} cards={data.newThisWeek} edition={edition} href={r.newLeaving} />
       <PosterRow
         title="Anime — sub or dub"
         cards={data.anime}
         edition={edition}
         href={r.anime}
-        badge={(c) => (c.dub ? <span className="rounded-chip bg-dub px-2 py-0.5 text-[11px] font-extrabold">TR dub</span> : c.sub ? undefined : "none")}
+        badge={(c) => (c.dub ? <DubBadge>{edition.contentLang.toUpperCase()} dub</DubBadge> : c.sub ? undefined : "none")}
       />
 
       <MyServices services={services} />
 
-      <PosterRow title="For kids — in Turkish" cards={data.kids} edition={edition} href={r.kids} />
+      <PosterRow title={`For kids — in ${langName(edition.contentLang)}`} cards={data.kids} edition={edition} href={r.kids} />
 
       {data.lists.length ? (
-        <section className="mx-auto max-w-site px-4 py-5 md:px-7 md:py-7" id="collections">
-          <SectionHeader title="Collections" href={r.collections} linkLabel="All collections" />
-          <ul className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
+        <section className="wrap section-y scroll-mt-24" id="collections">
+          <SectionHeader title="Collections" sub="Hand-picked by sofo editors" href={r.collections} linkLabel="All collections" />
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
             {data.lists.map((l) => (
               <li key={l.id}>
-                <Link href={paths.list(edition, l.slug)} className="group block overflow-hidden rounded-panel border border-line bg-surface hover:border-orange hover:text-text">
-                  <span className="grid grid-cols-4 gap-0.5">
-                    {l.items.map((it) => (
-                      <PosterImage key={it.titleId} path={it.title.posterPath} alt="" sizes="90px" className="rounded-none" />
-                    ))}
-                  </span>
-                  <span className="block p-3.5 md:p-4">
-                    <span className="line-clamp-2 block text-[15px] leading-snug font-extrabold">{l.name}</span>
-                    <span className="mt-1 block text-xs text-text-2">{l._count.items} titles · by {l.author}</span>
-                  </span>
-                </Link>
+                <CollectionCard edition={edition} list={l} />
               </li>
             ))}
           </ul>
@@ -194,21 +246,25 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
 
       <SubscribeSection langName={langName(edition.contentLang)} />
 
-      <section className="mx-auto max-w-site px-4 py-8 md:px-7">
-        <h2 className="text-lg font-extrabold md:text-xl">Türkçe dublaj filmler ve diziler — hangi platformda?</h2>
-        <details className="group mt-2 max-w-4xl text-sm leading-relaxed text-text-2">
-          <summary className="cursor-pointer list-none">
-            <span>
-              sofo; Netflix, Disney+, Prime Video, HBO Max, TOD, tabii, Exxen ve Gain gibi Türkiye&apos;deki yasal platformları her gün kontrol eder ve
-              hangi film ve dizinin Türkçe dublaj ya da altyazıyla izlenebildiğini gösterir…
-            </span>
-            <span className="mt-2 block font-bold text-text-2 group-open:hidden">Read more</span>
-          </summary>
-          <p className="mt-2">
-            Dil bilgisi yalnızca platform onayladığında gösterilir; doğrulanmamışsa “Not confirmed by the service” yazarız ve asla tahmin etmeyiz. Her
-            sonuçta son kontrol zamanı yer alır. Video barındırmayız; izleme her zaman resmi platformda gerçekleşir. Korsan sitelere bağlantı vermeyiz.
-          </p>
-        </details>
+      <section className="wrap section-y" lang={edition.hreflang}>
+        <div className="max-w-3xl">
+          <h2 className="text-h3 text-text-2">Türkçe dublaj filmler ve diziler — hangi platformda?</h2>
+          <details className="group mt-2 text-sm leading-relaxed text-text-3">
+            <summary className="list-none">
+              <span>
+                sofo; Netflix, Disney+, Prime Video, HBO Max, TOD, tabii, Exxen ve Gain gibi Türkiye&apos;deki yasal platformları her gün kontrol eder ve
+                hangi film ve dizinin Türkçe dublaj ya da altyazıyla izlenebildiğini gösterir…
+              </span>
+              <span lang="en" className="mt-2 block font-bold text-text-2 group-open:hidden">
+                Read more
+              </span>
+            </summary>
+            <p className="mt-2">
+              Dil bilgisi yalnızca platform onayladığında gösterilir; doğrulanmamışsa “Not confirmed by the service” yazarız ve asla tahmin etmeyiz. Her
+              sonuçta son kontrol zamanı yer alır. Video barındırmayız; izleme her zaman resmi platformda gerçekleşir. Korsan sitelere bağlantı vermeyiz.
+            </p>
+          </details>
+        </div>
       </section>
 
       <JsonLd

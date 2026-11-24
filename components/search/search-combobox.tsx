@@ -178,8 +178,8 @@ export function SearchCombobox({ action, variant = "header", defaultValue = "", 
   }
 
   const sizes = isPage
-    ? "h-14 gap-3 rounded-input border-2 px-4 text-[17px] md:h-16 md:text-lg"
-    : "h-11 gap-2.5 rounded-input border px-3.5 text-sm";
+    ? "h-14 gap-3 rounded-card px-4 text-[17px] md:h-16 md:px-5 md:text-lg"
+    : "h-10 gap-2.5 rounded-chip px-3.5 text-sm";
 
   return (
     <div
@@ -198,9 +198,9 @@ export function SearchCombobox({ action, variant = "header", defaultValue = "", 
           e.preventDefault();
           submit(value);
         }}
-        className={`flex min-w-0 items-center border-line bg-surface focus-within:border-orange ${sizes}`}
+        className={`flex min-w-0 items-center border transition duration-150 focus-within:border-orange focus-within:shadow-[0_0_0_4px_rgb(255_90_31/0.16)] ${isPage ? "border-hairline-strong bg-surface" : "border-hairline bg-white/[0.06] hover:bg-white/10 focus-within:bg-surface"} ${sizes}`}
       >
-        <SearchIcon className={`${isPage ? "size-5" : "size-[18px]"} shrink-0 text-orange`} />
+        <SearchIcon className={`${isPage ? "size-5 text-orange" : "size-[18px] text-text-2"} shrink-0`} />
         <label htmlFor={`${uid}-q`} className="sr-only">
           Search movies, series, people
         </label>
@@ -221,7 +221,7 @@ export function SearchCombobox({ action, variant = "header", defaultValue = "", 
           maxLength={100}
           autoFocus={autoFocus}
           value={value}
-          placeholder="Search movies, series, people…"
+          placeholder={isPage ? "Search movies, series, people…" : "Search titles, people…"}
           onChange={(e) => {
             setValue(e.target.value);
             setActive(-1);
@@ -246,11 +246,11 @@ export function SearchCombobox({ action, variant = "header", defaultValue = "", 
             </svg>
           </button>
         ) : null}
-        {!isPage ? <kbd className="rounded-[5px] border border-line px-1.5 text-xs text-text-2">/</kbd> : null}
+        {!isPage ? <kbd className="rounded-[6px] bg-white/8 px-1.5 font-ui text-[11px] leading-5 font-bold text-text-3">/</kbd> : null}
       </form>
 
       <div
-        className={`absolute inset-x-0 top-full z-40 mt-2 overflow-hidden rounded-card border border-line bg-surface shadow-2xl shadow-black/60 ${showList ? "" : "hidden"}`}
+        className={`absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-card border border-hairline-strong bg-surface-2 shadow-pop ${isPage ? "left-0" : "left-0 xl:-left-24"} ${showList ? "animate-pop-in" : "hidden"}`}
       >
         <ul id={listId} role="listbox" aria-label="Search suggestions" className="max-h-[min(70vh,560px)] overflow-y-auto p-2">
           {q && loading && options.length <= 1 ? <SkeletonRows /> : null}
@@ -303,7 +303,7 @@ function OptionRow({
   onHover: () => void;
   onChoose: () => void;
 }) {
-  const base = `flex cursor-pointer items-center gap-3 rounded-input px-3 ${selected ? "bg-surface-2" : ""}`;
+  const base = `flex cursor-pointer items-center gap-3 rounded-input px-3 transition-colors ${selected ? "bg-white/8" : ""}`;
   const handlers = {
     id: o.id,
     role: "option" as const,

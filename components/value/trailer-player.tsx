@@ -55,12 +55,12 @@ export function TrailerPlayer({ videoKey, title, lang, duration, overlay, playPo
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
       {overlay ? <div className="pointer-events-none absolute inset-0">{overlay}</div> : null}
       {lang ? (
-        <span className={`absolute top-2.5 right-2.5 rounded-chip px-2 py-0.5 text-[11px] font-extrabold ${lang === "tr" ? "bg-dub text-white" : "bg-black/70 text-white"}`}>
+        <span className={`absolute top-2.5 right-2.5 rounded-[5px] px-1.5 py-0.5 text-[11px] font-bold ${lang === "tr" ? "bg-dub text-white" : "bg-black/70 text-white"}`}>
           {lang.toUpperCase()}
         </span>
       ) : null}
       {duration ? (
-        <span className="absolute bottom-2.5 left-2.5 inline-flex items-center gap-1 rounded-chip bg-black/75 px-2 py-0.5 text-[11px] font-extrabold text-white">
+        <span className="absolute bottom-2.5 left-2.5 tnum inline-flex items-center gap-1 rounded-[5px] bg-black/75 px-1.5 py-0.5 text-[11px] font-bold text-white">
           <PlayGlyph className="size-2.5" /> {duration}
         </span>
       ) : null}
