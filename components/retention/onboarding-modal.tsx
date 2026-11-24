@@ -6,6 +6,7 @@ import { track } from "@/lib/client/analytics";
 import { usePrefs, type Prefs } from "@/lib/client/prefs";
 import type { Edition } from "@/lib/editions";
 import { dubTerm, subTerm } from "@/lib/lang";
+import { CheckIcon, ChevronRightIcon, GlobeIcon } from "../icons";
 import { buttonClass } from "../ui/button";
 import { ServiceLogo } from "../ui/service-logo";
 import { Dialog, useHydrated } from "./dialog";
@@ -57,52 +58,59 @@ export function OnboardingModal({ edition, services }: Props) {
   ];
 
   return (
-    <Dialog open onClose={() => finish("skip")} labelledBy={`${id}-h`} className="md:max-w-[480px]">
-      <div className="flex min-h-[70dvh] flex-col p-5 md:min-h-0 md:p-7">
-        <div className="flex items-center gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <span key={i} aria-hidden="true" className={`h-1.5 rounded-chip ${i === step ? "w-6 bg-orange" : "w-1.5 bg-line"}`} />
-          ))}
-          <button type="button" onClick={() => finish("skip")} className="ml-auto text-sm font-bold text-text-2 hover:text-text">
+    <Dialog open onClose={() => finish("skip")} labelledBy={`${id}-h`} className="md:max-w-[520px]">
+      <div className="flex min-h-[72dvh] flex-col p-5 pt-4 md:min-h-0 md:p-8">
+        <div className="flex items-center gap-4">
+          <div className="flex flex-1 items-center gap-1.5" aria-hidden="true">
+            {[0, 1, 2].map((i) => (
+              <span key={i} className={`h-[3px] flex-1 rounded-full transition-colors duration-300 ${i <= step ? "bg-white" : "bg-white/14"}`} />
+            ))}
+          </div>
+          <button type="button" onClick={() => finish("skip")} className={`${buttonClass("quiet", "sm")} -mr-3`}>
             Skip
           </button>
         </div>
-        <p lang="en" className="mt-6 text-xs font-extrabold tracking-[0.08em] text-orange uppercase" aria-live="polite">
+        <p lang="en" className="overline tnum mt-6 text-text-3 md:mt-8" aria-live="polite">
           Step {step + 1} of 3
         </p>
-        <h2 id={`${id}-h`} className="mt-2 text-[28px] leading-tight font-extrabold tracking-[-0.02em]">
+        <h2 id={`${id}-h`} className="mt-3 text-[28px] leading-[1.1] font-medium tracking-[-0.035em] md:text-[34px]">
           {headings[step]}
         </h2>
-        <p className="mt-2 text-sm text-text-2">{intros[step]}</p>
+        <p className="mt-3 max-w-sm text-[15px] text-text-2">{intros[step]}</p>
 
-        <div className="mt-5 grow">
+        <div className="mt-6 grow md:mt-7">
           {step === 0 ? (
             <>
-              <fieldset className="grid gap-3">
+              <fieldset className="grid gap-2">
                 <legend className="sr-only">Country</legend>
                 <Option checked name={`${id}-c`} title={edition.countryName} sub="Catalog, prices and local language terms · change anytime" onSelect={() => {}} />
-                <Link href="/" className="flex items-center gap-3 rounded-card border border-line bg-ink/40 p-4 hover:border-text-3 hover:text-text">
-                  <span aria-hidden="true" className="size-5 shrink-0 rounded-full border-2 border-line" />
-                  <span>
-                    <span className="block font-bold">Another country</span>
-                    <span className="block text-xs text-text-2">Choose an edition — more countries soon</span>
+                <Link href="/" className="group flex items-center gap-3.5 rounded-card p-4 ring-1 ring-hairline transition duration-200 ease-out ring-inset hover:ring-hairline-strong">
+                  <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center text-text-3">
+                    <GlobeIcon className="size-5" />
                   </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[15px] font-medium">Another country</span>
+                    <span className="block text-xs text-text-3">Choose an edition — more countries soon</span>
+                  </span>
+                  <ChevronRightIcon className="size-4 shrink-0 text-text-3 transition duration-200 group-hover:translate-x-0.5 group-hover:text-text" />
                 </Link>
               </fieldset>
-              <p className="mt-6 text-sm font-bold">Interface language</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                <span className="inline-flex h-9 items-center rounded-chip bg-white px-3.5 text-sm font-bold text-ink" aria-current="true">
+              <p lang="en" className="overline mt-7 text-text-3">
+                Interface language
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="inline-flex h-9 items-center rounded-full bg-white px-4 text-[13px] font-medium text-ink" aria-current="true">
                   English
                 </span>
                 {["Türkçe", "Español", "Deutsch"].map((l) => (
-                  <span key={l} className="inline-flex h-9 items-center rounded-chip border border-line px-3.5 text-sm font-bold text-text-3" title="Coming soon">
+                  <span key={l} className="inline-flex h-9 items-center rounded-full px-4 text-[13px] font-medium text-text-3 ring-1 ring-hairline ring-inset" title="Coming soon">
                     {l} · soon
                   </span>
                 ))}
               </div>
             </>
           ) : step === 1 ? (
-            <fieldset className="grid gap-3">
+            <fieldset className="grid gap-2">
               <legend className="sr-only">Audio preference</legend>
               {audioOptions.map((o) => (
                 <Option key={o.value} name={`${id}-a`} checked={chosenAudio === o.value} title={o.title} sub={o.sub} onSelect={() => setAudio(o.value)} />
@@ -118,15 +126,15 @@ export function OnboardingModal({ edition, services }: Props) {
                       type="button"
                       aria-pressed={on}
                       onClick={() => setPicked(on ? chosenServices.filter((x) => x !== s.slug) : [...chosenServices, s.slug])}
-                      className={`relative flex w-full flex-col items-center gap-2 rounded-card border px-1 py-3 text-xs font-bold transition ${
-                        on ? "border-orange bg-orange-deep" : "border-line bg-ink/40 hover:border-text-3"
+                      className={`relative flex w-full flex-col items-center gap-2.5 rounded-card px-1 pt-4 pb-3 text-xs font-medium ring-inset transition duration-200 ease-out active:scale-[0.97] ${
+                        on ? "bg-white/8 text-text ring-[1.5px] ring-white" : "text-text-2 ring-1 ring-hairline hover:text-text hover:ring-hairline-strong"
                       }`}
                     >
-                      <ServiceLogo slug={s.slug} name={s.name} logoPath={s.logoPath} size={40} />
-                      <span className="truncate">{s.name}</span>
+                      <ServiceLogo slug={s.slug} name={s.name} logoPath={s.logoPath} size={44} />
+                      <span className="max-w-full truncate">{s.name}</span>
                       {on ? (
-                        <span aria-hidden="true" className="absolute top-1.5 right-1.5 flex size-4 items-center justify-center rounded-full bg-orange text-[10px] text-ink">
-                          ✓
+                        <span aria-hidden="true" className="absolute top-1.5 right-1.5 flex size-[18px] items-center justify-center rounded-full bg-white text-ink">
+                          <CheckIcon className="size-3 stroke-[3.5]" />
                         </span>
                       ) : null}
                     </button>
@@ -137,13 +145,13 @@ export function OnboardingModal({ edition, services }: Props) {
           )}
         </div>
 
-        <div className="mt-6 flex gap-2">
+        <div className="mt-7 flex gap-2 md:mt-8">
           {step > 0 ? (
-            <button type="button" className={buttonClass("secondary")} onClick={() => setStep(step - 1)}>
+            <button type="button" className={buttonClass("secondary", "lg")} onClick={() => setStep(step - 1)}>
               Back
             </button>
           ) : null}
-          <button type="button" data-autofocus className={`${buttonClass("primary")} h-12 flex-1 text-[15px]`} onClick={next}>
+          <button type="button" data-autofocus className={`${buttonClass("primary", "lg")} flex-1`} onClick={next}>
             {step < 2 ? "Continue" : "Show my picks"}
           </button>
         </div>
@@ -155,18 +163,22 @@ export function OnboardingModal({ edition, services }: Props) {
 function Option({ name, checked, title, sub, onSelect }: { name: string; checked: boolean; title: string; sub: string; onSelect: () => void }) {
   return (
     <label
-      className={`flex cursor-pointer items-center gap-3 rounded-card border p-4 transition ${checked ? "border-orange bg-orange-deep" : "border-line bg-ink/40 hover:border-text-3"}`}
+      className={`flex cursor-pointer items-center gap-3.5 rounded-card p-4 ring-inset transition duration-200 ease-out ${
+        checked ? "bg-white/8 ring-[1.5px] ring-white" : "ring-1 ring-hairline hover:ring-hairline-strong"
+      }`}
     >
       <input type="radio" name={name} checked={checked} onChange={onSelect} className="peer sr-only" />
       <span
         aria-hidden="true"
-        className={`flex size-5 shrink-0 items-center justify-center rounded-full border-2 peer-focus-visible:outline-2 peer-focus-visible:outline-orange ${checked ? "border-orange" : "border-line"}`}
+        className={`flex size-5 shrink-0 items-center justify-center rounded-full peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-white ${
+          checked ? "bg-white" : "ring-[1.5px] ring-white/30 ring-inset"
+        }`}
       >
-        {checked ? <span className="size-2.5 rounded-full bg-orange" /> : null}
+        {checked ? <span className="size-2 rounded-full bg-ink" /> : null}
       </span>
-      <span>
-        <span className="block font-bold">{title}</span>
-        <span className="block text-xs text-text-2">{sub}</span>
+      <span className="min-w-0">
+        <span className="block text-[15px] font-medium">{title}</span>
+        <span className="block text-xs text-text-3">{sub}</span>
       </span>
     </label>
   );

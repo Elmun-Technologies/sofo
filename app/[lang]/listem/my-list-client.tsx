@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { ArrowUpRightIcon, BellIcon, BookmarkIcon, CheckIcon, ChevronDownIcon, ChevronRightIcon, EyeIcon, InfoIcon, XIcon } from "@/components/icons";
+import { ArrowUpRightIcon, BellIcon, BookmarkIcon, CheckIcon, ChevronDownIcon, EyeIcon, InfoIcon, XIcon } from "@/components/icons";
 import { OutboundLink } from "@/components/outbound-link";
 import { AlertToggles } from "@/components/retention/alert-toggles";
 import { useHydrated } from "@/components/retention/dialog";
@@ -372,10 +372,10 @@ function GridItem({ item, fresh, status, loading, edition, onNotify, onWatched, 
           country={edition.country}
           lang={o.audio === "confirmed_yes" ? edition.contentLang : undefined}
           offerType={o.type}
-          className={`${buttonClass("accent", "sm")} mt-3 max-w-full min-w-0 !shrink self-start`}
+          className={`${buttonClass("secondary", "sm")} mt-3 max-w-full min-w-0 !shrink self-start`}
         >
           <span className="truncate">Watch on {o.serviceName}</span>
-          <ArrowUpRightIcon className="size-3.5 shrink-0" />
+          <ArrowUpRightIcon className="size-3.5 shrink-0 text-orange" />
         </OutboundLink>
       ) : null}
     </li>
@@ -399,11 +399,10 @@ function RowItem({ item, fresh, status, loading, onNotify, onRemove }: ItemProps
     </>
   );
   return (
-    <li className="flex items-center gap-1 py-3 pr-2 pl-3">
+    <li className="flex items-center gap-0.5 py-3 pr-2 pl-3">
       {href ? (
         <Link href={href} className="flex min-w-0 flex-1 items-center gap-3">
           {body}
-          <ChevronRightIcon className="size-4 shrink-0 text-text-3" />
         </Link>
       ) : (
         <div className="flex min-w-0 flex-1 items-center gap-3">{body}</div>
@@ -421,7 +420,9 @@ function RowItem({ item, fresh, status, loading, onNotify, onRemove }: ItemProps
 function IconBtn({ label, onClick, active, touch, glass, children }: { label: string; onClick: () => void; active?: boolean; touch?: boolean; glass?: boolean; children: React.ReactNode }) {
   // On posters (glass): quiet until hover on pointer devices; an active control (alerts on, watched) always stays visible.
   const tone = active
-    ? "bg-white text-ink"
+    ? touch
+      ? "bg-white/12 text-text [&_svg]:fill-current"
+      : "bg-white text-ink"
     : glass
       ? "bg-black/55 text-white ring-1 ring-white/15 ring-inset backdrop-blur-md hover:bg-black/80 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100"
       : "text-text-2 hover:bg-white/8 hover:text-text";
@@ -542,11 +543,11 @@ function AlertsTab({ edition, items, events, loading, statusOf, onChange }: { ed
           What we tell you
         </h2>
         <p className="mt-2 text-[15px] text-text-2">Saved on this device. Connect Telegram or email to get them as messages.</p>
-        <ul className="mt-5 grid gap-3 md:gap-4 xl:grid-cols-2">
+        <ul className="mt-5 grid gap-3">
           {items.map((i) => {
             const st = statusOf(i.id);
             return (
-              <li key={i.id} className="panel min-w-0 p-4 md:p-5">
+              <li key={i.id} className="panel min-w-0 p-4 md:p-5 xl:grid xl:grid-cols-[230px_minmax(0,1fr)] xl:items-center xl:gap-6">
                 <div className="flex items-center gap-3.5">
                   <div className="w-11 shrink-0">
                     <PosterImage path={i.posterPath} alt="" sizes="44px" className="!rounded-[8px]" />
@@ -558,7 +559,7 @@ function AlertsTab({ edition, items, events, loading, statusOf, onChange }: { ed
                     </div>
                   </div>
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 xl:mt-0">
                   <AlertToggles
                     dense
                     value={i.alerts ?? []}

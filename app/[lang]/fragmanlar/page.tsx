@@ -221,7 +221,8 @@ function Featured({ item, edition }: { item: TrailerItem; edition: Edition }) {
   const { card, best } = item.title;
   const href = paths.title(edition, card.type, card.slug);
   const noun = card.type === "tv" ? "series" : "movie";
-  const facts = [KIND[item.kind] ?? "Video", item.lang ? langName(item.lang) : null, formatDuration(item.durationSec), "plays on YouTube"].filter(Boolean).join(" · ");
+  const kind = KIND[item.kind] ?? "Video";
+  const facts = [item.name.toLowerCase().includes(kind.toLowerCase()) ? null : kind, item.lang ? langName(item.lang) : null, formatDuration(item.durationSec), "plays on YouTube"].filter(Boolean).join(" · ");
   const meta = [card.type === "tv" ? "Series" : "Movie", card.year, card.genres.slice(0, 2).join(", ")].filter(Boolean).join(" · ");
   return (
     <div className="mt-5 flex flex-col gap-6 md:mt-7 md:flex-row md:items-start md:justify-between md:gap-10">

@@ -58,10 +58,7 @@ export function ParentSettings({ langLabel, myListHref }: { langLabel: string; m
         <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/6 text-text-2">
           <ShieldCheckIcon className="size-5" />
         </span>
-        <span className="min-w-0 flex-1">
-          <h2 className="text-h3">Parent settings</h2>
-          <span className="block truncate text-[13px] text-text-3 group-open:hidden md:group-open:block">Saved on this device — no account needed</span>
-        </span>
+        <h2 className="text-h3 min-w-0 flex-1">Parent settings</h2>
         <span className={`tag max-w-[40%] ${on ? "!border-white/40 !text-text" : ""}`}>
           {on ? <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-available" /> : null}
           <span className="truncate">{summary}</span>

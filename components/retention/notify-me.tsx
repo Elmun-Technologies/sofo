@@ -5,7 +5,7 @@ import { DEFAULT_ALERT_KINDS, isAlertKind, type AlertKindName } from "@/lib/aler
 import { track } from "@/lib/client/analytics";
 import { useWatchlist, type SavedTitle } from "@/lib/client/watchlist";
 import { BellIcon } from "../icons";
-import { buttonClass } from "../ui/button";
+import { buttonClass, iconButtonClass } from "../ui/button";
 import { PosterImage } from "../ui/poster-image";
 import { AlertToggles } from "./alert-toggles";
 import { CloseButton, Dialog } from "./dialog";
@@ -36,9 +36,9 @@ export function NotifyMeButton({ title, subtitle, serviceName, variant = "second
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-label={variant === "icon" ? `${label}: ${title.name}` : undefined}
-        className={variant === "icon" ? "inline-flex size-9 items-center justify-center rounded-chip bg-surface-2 text-text hover:bg-line" : buttonClass(variant)}
+        className={variant === "icon" ? iconButtonClass("sm", "outline") : buttonClass(variant)}
       >
-        <BellIcon className={`size-[18px] ${active ? "text-orange" : ""}`} />
+        <BellIcon className={`size-[18px] ${active ? "fill-current" : ""}`} />
         {variant === "icon" ? null : active ? "Alerts on" : label}
       </button>
       {open ? <NotifySheet title={title} subtitle={subtitle} serviceName={serviceName} onClose={() => setOpen(false)} /> : null}
@@ -63,28 +63,30 @@ export function NotifySheet({ title, subtitle, serviceName, onClose }: Omit<Prop
 
   return (
     <Dialog open onClose={onClose} labelledBy={`${id}-h`}>
-      <div className="p-5 md:p-6">
-        <div className="flex items-start justify-between gap-3">
-          <h2 id={`${id}-h`} className="text-xl font-extrabold">
+      <div className="p-5 pt-4 md:p-7">
+        <div className="flex items-center justify-between gap-3">
+          <h2 id={`${id}-h`} className="text-h2">
             Notify me
           </h2>
           <CloseButton onClick={onClose} />
         </div>
-        <div className="mt-4 flex items-center gap-3">
+        <div className="mt-5 flex items-center gap-3.5">
           <div className="w-12 shrink-0">
-            <PosterImage path={title.posterPath} alt="" sizes="48px" />
+            <PosterImage path={title.posterPath} alt="" sizes="48px" className="!rounded-[8px]" />
           </div>
           <div className="min-w-0">
-            <p className="truncate font-extrabold">{title.name}</p>
-            {subtitle ? <p className="truncate text-sm text-text-2">{subtitle}</p> : null}
+            <p className="truncate text-base leading-5 font-medium">{title.name}</p>
+            {subtitle ? <p className="mt-0.5 truncate text-sm text-text-2">{subtitle}</p> : null}
           </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-5">
           <AlertToggles value={kinds} onChange={setKinds} serviceName={serviceName} type={title.type} />
         </div>
 
-        <p className="mt-5 text-sm font-bold">Send to</p>
-        <div className="mt-2 flex gap-2" role="radiogroup" aria-label="Channel">
+        <p lang="en" className="overline mt-6 text-text-3">
+          Send to
+        </p>
+        <div className="no-scrollbar -mx-5 mt-3 flex gap-2 overflow-x-auto px-5 md:mx-0 md:px-0" role="radiogroup" aria-label="Channel">
           {(
             [
               ["telegram", "Telegram"],
@@ -98,20 +100,22 @@ export function NotifySheet({ title, subtitle, serviceName, onClose }: Omit<Prop
               role="radio"
               aria-checked={channel === v}
               onClick={() => setChannel(v)}
-              className={`inline-flex h-9 items-center rounded-chip px-3.5 text-sm font-bold ${channel === v ? "bg-white text-ink" : "border border-line text-text"}`}
+              className={`inline-flex h-9 shrink-0 items-center rounded-full px-4 text-[13px] font-medium whitespace-nowrap transition duration-200 ease-out ${
+                channel === v ? "bg-white text-ink" : "text-text-2 ring-1 ring-hairline-strong ring-inset hover:bg-white/6 hover:text-text hover:ring-white/30"
+              }`}
             >
               {l}
             </button>
           ))}
         </div>
 
-        <div className="mt-4">
+        <div className="mt-5">
           {kinds.length === 0 ? (
             <p className="text-sm text-text-2">Pick at least one alert.</p>
           ) : channel === "device" ? (
             <button
               type="button"
-              className={`${buttonClass("primary")} h-12 w-full text-[15px]`}
+              className={`${buttonClass("primary", "lg")} w-full`}
               onClick={() => {
                 saveLocal();
                 track("alert_subscribe", { channel: "device", title_id: title.id });
@@ -129,7 +133,7 @@ export function NotifySheet({ title, subtitle, serviceName, onClose }: Omit<Prop
                 submitLabel="Save alerts"
                 onSubscribed={saveLocal}
               />
-              <p className="mt-1 text-xs text-text-3">
+              <p className="mt-1.5 text-xs text-text-3">
                 {channel === "telegram" ? "Type your @username — you'll confirm once in Telegram." : "Email alerts arrive in the Friday 18:00 digest."}
               </p>
             </>

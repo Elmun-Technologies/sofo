@@ -50,7 +50,7 @@ const NODE: Record<State, string> = {
 
 function Node({ state }: { state: State }) {
   return (
-    <span aria-hidden="true" className={`relative z-10 inline-flex size-5 shrink-0 items-center justify-center rounded-full text-[13px] leading-none font-medium ${NODE[state]}`}>
+    <span aria-hidden="true" className={`relative z-10 flex size-5 shrink-0 items-center justify-center rounded-full text-[13px] leading-none font-medium ${NODE[state]}`}>
       {state === "done" ? <CheckIcon className="size-3 stroke-[3]" /> : state === "confirmed" ? <span className="size-1.5 rounded-full bg-ink" /> : state === "estimate" ? "~" : null}
     </span>
   );
