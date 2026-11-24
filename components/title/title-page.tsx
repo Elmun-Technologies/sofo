@@ -29,6 +29,7 @@ import { OfferRow } from "./offer-row";
 import { Seasons } from "./seasons";
 import { ShareButton } from "./share-button";
 import { ShortAnswerBlock, ShortAnswerFacts } from "./short-answer";
+import { StickyCta } from "./sticky-cta";
 import { WhereToWatchTabs } from "./where-to-watch";
 
 type Params = { lang: string; slug: string };
@@ -188,7 +189,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
           </div>
 
           <div className="sm:hidden">
-            <ShortAnswerBlock data={data} edition={edition} />
+            <ShortAnswerBlock data={data} edition={edition} idPrefix="answer" />
             <div className="mt-4 grid grid-cols-2 gap-2">
               <WatchlistButton title={saved} variant="secondary" />
               <ShareButton edition={edition.code} type={type} slug={local.slug} name={local.name} />
@@ -327,7 +328,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
 
       {/* Phones: the answer's action stays one thumb away. */}
       {primary ? (
-        <div className="glass fixed inset-x-0 bottom-[calc(58px+env(safe-area-inset-bottom))] z-30 border-t border-hairline px-4 py-2.5 md:hidden">
+        <StickyCta targetId="answer-cta">
           <OutboundLink
             href={primary.url}
             service={primary.serviceSlug}
@@ -340,7 +341,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
             {primary.type === "rent" ? "Rent" : primary.type === "buy" ? "Buy" : "Watch"} on {primary.serviceName}
             <ArrowUpRightIcon className="size-[18px]" />
           </OutboundLink>
-        </div>
+        </StickyCta>
       ) : null}
 
       <TitleJsonLd data={data} edition={edition} type={type} faq={faq} />

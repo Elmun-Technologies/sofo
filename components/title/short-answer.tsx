@@ -10,7 +10,7 @@ import { AlertButton } from "./alert-button";
 import { ReportButton } from "./report-button";
 
 /** V2 short answer — deterministic sentence + cheapest way + dub services + "not on". */
-export function ShortAnswerBlock({ data, edition }: { data: TitlePageData; edition: Edition }) {
+export function ShortAnswerBlock({ data, edition, idPrefix }: { data: TitlePageData; edition: Edition; idPrefix?: string }) {
   const { shortAnswer: a, local, offers, title } = data;
   const lang = edition.contentLang;
   const langLabel = langName(lang);
@@ -39,8 +39,8 @@ export function ShortAnswerBlock({ data, edition }: { data: TitlePageData; editi
   const dubOn = [...new Set(offers.filter((o) => o.audio[lang] === "confirmed_yes").map((o) => o.service.name))];
 
   return (
-    <section aria-labelledby="short-answer">
-      <p lang="en" id="short-answer" className="overline flex items-center gap-2 text-text-3">
+    <section aria-labelledby={idPrefix ? `${idPrefix}-heading` : "short-answer"}>
+      <p lang="en" id={idPrefix ? `${idPrefix}-heading` : "short-answer"} className="overline flex items-center gap-2 text-text-3">
         <span aria-hidden="true" className={`inline-flex size-[18px] items-center justify-center rounded-full ring-1 ring-inset ${yes ? "text-available ring-available/60" : "text-text-2 ring-white/25"}`}>
           {yes ? <CheckIcon className="size-3 stroke-[3]" /> : <span className="h-0.5 w-2 rounded-full bg-current" />}
         </span>
@@ -48,7 +48,7 @@ export function ShortAnswerBlock({ data, edition }: { data: TitlePageData; editi
       </p>
       <p className="mt-2.5 max-w-[34ch] text-[21px] leading-[1.3] font-extrabold tracking-[-0.02em] sm:max-w-none md:text-[26px]">{sentence}</p>
 
-      <div className="mt-5 flex flex-wrap items-center gap-2.5">
+      <div className="mt-5 flex flex-wrap items-center gap-2.5" id={idPrefix ? `${idPrefix}-cta` : undefined}>
         {a.kind !== "none" ? (
           <OutboundLink
             href={a.offer.url}

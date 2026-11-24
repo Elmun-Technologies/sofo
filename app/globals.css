@@ -288,7 +288,7 @@
 }
 /** Frosted glass for bars and overlays that sit on imagery. */
 @utility glass {
-  background: rgb(9 9 11 / 0.88);
+  background: rgb(9 9 11 / 0.94);
   backdrop-filter: saturate(160%) blur(20px);
   -webkit-backdrop-filter: saturate(160%) blur(20px);
 }
