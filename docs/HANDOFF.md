@@ -6,7 +6,7 @@ Kod va UI tayyor holatga keltirildi (DS3, `docs/design-system.md`). Quyidagilar 
 
 | Nima | Qayerga | Natija |
 | --- | --- | --- |
-| `TMDB_API_KEY` (v3) + tijoriy litsenziya (TASK-005) | `.env.local` / GitHub Actions secret / Sites secret | Metadata, posterlar, treylerlar (`pnpm ingest:metadata`) |
+| `TMDB_API_KEY` — v4 "API Read Access Token" (tavsiya, `Authorization: Bearer`) yoki v3 kalit + tijoriy litsenziya (TASK-005) | `.env.local` / GitHub Actions secret / Sites secret | Metadata, posterlar, treylerlar (`pnpm ingest:metadata`) |
 | `STREAMING_AVAILABILITY_API_KEY` (Movie of the Night; RapidAPI bo'lsa `STREAMING_AVAILABILITY_API_URL` ham) | xuddi shunday | Servis × til × narx (`pnpm ingest:availability`); TR qamrovi/narxi hali tasdiqlanmagan (TASK-006) |
 | `data/titles.csv` ro'yxati (`tmdb_id,type`) | repo | Qaysi nomlar ingest bo'ladi |
 | Birinchi ingestdan keyin `DEMO_DATA = false` (`lib/site.ts`) | kod, 1 qator | Demo banner o'chadi, `noindex` olinadi, sitemap to'ladi |
