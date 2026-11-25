@@ -62,7 +62,7 @@ export function LangMatrix({ offers, editionLang, originalLang }: { offers: Offe
       ) : null}
       <tbody>
         {rows.map((r) => (
-          <tr key={r.label} className="border-b border-hairline transition-colors last:border-0 hover:bg-white/[0.025]">
+          <tr key={r.label} className="border-b border-hairline transition-colors last:border-0 hover:bg-text/[0.025]">
             <th scope="row" className="px-5 py-3 text-left font-semibold">
               {r.label}
             </th>
@@ -82,7 +82,7 @@ export function LangMatrix({ offers, editionLang, originalLang }: { offers: Offe
       {table(keyRows, true)}
       {restRows.length ? (
         <details className="group border-t border-hairline">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-3.5 text-sm font-semibold text-text-2 transition-colors hover:bg-white/[0.025] hover:text-text [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-3.5 text-sm font-semibold text-text-2 transition-colors hover:bg-text/[0.025] hover:text-text [&::-webkit-details-marker]:hidden">
             <span>
               All languages <span className="font-normal text-text-3">· {others.size} more</span>
             </span>
@@ -91,7 +91,7 @@ export function LangMatrix({ offers, editionLang, originalLang }: { offers: Offe
           <div className="border-t border-hairline">{table(restRows, false)}</div>
         </details>
       ) : null}
-      <p className="border-t border-hairline bg-white/[0.02] px-5 py-3 text-xs text-text-3">
+      <p className="border-t border-hairline bg-text/[0.02] px-5 py-3 text-xs text-text-3">
         <span className="inline-flex flex-wrap items-center gap-x-4 gap-y-1.5">
           <span className="inline-flex items-center gap-1.5">
             <span aria-hidden="true" className="size-1.5 rounded-full bg-available" />

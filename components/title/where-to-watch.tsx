@@ -13,7 +13,7 @@ export function WhereToWatchTabs({ heading, tabs, footer }: { heading: string; t
       <h2 id="wtw" className="text-h3">
         {heading}
       </h2>
-      <div role="tablist" aria-label="Offer type" className="mt-3 mb-2 grid grid-cols-3 gap-1 rounded-button bg-ink/70 p-1">
+      <div role="tablist" aria-label="Offer type" className="mt-3 mb-2 grid grid-cols-3 gap-1 rounded-button bg-surface p-1">
         {tabs.map((t) => (
           <button
             key={t.key}

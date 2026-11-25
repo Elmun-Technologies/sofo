@@ -9,43 +9,43 @@
   --color-orange-hover: #ff7a47;
   --color-orange-press: #e04a12;
   --color-orange-tint: #ffd5c7;
-  --color-orange-deep: #2a150d;
+  --color-orange-deep: #fff1eb;
 
   /* DS3 neutrals: near-black, no tint — the artwork supplies the colour. */
-  --color-ink: #09090b;
-  --color-ink-2: #0d0d0f;
-  --color-surface: #131316;
-  --color-surface-2: #1b1b1f;
-  --color-surface-3: #26262b;
-  --color-line: #26262b;
-  --color-line-soft: #18181b;
+  --color-ink: #ffffff;
+  --color-ink-2: #f8f9fc;
+  --color-surface: #f3f5f9;
+  --color-surface-2: #eaedf3;
+  --color-surface-3: #dde1ea;
+  --color-line: #e2e6ee;
+  --color-line-soft: #eef1f6;
   /* Alpha hairline: reads correctly on any surface and over imagery. */
-  --color-hairline: rgb(255 255 255 / 0.07);
-  --color-hairline-strong: rgb(255 255 255 / 0.14);
+  --color-hairline: rgb(21 23 28 / 0.08);
+  --color-hairline-strong: rgb(21 23 28 / 0.16);
 
-  --color-text: #ffffff;
-  --color-text-2: #a3a3ad;
-  --color-text-3: #70707a;
+  --color-text: #15171c;
+  --color-text-2: #586070;
+  --color-text-3: #8a909d;
 
-  --color-dub: #3b82f6;
-  --color-available: #4ade80;
-  --color-leaving: #fbbf24;
-  --color-free: #a78bfa;
+  --color-dub: #2563eb;
+  --color-available: #16a34a;
+  --color-leaving: #d97706;
+  --color-free: #7c3aed;
 
   /* DS3 radii: soft bento surfaces, pill controls. */
   --radius-chip: 999px;
-  --radius-button: 999px;
-  --radius-input: 14px;
-  --radius-poster: 12px;
-  --radius-card: 20px;
-  --radius-panel: 24px;
-  --radius-hero: 28px;
+  --radius-button: 12px;
+  --radius-input: 12px;
+  --radius-poster: 10px;
+  --radius-card: 16px;
+  --radius-panel: 20px;
+  --radius-hero: 20px;
 
   /* DS3 weights: light, large type. Names are remapped one-to-two steps down (800 = logo only). */
   --font-weight-medium: 500;
-  --font-weight-semibold: 500;
-  --font-weight-bold: 600;
-  --font-weight-extrabold: 600;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
 
   --font-ui: var(--font-manrope), system-ui, sans-serif;
   --font-logo: var(--font-nunito), var(--font-manrope), sans-serif;
@@ -59,9 +59,9 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
 
-  --shadow-card: 0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px -16px rgb(0 0 0 / 0.7);
-  --shadow-pop: 0 1px 0 0 rgb(255 255 255 / 0.06) inset, 0 24px 64px -12px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(0 0 0 / 0.4);
-  --shadow-poster: 0 18px 40px -18px rgb(0 0 0 / 0.9);
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.04), 0 8px 24px -12px rgb(16 24 40 / 0.12);
+  --shadow-pop: 0 0 0 1px rgb(16 24 40 / 0.06), 0 24px 56px -16px rgb(16 24 40 / 0.28);
+  --shadow-poster: 0 12px 28px -14px rgb(16 24 40 / 0.35);
   --shadow-cta: 0 6px 20px -10px rgb(255 90 31 / 0.6);
 
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -114,9 +114,9 @@
 
 @layer base {
   html {
-    color-scheme: dark;
+    color-scheme: light;
     background: var(--color-ink);
-    scroll-padding-top: 88px;
+    scroll-padding-top: 136px;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
   }
@@ -146,17 +146,17 @@
     text-wrap: pretty;
   }
   ::selection {
-    background: #fff;
-    color: #09090b;
+    background: #ffd5c7;
+    color: #15171c;
   }
   a {
     transition: color 0.15s var(--ease-out);
   }
   a:hover {
-    color: #fff;
+    color: var(--color-orange-press);
   }
   :focus-visible {
-    outline: 2px solid #fff;
+    outline: 2px solid var(--color-orange);
     outline-offset: 2px;
   }
   button,
@@ -192,6 +192,33 @@
   }
 }
 
+/* ── Theme scopes ─────────────────────────────────────────────────────── */
+
+/**
+ * Cinema-dark island inside the light site (ivi-style title hero, Top 10 shelf). Re-points the colour
+ * tokens, so every utility inside (text-text, bg-surface, ring-hairline…) flips with it.
+ */
+@utility theme-dark {
+  --color-ink: #0f1013;
+  --color-ink-2: #141519;
+  --color-surface: #1c1d22;
+  --color-surface-2: #25262c;
+  --color-surface-3: #30323a;
+  --color-line: #2c2e35;
+  --color-line-soft: #1f2025;
+  --color-hairline: rgb(255 255 255 / 0.09);
+  --color-hairline-strong: rgb(255 255 255 / 0.18);
+  --color-text: #ffffff;
+  --color-text-2: #b9bdc7;
+  --color-text-3: #8a8f9a;
+  --color-dub: #4f8bff;
+  --color-available: #34d399;
+  --color-leaving: #fbbf24;
+  --color-free: #a78bfa;
+  color: var(--color-text);
+  color-scheme: dark;
+}
+
 /* ── Layout ───────────────────────────────────────────────────────────── */
 
 /** Page container: 16 px gutters on phones, 28 px from md, 40 px from xl; max 1360. */
@@ -223,28 +250,28 @@
 /* ── Type scale ───────────────────────────────────────────────────────── */
 
 @utility text-display {
-  font-size: clamp(2.25rem, 1.1rem + 4.6vw, 4.75rem);
-  line-height: 1.02;
-  font-weight: 500;
-  letter-spacing: -0.045em;
+  font-size: clamp(1.875rem, 1.2rem + 2.4vw, 3.25rem);
+  line-height: 1.04;
+  font-weight: 800;
+  letter-spacing: -0.035em;
 }
 @utility text-h1 {
-  font-size: clamp(1.875rem, 1.2rem + 2.7vw, 3.25rem);
-  line-height: 1.06;
-  font-weight: 500;
-  letter-spacing: -0.04em;
+  font-size: clamp(1.625rem, 1.2rem + 1.4vw, 2.375rem);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 @utility text-h2 {
-  font-size: clamp(1.375rem, 1.1rem + 1.1vw, 1.875rem);
-  line-height: 1.15;
-  font-weight: 500;
-  letter-spacing: -0.03em;
+  font-size: clamp(1.25rem, 1.05rem + 0.7vw, 1.625rem);
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 @utility text-h3 {
   font-size: 1.125rem;
   line-height: 1.3;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.015em;
 }
 /** Small caps label. Always pair with lang="en" inside <html lang="tr"> (dotless-i rule). */
 @utility overline {
@@ -288,7 +315,7 @@
 }
 /** Frosted glass for bars and overlays that sit on imagery. */
 @utility glass {
-  background: rgb(9 9 11 / 0.94);
+  background: rgb(255 255 255 / 0.96);
   backdrop-filter: saturate(160%) blur(20px);
   -webkit-backdrop-filter: saturate(160%) blur(20px);
 }
@@ -332,7 +359,7 @@
   text-decoration-color: var(--color-hairline-strong);
   text-underline-offset: 3px;
   &:hover {
-    color: #fff;
+    color: var(--color-orange-press);
     text-decoration-color: currentColor;
   }
 }
@@ -343,7 +370,7 @@
   min-width: 0;
   border-radius: var(--radius-input);
   border: 1px solid var(--color-hairline-strong);
-  background: rgb(255 255 255 / 0.03);
+  background: var(--color-surface);
   padding-inline: 16px;
   font-size: 15px;
   font-weight: 500;
@@ -357,12 +384,13 @@
     font-weight: 400;
   }
   &:hover {
-    border-color: rgb(255 255 255 / 0.22);
+    border-color: rgb(21 23 28 / 0.28);
   }
   &:focus,
   &:focus-visible {
-    border-color: rgb(255 255 255 / 0.6);
-    box-shadow: 0 0 0 4px rgb(255 255 255 / 0.08);
+    border-color: var(--color-orange);
+    box-shadow: 0 0 0 4px rgb(255 90 31 / 0.14);
+    background: #fff;
     outline: none;
   }
 }

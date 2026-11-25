@@ -55,7 +55,7 @@ export function Dropdown({ label, name, active, group, align = "left", className
         onClick={(e) => {
           if ((e.target as HTMLElement).closest("a") && ref.current) ref.current.open = false;
         }}
-        className={`animate-pop-in absolute z-30 mt-2 max-h-[min(420px,60vh)] overflow-y-auto rounded-card border border-hairline-strong bg-surface-2 p-1.5 shadow-pop ${
+        className={`animate-pop-in absolute z-30 mt-2 max-h-[min(420px,60vh)] overflow-y-auto rounded-card border border-hairline bg-ink p-1.5 shadow-pop ${
           align === "right" ? "right-0" : "left-0"
         } ${panelClassName}`}
       >

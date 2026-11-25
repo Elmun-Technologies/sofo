@@ -44,7 +44,7 @@ function rangeLabel(days: string[]) {
     : `${dayLabel(a, { day: "numeric", month: "short" })} – ${dayLabel(b, { day: "numeric", month: "short" })}`;
 }
 
-const KIND_DOT = { new_dub: "bg-dub", new: "bg-white", leaving: "bg-leaving" } as const;
+const KIND_DOT = { new_dub: "bg-dub", new: "bg-text", leaving: "bg-leaving" } as const;
 
 export default async function NewLeavingPage({ params, searchParams }: PageProps<"/[lang]/yeni-ve-ayrilanlar">) {
   const { lang } = await params;
@@ -98,7 +98,7 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
         }
         aside={
           <Stats>
-            <Stat value={count("new")} label="New" dot="bg-white" />
+            <Stat value={count("new")} label="New" dot="bg-text" />
             <Stat value={count("new_dub")} label="New dubs" dot="bg-dub" />
             <Stat value={count("leaving")} label="Leaving" dot="bg-leaving" />
           </Stats>
@@ -132,7 +132,7 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
               const today = d === data.today;
               const items = byDay.get(d)!;
               const cell = `flex h-full flex-col items-center gap-0.5 rounded-[14px] px-1 py-2.5 md:items-start md:gap-1 md:rounded-card md:px-4 md:py-3.5 ${
-                today ? "bg-white text-ink hover:text-ink" : items.length ? "bg-surface text-text ring-1 ring-hairline ring-inset hover:bg-surface-2 hover:text-text" : "text-text-3 ring-1 ring-hairline ring-inset"
+                today ? "bg-text text-ink hover:text-ink" : items.length ? "bg-surface text-text ring-1 ring-hairline ring-inset hover:bg-surface-2 hover:text-text" : "text-text-3 ring-1 ring-hairline ring-inset"
               }`;
               const inner = (
                 <>
@@ -162,7 +162,7 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
             })}
           </ul>
           <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-3" aria-hidden="true">
-            <Legend dot="bg-white" label="New on a service" />
+            <Legend dot="bg-text" label="New on a service" />
             <Legend dot="bg-dub" label={`New ${langLabel} dub`} />
             <Legend dot="bg-leaving" label="Last day" />
           </p>
@@ -195,7 +195,7 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
                       <span className="text-text-3">, {dayLabel(d, { month: "short" })}</span>
                     </span>
                     {today ? (
-                      <span aria-hidden="true" className="tag ml-auto border-white/40 text-text lg:mt-1 lg:ml-0">
+                      <span aria-hidden="true" className="tag ml-auto border-text/40 text-text lg:mt-1 lg:ml-0">
                         Today
                       </span>
                     ) : null}
@@ -259,7 +259,7 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
           )}
         </section>
 
-        <aside className="panel self-start p-6 md:p-8 lg:sticky lg:top-24">
+        <aside className="panel self-start p-6 md:p-8 lg:sticky lg:top-36">
           <span aria-hidden="true" className="inline-flex size-11 items-center justify-center rounded-full ring-1 ring-hairline-strong ring-inset">
             <BellIcon className="size-5" />
           </span>
@@ -363,7 +363,7 @@ function ScheduleRow({ item, edition, today }: { item: CalendarItem; edition: Ed
           </>
         ) : (
           <>
-            <Link href={href} className="inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-[13px] font-medium whitespace-nowrap text-text ring-1 ring-hairline-strong ring-inset transition duration-200 ease-out hover:bg-white/6 hover:ring-white/30 max-md:hidden">
+            <Link href={href} className="inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-[13px] font-medium whitespace-nowrap text-text ring-1 ring-hairline-strong ring-inset transition duration-200 ease-out hover:bg-text/6 hover:ring-text/30 max-md:hidden">
               Where to watch
               <ArrowRightIcon className="size-3.5" />
             </Link>

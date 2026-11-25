@@ -24,7 +24,7 @@ export function EditionLabel({ edition }: { edition: Edition }) {
           </option>
         ))}
       </select>
-      <button type="submit" className="inline-flex h-9 items-center rounded-full bg-white/10 px-4 text-[13px] font-medium transition-colors hover:bg-white/16">
+      <button type="submit" className="inline-flex h-9 items-center rounded-full bg-text/10 px-4 text-[13px] font-medium transition-colors hover:bg-text/16">
         Go
       </button>
     </form>

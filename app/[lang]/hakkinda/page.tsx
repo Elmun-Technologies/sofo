@@ -148,7 +148,7 @@ export default async function AboutPage({ params }: PageProps<"/[lang]/hakkinda"
             <li>
               <a
                 href={`mailto:${CONTACT}?subject=Content%20removal%20request`}
-                className="inline-flex h-9 items-center gap-2 rounded-full px-4 text-[13px] font-medium whitespace-nowrap text-text-2 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-white/6 hover:text-text hover:ring-white/30"
+                className="inline-flex h-9 items-center gap-2 rounded-full px-4 text-[13px] font-medium whitespace-nowrap text-text-2 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-text/6 hover:text-text hover:ring-text/30"
               >
                 <MailIcon className="size-3.5" />
                 Content removal

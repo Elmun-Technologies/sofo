@@ -39,7 +39,7 @@ function Toggle({ checked, onChange, label, hint }: { checked: boolean; onChange
       <input type="checkbox" role="switch" className="peer sr-only" checked={checked} onChange={(ev) => onChange(ev.target.checked)} />
       <span
         aria-hidden="true"
-        className="relative h-7 w-12 shrink-0 rounded-full bg-white/10 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset peer-checked:bg-white peer-checked:ring-transparent peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-white after:absolute after:top-1 after:left-1 after:size-5 after:rounded-full after:bg-white/70 after:transition after:duration-200 after:ease-out peer-checked:after:translate-x-5 peer-checked:after:bg-ink"
+        className="relative h-7 w-12 shrink-0 rounded-full bg-text/10 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset peer-checked:bg-text peer-checked:ring-transparent peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-text after:absolute after:top-1 after:left-1 after:size-5 after:rounded-full after:bg-text/70 after:transition after:duration-200 after:ease-out peer-checked:after:translate-x-5 peer-checked:after:bg-ink"
       />
     </label>
   );
@@ -55,11 +55,11 @@ export function ParentSettings({ langLabel, myListHref }: { langLabel: string; m
   return (
     <details className="panel group" open>
       <summary className="flex list-none items-center gap-3.5 px-5 py-4 md:px-6 md:py-5">
-        <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/6 text-text-2">
+        <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-text/6 text-text-2">
           <ShieldCheckIcon className="size-5" />
         </span>
         <h2 className="text-h3 min-w-0 flex-1 truncate">Parent settings</h2>
-        <span className={`tag shrink-0 ${on ? "!border-white/40 !text-text" : ""}`}>
+        <span className={`tag shrink-0 ${on ? "!border-text/40 !text-text" : ""}`}>
           {on ? <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-available" /> : null}
           <span aria-hidden="true" className="sm:hidden">
             {on ? "On" : "Off"}

@@ -130,7 +130,7 @@ export function MyListClient({ edition, services }: { edition: Ed; services: Svc
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as Sort)}
-              className="h-9 appearance-none rounded-full bg-transparent pr-9 pl-4 text-[13px] font-medium text-text-2 ring-1 ring-hairline-strong outline-none transition duration-200 ring-inset hover:bg-white/6 hover:text-text hover:ring-white/30 focus-visible:ring-2 focus-visible:ring-white"
+              className="h-9 appearance-none rounded-full bg-transparent pr-9 pl-4 text-[13px] font-medium text-text-2 ring-1 ring-hairline-strong outline-none transition duration-200 ring-inset hover:bg-text/6 hover:text-text hover:ring-text/30 focus-visible:ring-2 focus-visible:ring-text"
             >
               <option value="available">Sort: Available first</option>
               <option value="added">Sort: Recently added</option>
@@ -309,12 +309,12 @@ const TONE_DOT: Record<ItemStatus["tone"], string> = {
   available: "bg-available",
   leaving: "bg-leaving",
   free: "bg-free",
-  muted: "bg-white/30",
+  muted: "bg-text/30",
 };
 
 /** One-line status: a 6 px semantic dot + text (never a solid fill). */
 function StatusPill({ status, loading }: { status: ItemStatus | null; loading: boolean }) {
-  if (!status) return loading ? <span className="inline-block h-3 w-28 animate-pulse rounded-full bg-white/8 align-middle" aria-label="Checking availability" /> : null;
+  if (!status) return loading ? <span className="inline-block h-3 w-28 animate-pulse rounded-full bg-text/8 align-middle" aria-label="Checking availability" /> : null;
   return (
     <span className={`inline-flex max-w-full items-center gap-1.5 text-xs leading-[18px] font-medium ${status.tone === "leaving" ? "text-leaving" : status.tone === "muted" ? "text-text-3" : "text-text-2"}`}>
       <span aria-hidden="true" className={`size-1.5 shrink-0 rounded-full ${TONE_DOT[status.tone]}`} />
@@ -421,11 +421,11 @@ function IconBtn({ label, onClick, active, touch, glass, children }: { label: st
   // On posters (glass): quiet until hover on pointer devices; an active control (alerts on, watched) always stays visible.
   const tone = active
     ? touch
-      ? "bg-white/12 text-text [&_svg]:fill-current"
-      : "bg-white text-ink"
+      ? "bg-text/12 text-text [&_svg]:fill-current"
+      : "bg-text text-ink"
     : glass
-      ? "bg-black/55 text-white ring-1 ring-white/15 ring-inset backdrop-blur-md hover:bg-black/80 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100"
-      : "text-text-2 hover:bg-white/8 hover:text-text";
+      ? "bg-black/55 text-white ring-1 ring-text/15 ring-inset backdrop-blur-md hover:bg-black/80 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:group-focus-within:opacity-100"
+      : "text-text-2 hover:bg-text/8 hover:text-text";
   return (
     <button
       type="button"
@@ -452,12 +452,12 @@ function ServiceToggles({ services, selected, onToggle, className = "" }: { serv
               role="switch"
               aria-checked={on}
               onClick={() => onToggle(s.slug)}
-              className="flex w-full items-center gap-3.5 rounded-[18px] px-4 py-2.5 text-left transition-colors duration-200 hover:bg-white/5"
+              className="flex w-full items-center gap-3.5 rounded-[18px] px-4 py-2.5 text-left transition-colors duration-200 hover:bg-text/5"
             >
               <ServiceLogo slug={s.slug} name="" logoPath={s.logoPath} size={32} />
               <span className={`flex-1 text-[15px] font-medium transition-colors ${on ? "text-text" : "text-text-2"}`}>{s.name}</span>
-              <span aria-hidden="true" className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${on ? "bg-white" : "bg-white/12"}`}>
-                <span className={`absolute top-0.5 left-0.5 size-5 rounded-full transition duration-200 ease-out ${on ? "translate-x-5 bg-ink" : "bg-white/70"}`} />
+              <span aria-hidden="true" className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${on ? "bg-text" : "bg-text/12"}`}>
+                <span className={`absolute top-0.5 left-0.5 size-5 rounded-full transition duration-200 ease-out ${on ? "translate-x-5 bg-ink" : "bg-text/70"}`} />
               </span>
             </button>
           </li>
@@ -501,7 +501,7 @@ function EventList({ events, loading }: { events: ListEvent[]; loading: boolean 
     return (
       <div className="grid gap-3 px-4 py-3" aria-label="Loading alerts">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="h-10 animate-pulse rounded-input bg-white/5" />
+          <div key={i} className="h-10 animate-pulse rounded-input bg-text/5" />
         ))}
       </div>
     );
@@ -510,7 +510,7 @@ function EventList({ events, loading }: { events: ListEvent[]; loading: boolean 
     <ul>
       {events.map((e) => (
         <li key={e.id}>
-          <Link href={e.href ?? "#"} className="block rounded-[18px] px-4 py-3 transition-colors duration-200 hover:bg-white/5">
+          <Link href={e.href ?? "#"} className="block rounded-[18px] px-4 py-3 transition-colors duration-200 hover:bg-text/5">
             <span className="flex items-center justify-between gap-3">
               <KindBadge kind={e.kind} />
               <time dateTime={e.occurredAt} className="tnum ml-auto text-xs text-text-3">
@@ -587,7 +587,7 @@ function EmptyList({ edition }: { edition: Ed }) {
   return (
     <div className="grid gap-3 md:gap-4">
       <div className="panel px-6 py-10 md:px-10 md:py-14">
-        <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-full bg-white/6 text-text-2">
+        <span aria-hidden="true" className="flex size-12 items-center justify-center rounded-full bg-text/6 text-text-2">
           <BookmarkIcon className="size-5" />
         </span>
         <p className="text-h1 mt-6">Your list is empty</p>

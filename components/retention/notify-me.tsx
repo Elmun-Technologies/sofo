@@ -101,7 +101,7 @@ export function NotifySheet({ title, subtitle, serviceName, onClose }: Omit<Prop
               aria-checked={channel === v}
               onClick={() => setChannel(v)}
               className={`inline-flex h-9 shrink-0 items-center rounded-full px-4 text-[13px] font-medium whitespace-nowrap transition duration-200 ease-out ${
-                channel === v ? "bg-white text-ink" : "text-text-2 ring-1 ring-hairline-strong ring-inset hover:bg-white/6 hover:text-text hover:ring-white/30"
+                channel === v ? "bg-text text-ink" : "text-text-2 ring-1 ring-hairline-strong ring-inset hover:bg-text/6 hover:text-text hover:ring-text/30"
               }`}
             >
               {l}

@@ -69,7 +69,7 @@ export function ListMetaForm({
             <input type="checkbox" checked={auto} onChange={(ev) => setAuto(ev.target.checked)} className="size-3.5 accent-white" /> auto from title
           </span>
         </span>
-        <div className="flex h-[46px] items-center rounded-input border border-hairline-strong bg-white/[0.03] transition duration-150 focus-within:border-white/60 focus-within:shadow-[0_0_0_4px_rgb(255_255_255/0.08)] hover:border-white/22">
+        <div className="flex h-[46px] items-center rounded-input border border-hairline-strong bg-text/[0.03] transition duration-150 focus-within:border-text/60 focus-within:shadow-[0_0_0_4px_rgb(255_255_255/0.08)] hover:border-text/22">
           <span className="max-w-[55%] shrink-0 truncate pl-4 text-[15px] text-text-3">{pathPrefix}/</span>
           <input
             name="slug"
@@ -140,7 +140,7 @@ export function BlurbForm({ listId, titleId, blurb }: { listId: number; titleId:
         defaultValue={blurb ?? ""}
         maxLength={280}
         placeholder="Short human-written blurb…"
-        className="-ml-2.5 h-8 min-w-0 grow rounded-full border border-transparent bg-transparent px-2.5 text-[13px] text-text-2 transition-colors duration-150 placeholder:text-text-3 hover:border-hairline-strong focus:border-white/60 focus:text-text focus:outline-none"
+        className="-ml-2.5 h-8 min-w-0 grow rounded-full border border-transparent bg-transparent px-2.5 text-[13px] text-text-2 transition-colors duration-150 placeholder:text-text-3 hover:border-hairline-strong focus:border-text/60 focus:text-text focus:outline-none"
       />
       <SubmitButton variant="ghost" className="!h-8 !px-3 !text-xs">
         Save

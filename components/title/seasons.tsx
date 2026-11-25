@@ -33,7 +33,7 @@ export function Seasons({ data, edition }: { data: TitlePageData; edition: Editi
               >
                 <span className="text-sm font-bold whitespace-nowrap">Season {s.number}</span>
                 {perSeason ? (
-                  <span className={`mt-0.5 text-xs whitespace-nowrap ${d === "yes" ? "text-[#8ab4ff]" : d === "no" ? "text-text-3" : "text-leaving"}`}>
+                  <span className={`mt-0.5 text-xs whitespace-nowrap ${d === "yes" ? "text-dub" : d === "no" ? "text-text-3" : "text-leaving"}`}>
                     {d === "yes" ? dubTerm(lang) : d === "no" ? "no dub" : "dub not confirmed"}
                   </span>
                 ) : (

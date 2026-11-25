@@ -96,7 +96,7 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
       </header>
 
       {/* Filters stay within reach while the grid scrolls (sits under the site header). */}
-      <div className="glass sticky top-14 z-30 border-y border-hairline md:top-16">
+      <div className="sticky top-16 z-30 border-y border-hairline bg-ink/95 backdrop-blur-xl md:top-[120px]">
         <div className="wrap flex items-center gap-2 py-2.5 lg:py-3">
           <div className="hidden min-w-0 flex-1 lg:block">
             <FilterBar edition={e} base={base} filters={f} result={r} />
@@ -125,10 +125,10 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
                   href={a.href}
                   scroll={false}
                   aria-label={`Remove filter ${a.label}`}
-                  className="group/x inline-flex h-9 items-center gap-1.5 rounded-full bg-white/8 pr-2 pl-3.5 text-[13px] font-medium whitespace-nowrap text-text transition duration-200 ease-out hover:bg-white/14"
+                  className="group/x inline-flex h-9 items-center gap-1.5 rounded-full bg-text/8 pr-2 pl-3.5 text-[13px] font-medium whitespace-nowrap text-text transition duration-200 ease-out hover:bg-text/14"
                 >
                   <span lang={a.local ? e.hreflang : undefined}>{a.label}</span>
-                  <span aria-hidden="true" className="flex size-5 items-center justify-center rounded-full text-text-3 transition-colors group-hover/x:bg-white/15 group-hover/x:text-text">
+                  <span aria-hidden="true" className="flex size-5 items-center justify-center rounded-full text-text-3 transition-colors group-hover/x:bg-text/15 group-hover/x:text-text">
                     <XIcon className="size-3.5" />
                   </span>
                 </Link>

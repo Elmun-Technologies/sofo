@@ -51,7 +51,7 @@ export default async function AdminListEditor({ params, searchParams }: PageProp
           <PanelLabel className="tnum mt-10 mb-3 border-t border-hairline pt-6">Items · {items.length}</PanelLabel>
           <ol className="space-y-1.5">
             {items.map((it, idx) => (
-              <li key={it.titleId} className="flex items-center gap-3 rounded-card border border-hairline bg-white/[0.02] p-3 sm:gap-4 sm:pr-4">
+              <li key={it.titleId} className="flex items-center gap-3 rounded-card border border-hairline bg-text/[0.02] p-3 sm:gap-4 sm:pr-4">
                 <MoveButtons listId={list.id} titleId={it.titleId} first={idx === 0} last={idx === items.length - 1} />
                 <span className="tnum w-6 shrink-0 text-center text-sm text-text-3">{String(idx + 1).padStart(2, "0")}</span>
                 <PosterImage path={it.posterPath} alt={it.name} sizes="40px" className="w-10 shrink-0 !rounded-[6px]" />
@@ -98,7 +98,7 @@ export default async function AdminListEditor({ params, searchParams }: PageProp
                 <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-[18px] -translate-y-1/2 text-text-3" />
                 <input id="q" name="q" defaultValue={q} minLength={2} maxLength={100} placeholder="Add a title — search by name" className={`${inputClass} !rounded-full !pl-11`} />
               </span>
-              <button type="submit" className="inline-flex h-[46px] shrink-0 items-center rounded-full bg-white/10 px-5 text-sm font-medium transition-colors duration-200 hover:bg-white/16">
+              <button type="submit" className="inline-flex h-[46px] shrink-0 items-center rounded-full bg-text/10 px-5 text-sm font-medium transition-colors duration-200 hover:bg-text/16">
                 Search
               </button>
             </form>
@@ -145,7 +145,7 @@ export default async function AdminListEditor({ params, searchParams }: PageProp
             ) : null}
             <p className="mt-4 text-xs leading-relaxed text-text-3">Toggle “Published” and save in the form. Publishing needs an intro (40+ chars) and at least one title.</p>
             {list.isPublished ? (
-              <Link href={publicPath} target="_blank" className="mt-5 flex h-11 items-center justify-center gap-2 rounded-full bg-white/10 px-5 text-sm font-medium transition-colors duration-200 hover:bg-white/16">
+              <Link href={publicPath} target="_blank" className="mt-5 flex h-11 items-center justify-center gap-2 rounded-full bg-text/10 px-5 text-sm font-medium transition-colors duration-200 hover:bg-text/16">
                 Preview
                 <ArrowUpRightIcon className="size-4" />
               </Link>

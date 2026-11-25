@@ -50,7 +50,7 @@ export function Faq({ items }: { items: FaqItem[] }) {
     <div className="divide-y divide-hairline overflow-hidden rounded-panel border border-hairline bg-surface">
       {items.map((f, i) => (
         <details key={f.q} open={i === 0} className="group">
-          <summary className="flex items-center gap-4 px-5 py-4 text-[15px] font-semibold transition-colors hover:bg-white/[0.03]">
+          <summary className="flex items-center gap-4 px-5 py-4 text-[15px] font-semibold transition-colors hover:bg-text/[0.03]">
             <span className="flex-1">{f.q}</span>
             <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-text-3 transition-transform duration-200 group-open:rotate-180">
               <path d="m5 9 7 7 7-7" />

@@ -96,7 +96,7 @@ export function ArrowLink({ href, children, className = "" }: { href: string; ch
   return (
     <Link href={href} className={`group/arrow inline-flex items-center justify-between gap-3 text-sm font-medium text-text hover:text-text ${className}`}>
       <span className="min-w-0 truncate">{children}</span>
-      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset group-hover/arrow:bg-white group-hover/arrow:text-ink group-hover/arrow:ring-transparent">
+      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset group-hover/arrow:bg-text group-hover/arrow:text-ink group-hover/arrow:ring-transparent">
         <ArrowRightIcon className="size-4" />
       </span>
     </Link>

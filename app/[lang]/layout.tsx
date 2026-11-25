@@ -9,6 +9,7 @@ import { OnboardingModal } from "@/components/retention/onboarding-modal";
 import { TabBar } from "@/components/tab-bar";
 import { getServices } from "@/lib/catalog";
 import { getEdition } from "@/lib/editions";
+import { getMegaMenu } from "@/lib/queries/mega-menu";
 import { manrope, nunito } from "@/lib/fonts";
 import { DEMO_DATA, SITE_NAME, siteUrl } from "@/lib/site";
 import "../globals.css";
@@ -20,8 +21,8 @@ export function generateStaticParams() {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#09090b",
-  colorScheme: "dark",
+  themeColor: "#ffffff",
+  colorScheme: "light",
 };
 
 export const metadata: Metadata = {
@@ -34,13 +35,14 @@ export default async function EditionLayout({ children, params }: LayoutProps<"/
   const { lang } = await params;
   const edition = getEdition(lang);
   if (!edition) notFound();
-  const services = (await getServices(edition)).map((s) => ({ slug: s.slug, name: s.name, logoPath: s.logoPath }));
+  const [all, menu] = await Promise.all([getServices(edition), getMegaMenu(edition)]);
+  const services = all.map((s) => ({ slug: s.slug, name: s.name, logoPath: s.logoPath }));
 
   return (
     <html lang={edition.hreflang} className={`${manrope.variable} ${nunito.variable}`}>
       <body className="flex min-h-dvh flex-col pb-16 md:pb-0">
         <DemoBanner />
-        <SiteHeader edition={edition} />
+        <SiteHeader edition={edition} menu={menu} services={services} />
         <main className="grow">{children}</main>
         <SiteFooter edition={edition} />
         <TabBar routes={edition.routes} />

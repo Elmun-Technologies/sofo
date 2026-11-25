@@ -8,7 +8,7 @@ export const metadata = { title: "Pages & SEO" };
 
 const chip = (active: boolean) =>
   `inline-flex h-9 items-center gap-2.5 rounded-full px-4 text-[13px] font-medium whitespace-nowrap transition duration-200 ease-out ${
-    active ? "bg-white text-ink hover:text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text hover:ring-white/30"
+    active ? "bg-text text-ink hover:text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-text/6 hover:text-text hover:ring-text/30"
   }`;
 
 const TYPES: PageType[] = ["home", "catalog", "lang_hub", "kids", "service", "list", "franchise", "new_leaving", "trailers", "releases", "title", "season", "person", "static"];
@@ -47,7 +47,7 @@ export default async function AdminPages({ searchParams }: PageProps<"/admin/pag
           ))}
         </div>
         <p className="mt-4 text-xs text-text-3">
-          Computed live from data (quality gate). <code className="rounded-[6px] bg-white/6 px-1.5 py-0.5 text-[11px] text-text-2">scripts/seo/sync-pages.ts</code> writes the same inventory to
+          Computed live from data (quality gate). <code className="rounded-[6px] bg-text/6 px-1.5 py-0.5 text-[11px] text-text-2">scripts/seo/sync-pages.ts</code> writes the same inventory to
           the Page table. Sitemap:{" "}
           <a href="/sitemap.xml" className="link !font-medium">
             /sitemap.xml

@@ -89,7 +89,7 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
   const liveServices = hub.services.filter((s) => s.count > 0).length;
   const tab = (active: boolean) =>
     `inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium whitespace-nowrap transition duration-200 ease-out ${
-      active ? "bg-white text-ink hover:text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text hover:ring-white/30"
+      active ? "bg-text text-ink hover:text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-text/6 hover:text-text hover:ring-text/30"
     }`;
   const states: { status: LangState; name: string; text: string }[] = [
     { status: "confirmed_yes", name: "Confirmed", text: `The service itself lists ${c.what} for this title in ${e.countryName}. Only then do we say yes.` },
@@ -108,7 +108,7 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
                 <span lang={e.hreflang}>{cap(dubTerm(e.contentLang))}</span>
               </Link>
               <Link href={e.routes.subHub} aria-current={k === "sub" ? "page" : undefined} className={tab(k === "sub")}>
-                <span aria-hidden="true" className={`size-1.5 rounded-full ${k === "sub" ? "bg-ink/50" : "bg-white/70"}`} />
+                <span aria-hidden="true" className={`size-1.5 rounded-full ${k === "sub" ? "bg-ink/50" : "bg-text/70"}`} />
                 <span lang={e.hreflang}>{cap(subTerm(e.contentLang))}</span>
               </Link>
             </nav>

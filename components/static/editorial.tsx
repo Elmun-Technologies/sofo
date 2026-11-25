@@ -32,7 +32,7 @@ export function EditorialBody({ toc, children, aside }: { toc: TocItem[]; childr
           <a
             key={t.id}
             href={`#${t.id}`}
-            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full px-4 text-[13px] font-medium whitespace-nowrap text-text-2 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-white/6 hover:text-text hover:ring-white/30"
+            className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full px-4 text-[13px] font-medium whitespace-nowrap text-text-2 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-text/6 hover:text-text hover:ring-text/30"
           >
             <span aria-hidden="true" className="tnum text-text-3">
               {pad(i + 1)}
@@ -43,7 +43,7 @@ export function EditorialBody({ toc, children, aside }: { toc: TocItem[]; childr
       </nav>
       <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 xl:grid-cols-[300px_minmax(0,1fr)]">
         <div className="hidden lg:block">
-          <div className="sticky top-28">
+          <div className="sticky top-40">
             <nav aria-label="On this page">
               <p lang="en" className="overline text-text-3">
                 On this page
@@ -51,7 +51,7 @@ export function EditorialBody({ toc, children, aside }: { toc: TocItem[]; childr
               <ol className="mt-4 border-l border-hairline">
                 {toc.map((t, i) => (
                   <li key={t.id}>
-                    <a href={`#${t.id}`} className="-ml-px flex items-baseline gap-3 border-l border-transparent py-2 pl-4 text-sm text-text-2 transition-colors duration-200 hover:border-white hover:text-text">
+                    <a href={`#${t.id}`} className="-ml-px flex items-baseline gap-3 border-l border-transparent py-2 pl-4 text-sm text-text-2 transition-colors duration-200 hover:border-text hover:text-text">
                       <span aria-hidden="true" className="tnum text-xs text-text-3">
                         {pad(i + 1)}
                       </span>

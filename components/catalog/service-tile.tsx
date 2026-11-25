@@ -13,7 +13,7 @@ export function ServiceTile({ href, slug, name, logoPath, count, label }: Props)
         <ServiceLogo slug={slug} name="" logoPath={logoPath} size={40} className={none ? "opacity-50" : ""} />
         <span
           aria-hidden="true"
-          className="flex size-8 items-center justify-center rounded-full text-text-3 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset group-hover:bg-white group-hover:text-ink group-hover:ring-transparent"
+          className="flex size-8 items-center justify-center rounded-full text-text-3 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset group-hover:bg-text group-hover:text-ink group-hover:ring-transparent"
         >
           <ArrowRightIcon className="size-4" />
         </span>

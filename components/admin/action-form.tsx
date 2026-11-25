@@ -32,9 +32,9 @@ export function ActionForm({
 
 const VARIANT = {
   // White pill = the main action of a form (DS3: orange is reserved for outbound "Watch on …" links).
-  primary: "bg-white text-ink hover:bg-white/85",
-  secondary: "bg-white/10 text-text hover:bg-white/16",
-  ghost: "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text hover:ring-white/30",
+  primary: "bg-text text-ink hover:bg-text/85",
+  secondary: "bg-text/10 text-text hover:bg-text/16",
+  ghost: "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-text/6 hover:text-text hover:ring-text/30",
   danger: "text-text-2 ring-1 ring-inset ring-hairline-strong hover:text-red-300 hover:ring-red-400/60",
 } as const;
 

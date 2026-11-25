@@ -70,7 +70,7 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
         aside={
           <ul aria-label="How to read the dates" className="grid shrink-0 grid-cols-2 gap-x-8 gap-y-2.5 text-[13px] leading-5 text-text-2 lg:grid-cols-1">
             <Key mark={<CheckIcon className="size-3 stroke-[3]" />} className="bg-surface-3 text-text-2" label="Already happened" />
-            <Key mark={<span className="size-1.5 rounded-full bg-ink" />} className="bg-white" label="Confirmed date" />
+            <Key mark={<span className="size-1.5 rounded-full bg-ink" />} className="bg-text" label="Confirmed date" />
             <Key mark="~" className="text-leaving ring-1 ring-leaving ring-inset" label="Our estimate" />
             <Key mark={null} className="ring-1 ring-hairline-strong ring-inset" label="Not announced" />
           </ul>

@@ -212,7 +212,7 @@ export default async function SeasonPage({ params }: PageProps<"/[lang]/dizi/[sl
                       {hasStills ? (
                         <span className="relative block aspect-video overflow-hidden rounded-[10px] bg-surface-2">
                           {still ? <Image src={still} alt="" fill sizes="132px" className="object-cover" /> : null}
-                          <span aria-hidden="true" className="absolute inset-0 rounded-[inherit] ring-1 ring-white/8 ring-inset" />
+                          <span aria-hidden="true" className="absolute inset-0 rounded-[inherit] ring-1 ring-text/8 ring-inset" />
                         </span>
                       ) : null}
                       <div className="min-w-0">
@@ -237,7 +237,7 @@ export default async function SeasonPage({ params }: PageProps<"/[lang]/dizi/[sl
           )}
         </section>
 
-        <aside className="flex min-w-0 flex-col gap-2 md:gap-3 lg:sticky lg:top-24 lg:self-start">
+        <aside className="flex min-w-0 flex-col gap-2 md:gap-3 lg:sticky lg:top-36 lg:self-start">
           {video ? (
             <section aria-label="Trailer" className="panel p-3 md:p-4">
               <TrailerPlayer

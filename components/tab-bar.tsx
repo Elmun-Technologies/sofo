@@ -27,7 +27,7 @@ export function TabBar({ routes }: { routes: EditionRoutes }) {
                 aria-current={active ? "page" : undefined}
                 className={`flex h-[58px] flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors hover:text-text ${active ? "text-text" : "text-text-3"}`}
               >
-                <span className={`flex h-7 w-14 items-center justify-center rounded-chip transition-colors duration-200 ${active ? "bg-white text-ink" : ""}`}>
+                <span className={`flex h-7 w-14 items-center justify-center rounded-chip transition-colors duration-200 ${active ? "bg-text text-ink" : ""}`}>
                   <Icon className="size-5" />
                 </span>
                 {label}

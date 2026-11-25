@@ -118,7 +118,7 @@ function AudioChips({ edition, q, audio }: { edition: Edition; q: string; audio:
         <span lang={edition.hreflang}>{dubTerm(edition.contentLang)}</span>
       </ChipLink>
       <ChipLink href={href("sub")} active={audio === "sub"} scroll={false}>
-        <span className={`size-1.5 rounded-full ${audio === "sub" ? "bg-ink/50" : "bg-white/70"}`} aria-hidden="true" />
+        <span className={`size-1.5 rounded-full ${audio === "sub" ? "bg-ink/50" : "bg-text/70"}`} aria-hidden="true" />
         <span lang={edition.hreflang}>{subTerm(edition.contentLang)}</span>
       </ChipLink>
     </ChipRow>
@@ -145,7 +145,7 @@ async function EmptyQuery({ edition }: { edition: Edition }) {
     { href: r.anime, label: "Anime" },
     { href: r.kids, label: "Kids" },
     { href: r.dubHub, label: dubTerm(edition.contentLang), local: true, dot: "bg-dub" },
-    { href: r.subHub, label: subTerm(edition.contentLang), local: true, dot: "bg-white/70" },
+    { href: r.subHub, label: subTerm(edition.contentLang), local: true, dot: "bg-text/70" },
     { href: r.newLeaving, label: "New & leaving", dot: "bg-leaving" },
   ];
   return (
@@ -205,7 +205,7 @@ async function Results({ edition, result, audio }: { edition: Edition; result: S
         {suggestion ? <DidYouMean edition={edition} suggestion={suggestion} audio={audio} /> : null}
         {audio ? (
           <div className="panel p-6 md:p-10">
-            <span aria-hidden="true" className="flex size-11 items-center justify-center rounded-full bg-white/6 text-text-2">
+            <span aria-hidden="true" className="flex size-11 items-center justify-center rounded-full bg-text/6 text-text-2">
               <SearchIcon />
             </span>
             <p className="text-h2 mt-5">
@@ -291,7 +291,7 @@ async function Results({ edition, result, audio }: { edition: Edition; result: S
         </div>
 
         {hasAside ? (
-          <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-3 md:gap-4 lg:sticky lg:top-24 lg:self-start" aria-label="Related results">
+          <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-3 md:gap-4 lg:sticky lg:top-36 lg:self-start" aria-label="Related results">
             {franchises.length ? (
               <section aria-labelledby="fr-h" className="panel p-2">
                 <GroupHead id="fr-h" title="Franchises" sub="Watch order" />
@@ -368,8 +368,8 @@ function GroupHead({ id, title, sub }: { id: string; title: string; sub?: string
 
 function RowLink({ href, icon, name, meta, localLang }: { href: string; icon: React.ReactNode; name: string; meta?: string; localLang?: string }) {
   return (
-    <Link href={href} className="group flex items-center gap-3.5 rounded-[18px] px-4 py-3 transition-colors duration-200 hover:bg-white/5">
-      <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/6 text-text-2">
+    <Link href={href} className="group flex items-center gap-3.5 rounded-[18px] px-4 py-3 transition-colors duration-200 hover:bg-text/5">
+      <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-text/6 text-text-2">
         {icon}
       </span>
       <span className="min-w-0 flex-1">
@@ -399,7 +399,7 @@ function DidYouMean({ edition, suggestion, audio }: { edition: Edition; suggesti
 function NoResults({ edition, q }: { edition: Edition; q: string }) {
   return (
     <div className="panel p-6 md:p-10">
-      <span aria-hidden="true" className="flex size-11 items-center justify-center rounded-full bg-white/6 text-text-2">
+      <span aria-hidden="true" className="flex size-11 items-center justify-center rounded-full bg-text/6 text-text-2">
         <SearchIcon />
       </span>
       <h2 className="text-h2 mt-5 break-words">No title called “{q}”</h2>
@@ -465,7 +465,7 @@ function TopResult({ edition, card, offer, label }: { edition: Edition; card: Ti
               ) : null}
               {card.sub ? (
                 <Pill>
-                  <span aria-hidden="true" className="size-1.5 rounded-full bg-white/70" />
+                  <span aria-hidden="true" className="size-1.5 rounded-full bg-text/70" />
                   <span lang={edition.hreflang}>{subTerm(edition.contentLang)}</span>
                 </Pill>
               ) : null}

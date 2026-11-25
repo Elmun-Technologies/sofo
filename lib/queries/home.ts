@@ -60,6 +60,13 @@ export async function getHomeData(e: Edition) {
     getCardsByIds(e, uniq(newEvents.map((d) => d.titleId)).slice(0, 12)),
   ]);
 
+  const available = { offers: { some: { countryCode: e.country, isActive: true } } };
+  const [movieCount, seriesCount, movieCards, seriesCards] = await Promise.all([
+    db.title.count({ where: { type: "movie", ...available } }),
+    db.title.count({ where: { type: "tv", ...available } }),
+    getCards(e, { type: "movie", ...available }, { take: 3 }),
+    getCards(e, { type: "tv", ...available }, { take: 3, skip: 2 }),
+  ]);
   const dubCards = await getCards(e, langWhere(e, "audio"), { take: 3 });
   const subCards = await getCards(e, langWhere(e, "subtitle"), { take: 3, skip: 3 });
   const animeCards = anime.slice(0, 3);
@@ -88,6 +95,10 @@ export async function getHomeData(e: Edition) {
     kids,
     lists,
     trending: trending.map((t) => t.query),
+    typeCards: [
+      { key: "movie", count: movieCount, cards: movieCards },
+      { key: "tv", count: seriesCount, cards: seriesCards },
+    ] satisfies { key: string; count: number; cards: TitleCard[] }[],
     langCards: [
       { key: "dub", count: dubCount, cards: dubCards },
       { key: "sub", count: subCount, cards: subCards },

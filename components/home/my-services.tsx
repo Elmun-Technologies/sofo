@@ -35,7 +35,7 @@ export function MyServices({ services }: { services: Service[] }) {
                   aria-pressed={on}
                   onClick={() => toggle(s.slug)}
                   className={`relative flex w-full flex-col items-center gap-2 rounded-card px-1 py-3 text-[11px] leading-tight font-bold transition duration-150 ease-out active:scale-95 ${
-                    on ? "bg-orange/14 text-text ring-2 ring-orange ring-inset" : "bg-white/5 text-text-2 ring-1 ring-hairline ring-inset hover:bg-white/10 hover:text-text"
+                    on ? "bg-orange/14 text-text ring-2 ring-orange ring-inset" : "bg-text/5 text-text-2 ring-1 ring-hairline ring-inset hover:bg-text/10 hover:text-text"
                   }`}
                 >
                   <ServiceLogo {...s} size={40} />

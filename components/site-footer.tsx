@@ -24,7 +24,7 @@ export function SiteFooter({ edition }: { edition: Edition }) {
             Find where to watch any movie or series — in your language. sofo doesn&apos;t host video: every title plays on the
             official service.
           </p>
-          <p className="mt-5 inline-flex items-center gap-2 rounded-chip bg-white/5 py-1.5 pr-3.5 pl-2.5 text-xs font-bold text-text-2 ring-1 ring-hairline ring-inset">
+          <p className="mt-5 inline-flex items-center gap-2 rounded-chip bg-text/5 py-1.5 pr-3.5 pl-2.5 text-xs font-bold text-text-2 ring-1 ring-hairline ring-inset">
             <ShieldCheckIcon className="size-4 text-available" />
             Legal services only · checked daily
           </p>
@@ -68,7 +68,7 @@ export function SiteFooter({ edition }: { edition: Edition }) {
               Editions
             </span>
             {Object.values(EDITIONS).map((e) => (
-              <Link key={e.code} href={e.routes.home} className="inline-flex h-7 items-center gap-1.5 rounded-chip bg-white/8 px-2.5 font-bold text-text hover:text-text">
+              <Link key={e.code} href={e.routes.home} className="inline-flex h-7 items-center gap-1.5 rounded-chip bg-text/8 px-2.5 font-bold text-text hover:text-text">
                 <span aria-hidden="true" className="size-1.5 rounded-full bg-available" />
                 {e.countryName}
               </Link>

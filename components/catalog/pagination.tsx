@@ -7,8 +7,8 @@ export function Pagination({ page, pages, href }: { page: number; pages: number;
   const nums = new Set([1, pages, page - 1, page, page + 1].filter((p) => p >= 1 && p <= pages));
   const list = [...nums].sort((a, b) => a - b);
   const cell = "tnum inline-flex h-11 min-w-11 items-center justify-center rounded-full px-3 text-sm font-medium transition duration-200 ease-out";
-  const idle = `${cell} text-text-2 hover:bg-white/8 hover:text-text`;
-  const step = `${cell} gap-1.5 text-text ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text hover:ring-white/30 sm:px-4`;
+  const idle = `${cell} text-text-2 hover:bg-text/8 hover:text-text`;
+  const step = `${cell} gap-1.5 text-text ring-1 ring-inset ring-hairline-strong hover:bg-text/6 hover:text-text hover:ring-text/30 sm:px-4`;
   const off = `${cell} gap-1.5 text-text-3 opacity-40 ring-1 ring-inset ring-hairline-strong sm:px-4`;
 
   return (
@@ -33,7 +33,7 @@ export function Pagination({ page, pages, href }: { page: number; pages: number;
               </span>
             ) : null}
             {p === page ? (
-              <span aria-current="page" className={`${cell} bg-white text-ink`}>
+              <span aria-current="page" className={`${cell} bg-text text-ink`}>
                 {p}
               </span>
             ) : (

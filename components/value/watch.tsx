@@ -46,7 +46,7 @@ export function LangBadges({
       ) : null}
       {subtitle === "confirmed_yes" ? (
         <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-text-2">
-          <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-white/70" />
+          <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-text/70" />
           <span lang={long ? edition.hreflang : undefined}>{sub}</span>
           <span className="sr-only"> confirmed</span>
         </span>
@@ -138,7 +138,7 @@ export function WatchIconLink({ option, title, edition, className = "" }: { opti
       country={edition.country}
       lang={edition.contentLang}
       offerType={option.type}
-      className={`inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-white/6 hover:ring-white/30 active:scale-95 ${className}`}
+      className={`inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-text/6 hover:ring-text/30 active:scale-95 ${className}`}
     >
       <ArrowUpRightIcon className="size-4" />
       <span className="sr-only">

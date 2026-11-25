@@ -63,7 +63,7 @@ export function OnboardingModal({ edition, services }: Props) {
         <div className="flex items-center gap-4">
           <div className="flex flex-1 items-center gap-1.5" aria-hidden="true">
             {[0, 1, 2].map((i) => (
-              <span key={i} className={`h-[3px] flex-1 rounded-full transition-colors duration-300 ${i <= step ? "bg-white" : "bg-white/14"}`} />
+              <span key={i} className={`h-[3px] flex-1 rounded-full transition-colors duration-300 ${i <= step ? "bg-text" : "bg-text/14"}`} />
             ))}
           </div>
           <button type="button" onClick={() => finish("skip")} className={`${buttonClass("quiet", "sm")} -mr-3`}>
@@ -99,7 +99,7 @@ export function OnboardingModal({ edition, services }: Props) {
                 Interface language
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <span className="inline-flex h-9 items-center rounded-full bg-white px-4 text-[13px] font-medium text-ink" aria-current="true">
+                <span className="inline-flex h-9 items-center rounded-full bg-text px-4 text-[13px] font-medium text-ink" aria-current="true">
                   English
                 </span>
                 {["Türkçe", "Español", "Deutsch"].map((l) => (
@@ -127,13 +127,13 @@ export function OnboardingModal({ edition, services }: Props) {
                       aria-pressed={on}
                       onClick={() => setPicked(on ? chosenServices.filter((x) => x !== s.slug) : [...chosenServices, s.slug])}
                       className={`relative flex w-full flex-col items-center gap-2.5 rounded-card px-1 pt-4 pb-3 text-xs font-medium ring-inset transition duration-200 ease-out active:scale-[0.97] ${
-                        on ? "bg-white/8 text-text ring-[1.5px] ring-white" : "text-text-2 ring-1 ring-hairline hover:text-text hover:ring-hairline-strong"
+                        on ? "bg-text/8 text-text ring-[1.5px] ring-text" : "text-text-2 ring-1 ring-hairline hover:text-text hover:ring-hairline-strong"
                       }`}
                     >
                       <ServiceLogo slug={s.slug} name={s.name} logoPath={s.logoPath} size={44} />
                       <span className="max-w-full truncate">{s.name}</span>
                       {on ? (
-                        <span aria-hidden="true" className="absolute top-1.5 right-1.5 flex size-[18px] items-center justify-center rounded-full bg-white text-ink">
+                        <span aria-hidden="true" className="absolute top-1.5 right-1.5 flex size-[18px] items-center justify-center rounded-full bg-text text-ink">
                           <CheckIcon className="size-3 stroke-[3.5]" />
                         </span>
                       ) : null}
@@ -164,14 +164,14 @@ function Option({ name, checked, title, sub, onSelect }: { name: string; checked
   return (
     <label
       className={`flex cursor-pointer items-center gap-3.5 rounded-card p-4 ring-inset transition duration-200 ease-out ${
-        checked ? "bg-white/8 ring-[1.5px] ring-white" : "ring-1 ring-hairline hover:ring-hairline-strong"
+        checked ? "bg-text/8 ring-[1.5px] ring-text" : "ring-1 ring-hairline hover:ring-hairline-strong"
       }`}
     >
       <input type="radio" name={name} checked={checked} onChange={onSelect} className="peer sr-only" />
       <span
         aria-hidden="true"
-        className={`flex size-5 shrink-0 items-center justify-center rounded-full peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-white ${
-          checked ? "bg-white" : "ring-[1.5px] ring-white/30 ring-inset"
+        className={`flex size-5 shrink-0 items-center justify-center rounded-full peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-text ${
+          checked ? "bg-text" : "ring-[1.5px] ring-text/30 ring-inset"
         }`}
       >
         {checked ? <span className="size-2 rounded-full bg-ink" /> : null}

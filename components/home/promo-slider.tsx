@@ -34,7 +34,7 @@ const AUTOPLAY_MS = 7000;
  * Wide promo carousel: one centred slide, dimmed neighbours peeking on both sides.
  * Native scroll-snap (swipe works without JS); arrows, dots and autoplay are enhancement.
  */
-export function PromoSlider({ slides, localLang }: { slides: PromoSlide[]; localLang: string }) {
+export function PromoSlider({ slides, localLang, contained = false }: { slides: PromoSlide[]; localLang: string; contained?: boolean }) {
   const scroller = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -90,7 +90,7 @@ export function PromoSlider({ slides, localLang }: { slides: PromoSlide[]; local
   }, [active, paused, go, slides.length]);
 
   const arrow =
-    "absolute top-1/2 z-20 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white ring-1 ring-white/15 backdrop-blur-md transition duration-200 hover:bg-black/70 hover:scale-105 md:inline-flex";
+    "absolute top-1/2 z-20 hidden size-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white ring-1 ring-text/15 backdrop-blur-md transition duration-200 hover:bg-black/70 hover:scale-105 md:inline-flex";
 
   return (
     <section
@@ -105,17 +105,17 @@ export function PromoSlider({ slides, localLang }: { slides: PromoSlide[]; local
     >
       <div
         ref={scroller}
-        className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 md:gap-5 md:px-[max(28px,calc((100vw-1216px)/2))]"
+        className={`no-scrollbar flex snap-x snap-mandatory overflow-x-auto ${contained ? "gap-3 rounded-hero" : "gap-3 px-4 md:gap-5 md:px-[max(28px,calc((100vw-1216px)/2))]"}`}
       >
         {slides.map((s, i) => (
-          <Slide key={s.id} slide={s} index={i} total={slides.length} current={i === active} localLang={localLang} onSelect={() => go(i)} />
+          <Slide key={s.id} slide={s} index={i} total={slides.length} current={i === active} localLang={localLang} onSelect={() => go(i)} contained={contained} />
         ))}
       </div>
 
-      <button type="button" aria-label="Previous slide" onClick={() => go(active - 1)} className={`${arrow} left-3 xl:left-[max(12px,calc((100vw-1216px)/2-72px))]`}>
+      <button type="button" aria-label="Previous slide" onClick={() => go(active - 1)} className={`${arrow} left-3 ${contained ? "" : "xl:left-[max(12px,calc((100vw-1216px)/2-72px))]"}`}>
         <ChevronLeftIcon className="size-6" />
       </button>
-      <button type="button" aria-label="Next slide" onClick={() => go(active + 1)} className={`${arrow} right-3 xl:right-[max(12px,calc((100vw-1216px)/2-72px))]`}>
+      <button type="button" aria-label="Next slide" onClick={() => go(active + 1)} className={`${arrow} right-3 ${contained ? "" : "xl:right-[max(12px,calc((100vw-1216px)/2-72px))]"}`}>
         <ChevronRightIcon className="size-6" />
       </button>
 
@@ -130,7 +130,7 @@ export function PromoSlider({ slides, localLang }: { slides: PromoSlide[]; local
             onClick={() => go(i)}
             className="group/dot flex h-5 items-center px-0.5"
           >
-            <span className={`block h-1 rounded-full transition-all duration-300 ${i === active ? "w-7 bg-white" : "w-1.5 bg-white/25 group-hover/dot:bg-white/50"}`} />
+            <span className={`block h-1 rounded-full transition-all duration-300 ${i === active ? "w-7 bg-text" : "w-1.5 bg-text/25 group-hover/dot:bg-text/50"}`} />
           </button>
         ))}
       </div>
@@ -138,24 +138,24 @@ export function PromoSlider({ slides, localLang }: { slides: PromoSlide[]; local
   );
 }
 
-function Slide({ slide: s, index, total, current, localLang, onSelect }: { slide: PromoSlide; index: number; total: number; current: boolean; localLang: string; onSelect: () => void }) {
+function Slide({ slide: s, index, total, current, localLang, onSelect, contained }: { slide: PromoSlide; index: number; total: number; current: boolean; localLang: string; onSelect: () => void; contained?: boolean }) {
   const list = useWatchlist();
   const saved = list.has(s.id);
   return (
     <article
       aria-roledescription="slide"
       aria-label={`${index + 1} of ${total}: ${s.name}`}
-      className="relative aspect-[4/5] w-[88%] shrink-0 snap-center overflow-hidden rounded-hero bg-surface sm:aspect-[16/9] sm:w-[84%] md:w-full md:max-w-[1216px] lg:aspect-[1216/460]"
+      className={`relative shrink-0 snap-center overflow-hidden rounded-hero bg-surface ${contained ? "aspect-[4/5] w-full sm:aspect-[16/9] lg:aspect-auto lg:h-full lg:min-h-[400px]" : "aspect-[4/5] w-[88%] sm:aspect-[16/9] sm:w-[84%] md:w-full md:max-w-[1216px] lg:aspect-[1216/460]"}`}
     >
       <Image src={s.backdrop} alt="" fill priority={index === 0} sizes="(max-width: 768px) 88vw, 1216px" className="object-cover object-[70%_20%]" />
-      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink from-15% via-ink/80 via-55% to-ink/0 md:bg-gradient-to-r md:from-ink/95 md:from-0% md:via-ink/60 md:via-50% md:to-transparent" />
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 hidden h-1/2 bg-gradient-to-t from-ink/80 to-transparent md:block" />
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-hero ring-1 ring-white/10 ring-inset" />
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/90 from-15% via-black/60 via-55% to-black/0 md:bg-gradient-to-r md:from-black/85 md:from-0% md:via-black/45 md:via-50% md:to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 hidden h-1/2 bg-gradient-to-t from-black/50 to-transparent md:block" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-hero ring-1 ring-text/10 ring-inset" />
 
-      <div className="absolute inset-0 flex flex-col justify-end p-5 [text-shadow:0_1px_14px_rgb(0_0_0/0.55)] md:max-w-[620px] md:justify-center md:p-10 lg:p-14">
+      <div className="absolute inset-0 flex flex-col justify-end p-5 text-white [text-shadow:0_1px_14px_rgb(0_0_0/0.55)] md:max-w-[620px] md:justify-center md:p-10 lg:p-14">
         <p className="tnum flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-white/70">
           {s.score ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/14 px-2 py-0.5 font-medium text-white backdrop-blur">
+            <span className="inline-flex items-center gap-1 rounded-full bg-text/14 px-2 py-0.5 font-medium text-white backdrop-blur">
               <StarIcon className="size-3 text-leaving" />
               {s.score.toFixed(1)}
             </span>
@@ -167,7 +167,7 @@ function Slide({ slide: s, index, total, current, localLang, onSelect }: { slide
             </span>
           ))}
         </p>
-        <h2 className="mt-2.5 line-clamp-2 text-[32px] leading-[1.04] font-medium tracking-[-0.045em] md:text-[52px] lg:text-[64px]">
+        <h2 className="mt-2.5 line-clamp-2 pb-[0.14em] text-[30px] leading-[1.12] font-extrabold tracking-[-0.03em] md:text-[44px] lg:text-[52px]">
           <Link href={s.href} className="hover:text-white">
             {s.name}
           </Link>
@@ -193,7 +193,7 @@ function Slide({ slide: s, index, total, current, localLang, onSelect }: { slide
             </span>
             {s.langLabel ? (
               <span className="inline-flex items-center gap-1.5">
-                <span aria-hidden="true" className={`size-1.5 rounded-full ${s.langKind === "dub" ? "bg-dub" : "bg-white"}`} />
+                <span aria-hidden="true" className={`size-1.5 rounded-full ${s.langKind === "dub" ? "bg-dub" : "bg-text"}`} />
                 <span lang={localLang}>{s.langLabel}</span>
               </span>
             ) : null}
@@ -207,7 +207,7 @@ function Slide({ slide: s, index, total, current, localLang, onSelect }: { slide
         ) : null}
 
         <div className="mt-5 flex items-center gap-2.5 md:mt-7">
-          <Link href={s.href} className={buttonClass("primary", "lg")} tabIndex={current ? 0 : -1}>
+          <Link href={s.href} className={buttonClass("accent", "lg")} tabIndex={current ? 0 : -1}>
             Where to watch
           </Link>
           <button

@@ -15,7 +15,7 @@ export function ShortAnswerBlock({ data, edition, idPrefix }: { data: TitlePageD
   const lang = edition.contentLang;
   const langLabel = langName(lang);
   const where = edition.countryName;
-  const name = <span className="text-white">{local.name}</span>;
+  const name = <span className="text-text">{local.name}</span>;
 
   const yes = a.kind !== "none" && a.kind !== "rent_only";
   const sentence = (() => {
@@ -41,7 +41,7 @@ export function ShortAnswerBlock({ data, edition, idPrefix }: { data: TitlePageD
   return (
     <section aria-labelledby={idPrefix ? `${idPrefix}-heading` : "short-answer"}>
       <p lang="en" id={idPrefix ? `${idPrefix}-heading` : "short-answer"} className="overline flex items-center gap-2 text-text-3">
-        <span aria-hidden="true" className={`inline-flex size-[18px] items-center justify-center rounded-full ring-1 ring-inset ${yes ? "text-available ring-available/60" : "text-text-2 ring-white/25"}`}>
+        <span aria-hidden="true" className={`inline-flex size-[18px] items-center justify-center rounded-full ring-1 ring-inset ${yes ? "text-available ring-available/60" : "text-text-2 ring-text/25"}`}>
           {yes ? <CheckIcon className="size-3 stroke-[3]" /> : <span className="h-0.5 w-2 rounded-full bg-current" />}
         </span>
         The short answer

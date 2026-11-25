@@ -28,7 +28,7 @@ type Props = {
   priority?: boolean;
 };
 
-const TAG = "inline-flex h-6 items-center gap-1.5 rounded-full bg-black/60 px-2.5 text-[11px] leading-none font-medium text-white ring-1 ring-white/12 ring-inset backdrop-blur-md";
+const TAG = "inline-flex h-6 items-center gap-1.5 rounded-full bg-black/60 px-2.5 text-[11px] leading-none font-medium text-white ring-1 ring-text/12 ring-inset backdrop-blur-md";
 
 /**
  * Official YouTube trailer (CLAUDE.md "Trailer & share policy"):
@@ -90,7 +90,7 @@ export function TrailerPlayer({
       />
       {thumb ? <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" /> : null}
       {overlay ? <div className="pointer-events-none absolute inset-0">{overlay}</div> : null}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-white/8 ring-inset" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-text/8 ring-inset" />
 
       {lang ? (
         <span className={`${TAG} absolute ${big ? "top-4 right-4 md:top-6 md:right-6" : "top-3 right-3"}`}>
@@ -110,7 +110,7 @@ export function TrailerPlayer({
         className={`absolute inset-0 flex rounded-[inherit] ${playPosition === "center" ? "items-center justify-center" : big ? "items-end justify-start p-4 md:p-6" : "items-end justify-start p-3"}`}
       >
         <span
-          className={`inline-flex items-center justify-center rounded-full bg-white text-ink transition duration-200 ease-out group-hover:scale-105 group-active:scale-95 ${
+          className={`inline-flex items-center justify-center rounded-full bg-text text-ink transition duration-200 ease-out group-hover:scale-105 group-active:scale-95 ${
             big ? "size-14 md:size-[72px]" : playPosition === "center" ? "size-12" : "size-10"
           }`}
         >
@@ -139,11 +139,11 @@ export function TrailerThumb({ videoKey, className = "" }: { videoKey: string; c
         className={`absolute inset-0 size-full object-cover ${thumb ? "opacity-100" : "opacity-0"}`}
       />
       <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center">
-        <span className="inline-flex size-7 items-center justify-center rounded-full bg-black/55 text-white ring-1 ring-white/15 backdrop-blur-sm ring-inset">
+        <span className="inline-flex size-7 items-center justify-center rounded-full bg-black/55 text-white ring-1 ring-text/15 backdrop-blur-sm ring-inset">
           <PlayIcon className="ml-px size-3" />
         </span>
       </span>
-      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-white/8 ring-inset" />
+      <span aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-text/8 ring-inset" />
     </span>
   );
 }

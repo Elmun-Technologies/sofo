@@ -25,7 +25,7 @@ type Props = {
 
 const pill = (active: boolean) =>
   `inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-medium transition duration-200 ease-out active:scale-[0.97] ${
-    active ? "bg-white text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text"
+    active ? "bg-text text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-text/6 hover:text-text"
   }`;
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
@@ -70,7 +70,7 @@ export function FilterSheet({ base, filters, dubLabel, subLabel, localLang, serv
         <FilterIcon className="size-4" />
         Filters
         {activeCount ? (
-          <span className="tnum -mr-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1.5 text-[11px] font-semibold text-white">{activeCount}</span>
+          <span className="tnum -mr-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-text px-1.5 text-[11px] font-semibold text-white">{activeCount}</span>
         ) : null}
       </button>
 
@@ -95,7 +95,7 @@ export function FilterSheet({ base, filters, dubLabel, subLabel, localLang, serv
                     const on = draft.audio === a;
                     return (
                       <button key={a} type="button" aria-pressed={on} className={pill(on)} onClick={() => toggle("audio", a)}>
-                        <span aria-hidden="true" className={`size-1.5 rounded-full ${a === "dub" ? "bg-dub" : on ? "bg-ink/50" : "bg-white/70"}`} />
+                        <span aria-hidden="true" className={`size-1.5 rounded-full ${a === "dub" ? "bg-dub" : on ? "bg-ink/50" : "bg-text/70"}`} />
                         <span lang={localLang}>{cap(a === "dub" ? dubLabel : subLabel)}</span>
                       </button>
                     );
@@ -113,13 +113,13 @@ export function FilterSheet({ base, filters, dubLabel, subLabel, localLang, serv
                         aria-pressed={on}
                         onClick={() => toggle("service", s.slug)}
                         className={`relative flex flex-col items-center gap-2 rounded-card px-1 pt-3.5 pb-3 text-[11px] leading-tight font-medium transition duration-200 ease-out active:scale-95 ${
-                          on ? "bg-white/10 text-text ring-2 ring-white ring-inset" : "text-text-2 ring-1 ring-hairline ring-inset hover:bg-white/6"
+                          on ? "bg-text/10 text-text ring-2 ring-text ring-inset" : "text-text-2 ring-1 ring-hairline ring-inset hover:bg-text/6"
                         }`}
                       >
                         <ServiceLogo slug={s.slug} name="" logoPath={s.logoPath} size={36} />
                         <span className="w-full truncate">{s.name}</span>
                         {on ? (
-                          <span aria-hidden="true" className="absolute top-1.5 right-1.5 flex size-4 items-center justify-center rounded-full bg-white text-ink">
+                          <span aria-hidden="true" className="absolute top-1.5 right-1.5 flex size-4 items-center justify-center rounded-full bg-text text-ink">
                             <CheckIcon className="size-3 stroke-[3.5]" />
                           </span>
                         ) : null}

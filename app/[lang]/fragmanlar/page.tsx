@@ -251,7 +251,7 @@ function Featured({ item, edition }: { item: TrailerItem; edition: Edition }) {
                 href={href}
                 aria-label={`Where to watch ${card.name}`}
                 title="Where to watch"
-                className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-white/6 hover:ring-white/30"
+                className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-text/6 hover:ring-text/30"
               >
                 <ArrowRightIcon className="size-4" />
               </Link>

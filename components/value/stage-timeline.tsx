@@ -43,7 +43,7 @@ const STATE_TEXT: Record<State, string> = { done: "done", confirmed: "confirmed 
 
 const NODE: Record<State, string> = {
   done: "bg-surface-3 text-text-2",
-  confirmed: "bg-white text-ink",
+  confirmed: "bg-text text-ink",
   estimate: "text-leaving ring-1 ring-leaving ring-inset",
   unknown: "ring-1 ring-hairline-strong ring-inset",
 };
@@ -72,7 +72,7 @@ export function StageTimeline({ stages, editionLang, type }: { stages: TrackStag
         const state = stageState(s);
         const last = i === STAGE_ORDER.length - 1;
         const reached = state === "done" && stageState(byStage.get(STAGE_ORDER[i + 1]!)) !== "unknown";
-        const line = reached ? "bg-white/30" : "bg-hairline-strong";
+        const line = reached ? "bg-text/30" : "bg-hairline-strong";
         const detail = s && s.date ? [s.service, state === "estimate" ? `estimate — ${stageSource(s)}` : state === "confirmed" ? stageSource(s) : null].filter(Boolean).join(" · ") : "";
         return (
           <li key={stage} className={`relative flex gap-3.5 md:block md:pr-5 ${last ? "" : "pb-4 md:pb-0"}`} title={s?.isEstimate ? `Estimate — ${s.source}` : s?.source}>

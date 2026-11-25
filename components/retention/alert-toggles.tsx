@@ -25,7 +25,7 @@ export function AlertToggles({ value, onChange, kinds = TITLE_ALERT_KINDS, servi
           <li key={k}>
             <label
               className={`flex cursor-pointer items-center gap-3 rounded-input px-3.5 text-sm font-medium ring-1 transition duration-200 ease-out ring-inset ${dense ? "min-h-11 py-2" : "min-h-12 py-2.5"} ${
-                on ? "bg-white/6 text-text ring-white/25" : "text-text-2 ring-hairline hover:text-text hover:ring-hairline-strong"
+                on ? "bg-text/6 text-text ring-text/25" : "text-text-2 ring-hairline hover:text-text hover:ring-hairline-strong"
               }`}
             >
               <input
@@ -36,8 +36,8 @@ export function AlertToggles({ value, onChange, kinds = TITLE_ALERT_KINDS, servi
               />
               <span
                 aria-hidden="true"
-                className={`flex size-5 shrink-0 items-center justify-center rounded-[6px] transition duration-200 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-white ${
-                  on ? "bg-white text-ink" : "ring-1 ring-white/25 ring-inset"
+                className={`flex size-5 shrink-0 items-center justify-center rounded-[6px] transition duration-200 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-text ${
+                  on ? "bg-text text-ink" : "ring-1 ring-text/25 ring-inset"
                 }`}
               >
                 {on ? <CheckIcon className="size-3.5 stroke-[3]" /> : null}

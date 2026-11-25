@@ -35,7 +35,7 @@ export default async function AdminLists({ searchParams }: PageProps<"/admin/lis
                   {l._count.items} items · updated {formatDate(l.updatedAt, { day: "numeric", month: "short" })}
                 </span>
                 {l.isPublished ? <Tag tone="good">Published</Tag> : <Tag>Draft</Tag>}
-                <Link href={`/admin/lists/${l.id}`} className="ml-auto inline-flex h-9 items-center rounded-full bg-white/10 px-4 text-[13px] font-medium transition-colors duration-200 hover:bg-white/16">
+                <Link href={`/admin/lists/${l.id}`} className="ml-auto inline-flex h-9 items-center rounded-full bg-text/10 px-4 text-[13px] font-medium transition-colors duration-200 hover:bg-text/16">
                   Edit
                 </Link>
               </div>
