@@ -17,7 +17,7 @@ export function HeroSearch({ action, langLabel }: { action: string; langLabel: s
             type="search"
             autoComplete="off"
             enterKeyHint="search"
-            placeholder="Search a movie, series or anime…"
+            placeholder="Search a title…"
             className="h-11 min-w-0 flex-1 bg-transparent text-base font-medium outline-none placeholder:font-normal placeholder:text-text-3 md:h-12 md:text-lg [&::-webkit-search-cancel-button]:hidden"
           />
           <label className="relative shrink-0">

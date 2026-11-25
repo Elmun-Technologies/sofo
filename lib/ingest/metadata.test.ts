@@ -4,7 +4,7 @@ import enMovie from "./fixtures/tmdb-movie-en.json";
 import trMovie from "./fixtures/tmdb-movie-tr.json";
 import enTv from "./fixtures/tmdb-tv-en.json";
 import trTv from "./fixtures/tmdb-tv-tr.json";
-import { mapMovie, mapTv } from "./metadata";
+import { isKidsGenres, mapMovie, mapTv, readableName } from "./metadata";
 import { parseTitleCsv } from "./title-list";
 
 const movieTr = trMovie as unknown as TmdbMovieDetails;
@@ -75,5 +75,23 @@ describe("parseTitleCsv", () => {
   it("refuses rows it cannot trust", () => {
     expect(() => parseTitleCsv("abc,movie")).toThrow(/invalid tmdb_id/);
     expect(() => parseTitleCsv("1396,series")).toThrow(/type must be/);
+  });
+});
+
+describe("isKidsGenres", () => {
+  it("keeps Turkish family dramas out of the kids sections", () => {
+    expect(isKidsGenres(["Drama", "Family", "Romance"])).toBe(false);
+    expect(isKidsGenres(["Family", "Animation", "Adventure"])).toBe(true);
+    expect(isKidsGenres(["Family", "Comedy"])).toBe(true);
+    expect(isKidsGenres(["Kids", "Drama"])).toBe(true);
+    expect(isKidsGenres(["Animation", "Comedy"])).toBe(false);
+  });
+});
+
+describe("readableName", () => {
+  it("falls back to the English title when the local one is not in Latin script", () => {
+    expect(readableName("ドラゴンボール超 ビルス", "Dragon Ball Super: Beerus", "ドラゴンボール超 ビルス")).toBe("Dragon Ball Super: Beerus");
+    expect(readableName("Şeytan Marka Giyer 2", "The Devil Wears Prada 2", "The Devil Wears Prada 2")).toBe("Şeytan Marka Giyer 2");
+    expect(readableName(null, "Ghosts", "Ghosts")).toBe("Ghosts");
   });
 });

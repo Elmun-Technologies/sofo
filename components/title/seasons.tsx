@@ -15,6 +15,10 @@ export function Seasons({ data, edition }: { data: TitlePageData; edition: Editi
     return st.includes("confirmed_yes") ? "yes" : st.includes("confirmed_no") ? "no" : "unknown";
   };
   const shown = [...seasons].reverse().find((s) => s.episodes.length > 0);
+  // Language data is ingested per title for now; without season-level offers, show facts, not "not confirmed" × N.
+  const perSeason = seasons.some((s) => s.offers.length > 0);
+  const facts = (s: (typeof seasons)[number]) =>
+    [s.episodeCount ? `${s.episodeCount} episodes` : null, s.airDate ? String(s.airDate.getUTCFullYear()) : null].filter(Boolean).join(" · ");
 
   return (
     <div>
@@ -28,9 +32,13 @@ export function Seasons({ data, edition }: { data: TitlePageData; edition: Editi
                 className="card card-hover flex h-auto min-w-[132px] flex-col px-4 py-3"
               >
                 <span className="text-sm font-bold whitespace-nowrap">Season {s.number}</span>
-                <span className={`mt-0.5 text-xs whitespace-nowrap ${d === "yes" ? "text-[#8ab4ff]" : d === "no" ? "text-text-3" : "text-leaving"}`}>
-                  {d === "yes" ? dubTerm(lang) : d === "no" ? "no dub" : "dub not confirmed"}
-                </span>
+                {perSeason ? (
+                  <span className={`mt-0.5 text-xs whitespace-nowrap ${d === "yes" ? "text-[#8ab4ff]" : d === "no" ? "text-text-3" : "text-leaving"}`}>
+                    {d === "yes" ? dubTerm(lang) : d === "no" ? "no dub" : "dub not confirmed"}
+                  </span>
+                ) : (
+                  <span className="mt-0.5 text-xs whitespace-nowrap text-text-3">{facts(s) || "\u00a0"}</span>
+                )}
               </Link>
             </li>
           );

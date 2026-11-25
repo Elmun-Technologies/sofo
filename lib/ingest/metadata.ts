@@ -77,6 +77,31 @@ function genresOf(local: TmdbCommon, en: TmdbCommon): string[] {
   return [...new Set(names)];
 }
 
+/** Genres that keep a "Family" title out of the kids sections (e.g. Turkish family dramas). */
+const ADULT_GENRES = ["Drama", "Romance", "Crime", "Thriller", "Horror", "War", "War & Politics", "Soap", "Mystery"];
+
+/**
+ * Kids-section heuristic (placement, not an availability claim): TMDB "Kids", or "Family" that is either
+ * animated or carries no adult genre. A plain "Family" tag also marks romance/family dramas.
+ */
+export function isKidsGenres(genres: readonly string[]): boolean {
+  if (genres.includes("Kids")) return true;
+  if (!genres.includes("Family")) return false;
+  return genres.includes("Animation") || !genres.some((g) => ADULT_GENRES.includes(g));
+}
+
+const LATIN = /[A-Za-z\u00C0-\u024F]/;
+
+/**
+ * Display name for a Latin-script edition: TMDB returns the original script (e.g. Japanese) when no
+ * Turkish title exists — fall back to the English title so cards and slugs stay readable.
+ */
+export function readableName(localName: string | null, englishName: string, originalTitle: string): string {
+  if (localName && LATIN.test(localName)) return localName;
+  if (LATIN.test(englishName)) return englishName;
+  return localName || englishName || originalTitle;
+}
+
 function localization(lang: string, data: TmdbCommon, primary: string, overview: string | null | undefined): MetadataLocalization {
   const altNames: string[] = [];
   const seen = new Set([primary.toLowerCase()]);
@@ -131,7 +156,7 @@ function baseMeta(local: TmdbMovieDetails | TmdbTvDetails, en: TmdbMovieDetails 
     backdropPath: text(local.backdrop_path),
     genres,
     isAnimation: genres.includes("Animation"),
-    isKids: genres.includes("Family") || genres.includes("Kids"),
+    isKids: isKidsGenres(genres),
     videos: videosOf(local, en),
   };
 }
@@ -147,7 +172,7 @@ export function mapMovie(tr: TmdbMovieDetails, en: TmdbMovieDetails): TitleMetad
     runtimeMin: typeof tr.runtime === "number" && tr.runtime > 0 ? tr.runtime : null,
     collection: tr.belongs_to_collection ? { tmdbId: tr.belongs_to_collection.id, name: tr.belongs_to_collection.name } : null,
     localizations: [
-      localization("tr", tr, text(tr.title) ?? originalTitle, tr.overview),
+      localization("tr", tr, readableName(text(tr.title), englishName, originalTitle), tr.overview),
       localization("en", en, englishName, en.overview),
     ],
     seasons: [],
@@ -178,7 +203,7 @@ export function mapTv(tr: TmdbTvDetails, en: TmdbTvDetails): TitleMetadata {
     runtimeMin: tr.episode_run_time?.find((m) => typeof m === "number" && m > 0) ?? null,
     collection: null,
     localizations: [
-      localization("tr", tr, text(tr.name) ?? originalTitle, tr.overview),
+      localization("tr", tr, readableName(text(tr.name), englishName, originalTitle), tr.overview),
       localization("en", en, englishName, en.overview),
     ],
     seasons,

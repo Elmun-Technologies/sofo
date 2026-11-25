@@ -9,8 +9,25 @@ const LOCAL_NAMES: Record<string, string> = {
   it: "Italiano", pt: "Português", ru: "Русский", ar: "العربية", uz: "Oʻzbekcha",
 };
 
+let display: Intl.DisplayNames | null | undefined;
+
+/** English language name: our table first, then the runtime's CLDR names ("cs" → "Czech"), else the code. */
 export function langName(code: string): string {
-  return NAMES[code] ?? code.toUpperCase();
+  if (NAMES[code]) return NAMES[code];
+  if (display === undefined) {
+    try {
+      display = new Intl.DisplayNames(["en"], { type: "language" });
+    } catch {
+      display = null;
+    }
+  }
+  try {
+    const name = display?.of(code);
+    if (name && name.toLowerCase() !== code.toLowerCase()) return name;
+  } catch {
+    // Invalid code: fall through.
+  }
+  return code.toUpperCase();
 }
 
 export function localLangName(code: string): string {

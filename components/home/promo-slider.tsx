@@ -148,11 +148,11 @@ function Slide({ slide: s, index, total, current, localLang, onSelect }: { slide
       className="relative aspect-[4/5] w-[88%] shrink-0 snap-center overflow-hidden rounded-hero bg-surface sm:aspect-[16/9] sm:w-[84%] md:w-full md:max-w-[1216px] lg:aspect-[1216/460]"
     >
       <Image src={s.backdrop} alt="" fill priority={index === 0} sizes="(max-width: 768px) 88vw, 1216px" className="object-cover object-[70%_20%]" />
-      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink via-ink/55 to-transparent md:bg-gradient-to-r md:from-ink/95 md:via-ink/60 md:to-transparent" />
+      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink from-15% via-ink/80 via-55% to-ink/0 md:bg-gradient-to-r md:from-ink/95 md:from-0% md:via-ink/60 md:via-50% md:to-transparent" />
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 hidden h-1/2 bg-gradient-to-t from-ink/80 to-transparent md:block" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-hero ring-1 ring-white/10 ring-inset" />
 
-      <div className="absolute inset-0 flex flex-col justify-end p-5 md:max-w-[620px] md:justify-center md:p-10 lg:p-14">
+      <div className="absolute inset-0 flex flex-col justify-end p-5 [text-shadow:0_1px_14px_rgb(0_0_0/0.55)] md:max-w-[620px] md:justify-center md:p-10 lg:p-14">
         <p className="tnum flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-white/70">
           {s.score ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-white/14 px-2 py-0.5 font-medium text-white backdrop-blur">

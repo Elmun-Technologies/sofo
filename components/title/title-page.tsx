@@ -246,7 +246,15 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
 
           {type === "tv" && title.seasons.length ? (
             <section aria-labelledby="seasons">
-              <SectionHeader id="seasons" title="Seasons & episodes" sub={`${dubTerm(lang)} status per season`} />
+              <SectionHeader
+                id="seasons"
+                title="Seasons & episodes"
+                sub={
+                  title.seasons.some((s) => s.offers.length > 0)
+                    ? `${dubTerm(lang)} status per season`
+                    : `${seasonsCount} seasons · language info above covers the whole series`
+                }
+              />
               <Seasons data={data} edition={edition} />
             </section>
           ) : null}
