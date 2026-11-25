@@ -37,7 +37,7 @@ export function ServiceChips({
         scroll={false}
         aria-current={!active ? "true" : undefined}
         className={`inline-flex h-9 shrink-0 items-center rounded-full px-4 text-[13px] font-medium whitespace-nowrap transition duration-200 ease-out ${
-          !active ? "bg-white text-ink hover:text-ink" : "text-text-2 ring-1 ring-hairline-strong ring-inset hover:bg-white/6 hover:text-text"
+          !active ? "bg-text text-ink hover:text-ink" : "text-text-2 ring-1 ring-hairline-strong ring-inset hover:bg-text/6 hover:text-text"
         }`}
       >
         All services
@@ -53,7 +53,7 @@ export function ServiceChips({
             title={s.name}
             aria-current={on ? "true" : undefined}
             className={`shrink-0 rounded-[11px] p-[3px] ring-1 ring-inset transition duration-200 ease-out ${
-              on ? "ring-white" : `ring-transparent hover:ring-hairline-strong ${active ? "opacity-45 hover:opacity-100" : ""}`
+              on ? "ring-text" : `ring-transparent hover:ring-hairline-strong ${active ? "opacity-45 hover:opacity-100" : ""}`
             }`}
           >
             <ServiceLogo {...s} size={30} />
@@ -75,7 +75,7 @@ export function Segmented({ label, options, className = "" }: { label: string; o
           scroll={false}
           aria-current={o.active ? "true" : undefined}
           className={`inline-flex h-9 min-w-0 flex-1 items-center justify-center rounded-full px-4 text-[13px] font-medium whitespace-nowrap transition duration-200 ease-out ${
-            o.active ? "bg-white text-ink hover:text-ink" : "text-text-2 hover:text-text"
+            o.active ? "bg-text text-ink hover:text-ink" : "text-text-2 hover:text-text"
           }`}
         >
           {o.label}
@@ -93,7 +93,7 @@ export function ToggleChip({ href, active, children, dot }: { href: string; acti
       scroll={false}
       aria-current={active ? "true" : undefined}
       className={`inline-flex h-9 shrink-0 items-center gap-2 rounded-full px-4 text-[13px] font-medium whitespace-nowrap transition duration-200 ease-out active:scale-[0.97] ${
-        active ? "bg-white text-ink hover:text-ink" : "text-text-2 ring-1 ring-hairline-strong ring-inset hover:bg-white/6 hover:text-text hover:ring-white/30"
+        active ? "bg-text text-ink hover:text-ink" : "text-text-2 ring-1 ring-hairline-strong ring-inset hover:bg-text/6 hover:text-text hover:ring-text/30"
       }`}
     >
       {active ? <CheckIcon className="size-3.5" /> : dot ? <span aria-hidden="true" className={`size-1.5 rounded-full ${dot}`} /> : null}

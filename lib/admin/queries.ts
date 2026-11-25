@@ -22,7 +22,7 @@ export type DashboardData = Awaited<ReturnType<typeof getDashboard>>;
 export async function getDashboard(e: Edition, now = new Date()) {
   const weekAgo = new Date(now.getTime() - 7 * 24 * HOUR);
   const freshSince = new Date(now.getTime() - FRESH_HOURS * HOUR);
-  const offerWhere = { countryCode: e.country, isActive: true } satisfies Prisma.OfferWhereInput;
+  const offerWhere = { countryCode: e.country, isActive: true, seasonId: null } satisfies Prisma.OfferWhereInput;
 
   const [titles, titlesNew, offersActive, offersFresh, lastIngest, perService, eventsByType, latestEvents, openReports, topSearches, zeroSearches, inventory] =
     await Promise.all([

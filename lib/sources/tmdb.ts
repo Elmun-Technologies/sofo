@@ -8,7 +8,7 @@
 import { fetchJson, HttpError, SourceConfigError } from "./http";
 
 const BASE = "https://api.themoviedb.org/3";
-const APPEND = "videos,alternative_titles,external_ids";
+const APPEND = "videos,alternative_titles,external_ids,credits";
 
 export type TmdbLanguage = "tr-TR" | "en-US";
 
@@ -37,7 +37,11 @@ type TmdbBase = {
   videos?: { results?: TmdbVideo[] };
   alternative_titles?: { titles?: TmdbAlternativeTitle[] };
   external_ids?: { imdb_id?: string | null };
+  credits?: { cast?: TmdbCast[]; crew?: TmdbCrew[] };
 };
+
+export type TmdbCast = { id: number; name: string; character?: string | null; order?: number; known_for_department?: string };
+export type TmdbCrew = { id: number; name: string; job?: string; department?: string; known_for_department?: string };
 
 export type TmdbMovieDetails = TmdbBase & {
   title: string;
@@ -64,6 +68,7 @@ export type TmdbTvDetails = TmdbBase & {
   episode_run_time?: number[];
   number_of_seasons?: number;
   seasons?: TmdbSeason[];
+  created_by?: { id: number; name: string }[];
 };
 
 function apiKey(): string {

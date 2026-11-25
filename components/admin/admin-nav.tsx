@@ -22,7 +22,7 @@ export function AdminNav() {
             href={href}
             aria-current={active ? "page" : undefined}
             className={`flex h-10 shrink-0 items-center gap-3 rounded-full px-4 text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
-              active ? "bg-white/10 text-text" : "text-text-2 hover:bg-white/5 hover:text-text"
+              active ? "bg-text/10 text-text" : "text-text-2 hover:bg-text/5 hover:text-text"
             }`}
           >
             <Icon className={`size-4 shrink-0 ${active ? "text-text" : "text-text-3"}`} />

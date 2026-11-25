@@ -130,7 +130,7 @@ export function SubscribeForm({ titleId, kinds, alerts, variant = "inline", edit
           placeholder="you@email.com or @telegram"
           aria-invalid={!!error}
           aria-describedby={`${id}-help`}
-          className={`field ${stacked ? "" : "flex-1"} ${variant === "compact" ? "!h-10 !text-sm" : "!h-12"}`}
+          className={`field ${stacked ? "" : "sm:flex-1"} ${variant === "compact" ? "!h-10 !text-sm" : "!h-12"}`}
         />
         {/* Honeypot */}
         <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />

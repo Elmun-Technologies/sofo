@@ -52,6 +52,7 @@ function reviveMetadata(v: unknown, i: number): TitleMetadata {
   if (typeof m.originalTitle !== "string" || !m.originalTitle) fail(`${where}: missing originalTitle`);
   if (!Array.isArray(m.localizations) || m.localizations.length === 0) fail(`${where}: missing localizations`);
   if (!Array.isArray(m.seasons) || !Array.isArray(m.videos) || !Array.isArray(m.genres)) fail(`${where}: seasons, videos and genres must be arrays`);
+  if (m.credits !== undefined && !Array.isArray(m.credits)) fail(`${where}: credits must be an array`);
   return {
     ...m,
     seasons: m.seasons.map((s: MetadataSeason, j: number) => ({ ...s, airDate: dateOrNull(s.airDate, `${where}.seasons[${j}].airDate`) })),
@@ -65,13 +66,20 @@ function reviveSnapshot(v: unknown, i: number): SnapshotTitle {
   const s = v as SnapshotTitle & Json;
   if (typeof s.countryCode !== "string" || !/^[A-Z]{2}$/.test(s.countryCode)) fail(`${where}: countryCode must be ISO alpha-2`);
   if (!Array.isArray(s.offers)) fail(`${where}: offers must be an array`);
-  const offers = s.offers.map((o: SnapshotOffer, j: number): SnapshotOffer => {
-    const w = `${where}.offers[${j}]`;
-    if (!isRecord(o) || typeof o.serviceSlug !== "string" || typeof o.type !== "string" || typeof o.url !== "string") fail(`${w}: missing serviceSlug, type or url`);
-    if (!Array.isArray(o.audio) || !Array.isArray(o.subtitle)) fail(`${w}: audio and subtitle must be arrays`);
-    return { ...o, leavingAt: dateOrNull(o.leavingAt, `${w}.leavingAt`) };
+  const reviveOffers = (list: SnapshotOffer[], at: string) =>
+    list.map((o: SnapshotOffer, j: number): SnapshotOffer => {
+      const w = `${at}[${j}]`;
+      if (!isRecord(o) || typeof o.serviceSlug !== "string" || typeof o.type !== "string" || typeof o.url !== "string") fail(`${w}: missing serviceSlug, type or url`);
+      if (!Array.isArray(o.audio) || !Array.isArray(o.subtitle)) fail(`${w}: audio and subtitle must be arrays`);
+      return { ...o, leavingAt: dateOrNull(o.leavingAt, `${w}.leavingAt`), availableSince: dateOrNull(o.availableSince, `${w}.availableSince`) };
+    });
+  const offers = reviveOffers(s.offers, `${where}.offers`);
+  if (s.seasons !== undefined && !Array.isArray(s.seasons)) fail(`${where}: seasons must be an array`);
+  const seasons = s.seasons?.map((se, j) => {
+    if (!isRecord(se) || !Number.isInteger(se.number) || !Array.isArray(se.offers)) fail(`${where}.seasons[${j}]: number and offers required`);
+    return { number: se.number, offers: reviveOffers(se.offers, `${where}.seasons[${j}].offers`) };
   });
-  return { ...key, countryCode: s.countryCode, offers };
+  return { ...key, countryCode: s.countryCode, offers, ...(seasons ? { seasons } : {}) };
 }
 
 export function parseIngestBatch(body: unknown): IngestBatch {

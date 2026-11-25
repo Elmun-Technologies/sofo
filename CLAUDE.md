@@ -30,11 +30,12 @@ Legal "qayerda ko'rish" gidi: film yoki serialni qaysi legal servisda, qaysi dav
 
 ## Tech stack
 
-Qaror va sabablar: `docs/adr/0001-tech-stack.md`, **`docs/adr/0002-cloudflare-d1.md` (2026-11-06, ustun)**.
+Qaror va sabablar: `docs/adr/0001-tech-stack.md`, `docs/adr/0002-cloudflare-d1.md` (2026-11-06), **`docs/adr/0003-self-host-coolify.md` (2026-11-25, production)**.
 
 - Next.js (App Router, ISR), TypeScript
 - **Cloudflare D1 (SQLite) + Prisma 6 (`@prisma/adapter-d1`)** — ADR 0002
-- Hosting: **Freebuff Sites** (Cloudflare Workers, OpenNext) — `deploy/freebuff-site.json`
+- Hosting: **Coolify (founder serveri, Docker)** — `Dockerfile`, SQLite fayl `/data/sofo.db` (ADR 0003). Zaxira yo'l: Freebuff Sites (Workers + D1) — `deploy/freebuff-site.json`
+- DB tanlovi: `SOFO_SQLITE_PATH` bor → better-sqlite3 adapter (self-host); yo'q → D1 binding (`lib/runtime.ts`)
 - Ingest: Node/TypeScript skriptlar; production'ga `pnpm ingest:push` → `POST /api/ingest` (Bearer `INGEST_TOKEN`), GitHub Actions har kuni (`.github/workflows/ingest.yml`)
 - Qidiruv: TypeScript trigram reyting (`lib/search.ts`), alohida dvigatelsiz
 - Analytics: GA4 + Google Search Console
@@ -70,20 +71,20 @@ Qaror va sabablar: `docs/adr/0001-tech-stack.md`, **`docs/adr/0002-cloudflare-d1
 - Har bir title sahifasida `hreflang` (tr, en, x-default).
 - Slug: lotin, kichik harf, defis; TR harflari transliteratsiya (ç→c, ğ→g, ı→i, ö→o, ş→s, ü→u).
 
-## Design (DS3 "clean", 2026-11-24 — DS2 o'rniga)
+## Design (DS4 "Sofo Market", 2026-11-25 — DS3 o'rniga)
 
-Founder qarori (2026-11-24): DS2 UI "multfilm/detskiy" ko'rindi. Yangi yo'nalish — toza, tipografiyaga tayangan, IVI (imagery-led dark katalog) + QClay agentlik deki (havodor, yirik yengil shrift, pill kontrollar, bento bloklar). To'liq qoidalar: **`docs/design-system.md`**. Eski canvas (https://claude.ai/artifact/QjjfE8kYPKjasiVwjSFEUS) tarixiy.
-- Rang: neytral qora (`#09090B`, surface `#131316`), tint yo'q. Oq = asosiy tugma (pill). Sofo Orange `#FF5A1F` faqat tashqi "Watch on <service>" tugmasi (`buttonClass("accent")`) va logo. Semantik ranglar (dub #3B82F6, available #4ADE80, leaving #FBBF24, free #A78BFA) — faqat 6 px nuqta/kontur/matn, to'ldirilgan blok emas.
-- Shrift: Manrope 400/500/600 (og'irligi remap qilingan: `font-bold`=600, `font-extrabold`=600), Nunito Black — faqat logo. Yirik yengil sarlavhalar (`text-display/h1/h2`, 500, manfiy tracking).
-- Radius: chip/button/tag — to'liq pill; input 14, card 20, panel 24, hero 28, poster 12. Soyalar yo'q (panel), glow/gradient-matn yo'q.
-- Layout: `wrap` konteyner, `section-y` ritm, bento bloklar, nozik `rule`, `numeral` hisoblagichlar. Responsivlik (xs 360 → xl 1280+) va mobil tab bar/bottom sheet/sticky CTA o'zgarmadi.
-- Kontrast: CTA'da qora matn orange/oq ustida. Oq matn orange'da faqat ≥18 px yoki logo.
-- Eslatmalar: Telegram — asosiy, email — haftalik dayjest (juma 18:00), kuniga max 3 Telegram xabar.
-- Admin (AdminDash, AdminQA, AdminLists): ingest holati va KPI, "Something wrong?" navbati (SLA 24 soat), TMDB bog'lash, to'plam muharriri — shu tizimda, zich va sokin.
+Founder qarori (2026-11-25): DS3 "Netflix shabloni"dek ko'rindi. Yangi yo'nalish — **santehnika-online.ru tuzilishi** (katta katalog-do'kon: "kino = mahsulot") + **ivi.ru aksentlari** (til belgilari, kino-qora bloklar). To'liq qoidalar: **`docs/design-system.md`** (DS4).
+- Yorug' tema: oq sahifa, `surface #F3F5F9`, grafit matn. Qora "kino orollari" faqat title hero va bosh sahifadagi Top 10 (`theme-dark` utility tokenlarni blok ichida almashtiradi).
+- Header: utility qator → logo + to'q sariq **Catalogue** mega-menyu (`components/catalog-menu.tsx`, `lib/queries/mega-menu.ts`) + to'ldirilgan qidiruv (to'q sariq tugma) + ikonkalar → kategoriya qatori. Qidiruv takliflarida "Category / Platform" qatorlari.
+- Katalog: breadcrumbs, H1 + son, rasmli janr plitkalari, chap filtr paneli (`filter-sidebar.tsx`, checkbox-linklar sonlar bilan), inline saralash. Mobil — filter sheet.
+- Title sahifa: qora hero (poster, faktlar, qisqa javob, "Where to watch" bloki) + sticky tablar (`title-tabs.tsx`).
+- Poster belgilari: to'ldirilgan pill — türkçe dublaj ko'k, altyazı kulrang, New yashil, Leaving to'q sariq, Free binafsha.
+- Sofo Orange `#FF5A1F` = harakat (Catalogue, qidiruv, hero CTA, "Watch on …"), to'q sariq ustida qora matn. Primary neutral = grafit tugma.
+- Shrift: Manrope 700/800 sarlavhalar (qalin, ixcham), Nunito Black — faqat logo. Radius: tugma/input 12, card 16, panel/hero 20.
 
 ## Key documents
 
-- `docs/design-system.md` — DS3 dizayn tizimi (tokenlar, utility, komponentlar, sahifa andozalari).
+- `docs/design-system.md` — DS4 dizayn tizimi (tokenlar, theme-dark, komponentlar); DS3 arxivi pastda.
 - `docs/HANDOFF.md` — founder tomonidan ulanadigan narsalar ro'yxati.
 - `docs/PRD.md` — PRD v2 (Sofo, 20 sahifa turi, qiymatlar, bosqichlar, acceptance criteria).
 - `docs/data-model.md` — ma'lumotlar modeli, ingest diff → event, qisqa javob algoritmi, sifat darvozasi.
@@ -103,6 +104,7 @@ Founder qarori (2026-11-24): DS2 UI "multfilm/detskiy" ko'rindi. Yangi yo'nalish
 SETUP_TOKEN=            # Sites secret — /api/setup (D1 has no URL)
 INGEST_TOKEN=           # Sites secret — /api/ingest; same value in GitHub Actions (+ INGEST_URL)
 SOFO_DEMO_DATA=         # Sites var — 0 once real data is loaded
+SOFO_SQLITE_PATH=       # self-host only (Docker default /data/sofo.db); unset = Cloudflare D1
 STREAMING_AVAILABILITY_API_KEY=
 TMDB_API_KEY=
 NEXT_PUBLIC_SITE_URL=
@@ -146,6 +148,7 @@ URL hajmi: MVP ≈ 510 indekslanadigan (TR), 12 oyda ≈ 30 000 (TR+US+FR). Mobi
 - Unit: slug, transliteratsiya, availability normalizatsiyasi.
 - Integration: ingest → DB (mock API javoblari bilan).
 - E2E (Playwright): title sahifa render, hreflang, schema, outbound link.
+- Smoke (2026-11-25, brauzersiz, istalgan deploy'ga qarshi): `pnpm smoke -- --base=<url>` (`scripts/e2e/smoke.ts`) — asosiy sahifalar 200, 404, robots → sitemap, title sahifada bitta H1, canonical, hreflang, JSON-LD Movie/TVSeries + WatchAction, outbound havola `noopener nofollow`, checked sana, pirat havola yo'q, sitemap URL'lari 200 va indexable. Har deploy'dan keyin Coolify terminalida yoki lokal ishga tushiriladi.
 
 ## Common commands
 
@@ -158,6 +161,7 @@ pnpm lint && pnpm typecheck && pnpm test
 python3 scripts/d1/build-bundle.py   # after schema/seed changes: regenerate lib/generated/d1-bundle.ts
 pnpm ingest:metadata        # 04-ingest
 pnpm ingest:availability    # 04-ingest
+pnpm smoke -- --base=http://localhost:3000   # HTTP smoke test (also against production)
 ```
 
 ## Setup decisions (01-setup, 2026-11-05)
@@ -196,13 +200,24 @@ pnpm ingest:availability    # 04-ingest
 - **Production write path (2026-11-25):** the Worker holds no API keys. A runner crawls (`pnpm ingest:catalog`), then `pnpm ingest:push -- --target=<site>` (needs `INGEST_TOKEN` + `TMDB_API_KEY`): asks `/api/ingest` which titles exist (`kind: known`), fetches TMDB metadata only for new ones, posts `metadata` (≤10/request) then `availability` (≤25/request). The endpoint (`app/api/ingest/route.ts`, payload parser `lib/ingest/payload.ts`, unit-tested) runs the same `apply.ts` diff, so a re-push is idempotent (0 events). Verified locally: demo → `clear-demo` → push = 314 titles / 421 offers, second push 421 unchanged.
 - First production import: deploy → `/api/setup {"action":"migrate"}` → `{"action":"clear-demo"}` (deletes sample rows, restores base services; refuses once real offers exist) → push → set `SOFO_DEMO_DATA=0`.
 - Title list: `data/titles.csv` (`tmdb_id,type`, `#` comments, duplicates ignored). Commands: `pnpm ingest:metadata [-- --limit=50 --dry-run --file=…]` and `pnpm ingest:availability [-- --edition=tr --limit=50 --dry-run --file=…]` (default list = every title in the DB). Cron: `.github/workflows/ingest.yml` — daily catalogue crawl + push (needs repo secrets `STREAMING_AVAILABILITY_API_KEY`, `TMDB_API_KEY`, `INGEST_TOKEN`, `INGEST_URL`; skips with a notice otherwise).
-- Metadata → `Title`, `TitleLocalization` (tr/en, `altNames` from TMDB alternative titles, slug = `slugify(name)` + tmdb id suffix on collision), `Season` (specials skipped), official YouTube `Video` (fan uploads/other sites dropped), `Franchise`/`FranchiseItem` (release order by year, recomputed after each upsert). Credits/persons are not ingested yet. `isKids` = TMDB genre Family/Kids (section placement heuristic, not an availability claim).
+- Metadata → `Title`, `TitleLocalization` (tr/en, `altNames` from TMDB alternative titles, slug = `slugify(name)` + tmdb id suffix on collision), `Season` (specials skipped), official YouTube `Video` (fan uploads/other sites dropped), `Franchise`/`FranchiseItem` (release order by year, recomputed after each upsert). Credits (2026-11-25): directors (movie) / creators (tv) + top 10 billed cast from the English TMDB `credits` → `Person` (by tmdb id, slug + id on collision) and `Credit` (replaced per title, `creditsOf` unit-tested); feeds Cast & crew, person pages and person search. `isKids` = TMDB genre Family/Kids (section placement heuristic, not an availability claim).
 - Availability → title-level `Offer` (`seasonId` null) + `OfferLanguage` + `AvailabilityEvent`. Offer key = service × offer type × quality; a quality change is `removed` + `added`. Service map: netflix, prime→prime-video, disney→disney-plus, hbo→hbo-max, crunchyroll (tod, tabii, exxen, gain kept for later); `addon` options and unmapped services are skipped. Prices only come from `rent`/`buy` options (never plan prices).
+- Event dating (2026-11-25): an `added` event takes the option's `availableSince` from the API (never in the future). On a title's **first** import in a country (baseline: it never had an offer there), an undated offer gets **no** `added` event — we cannot claim when it arrived, and a first import must not flood "New this week" with the back catalogue. Later undated additions are dated at write time.
 - Language rule: languages the API lists become `confirmed_yes`; every other language gets **no row** (= `unknown`), never `confirmed_no`. The API's list is not treated as proof that a dub does not exist.
 - Idempotency: the same snapshot twice → 0 creates/updates/deactivations/events; only `checkedAt` is refreshed (that is the page's "checked" proof). `lib/ingest/diff.ts` is pure and unit-tested: `planDiff` → `applyPlanToState` → `planDiff` is empty.
-- TASK-006 (season/episode languages): the v4 schema does expose per-season and per-episode `streamingOptions` with their own `audios`/`subtitles` (`series_granularity=season|episode`), so the data exists. We still ingest title-level only (MVP pages read title-level offers); season-level dub rows are a follow-up. TR coverage/price of the API stays unverified without a live key.
+- TASK-006 (season languages, done 2026-11-25): the catalogue crawl and per-title checks use `series_granularity=season` (same request cost). `parseShow` keeps `seasons[]` (number from "Season N", else index), `normalizeShow` → `SnapshotTitle.seasons`, `apply.ts#ingestSeasonOffers` diffs offers per `Season` row (`seasonId` set, **no events**; a season missing from the snapshot is deactivated). Every title-level query filters `seasonId: null`; season cards show `türkçe dublaj` per season once any season has offers. Episode granularity not ingested.
 
-## Deploy (Freebuff Sites, ADR 0002)
+## Deploy (Coolify, ADR 0003 — production)
+
+- Coolify → resource from Git (public repo), build pack **Dockerfile**, port 3000, persistent storage → `/data`.
+- Env: `SOFO_DEMO_DATA=0` (build + runtime), `NEXT_PUBLIC_SITE_URL` (build time — canonical/hreflang/sitemap), `INGEST_TOKEN`, `SETUP_TOKEN`, `ADMIN_USER`, `ADMIN_PASSWORD`. `SOFO_SQLITE_PATH=/data/sofo.db` is the image default.
+- Start: `scripts/selfhost/migrate.ts` (idempotent migrations; demo data only in demo mode on an empty DB) → `next start`. Healthcheck `/robots.txt`.
+- Fill the DB (primary, 2026-11-25 — GitHub Actions is disabled on the founder's account): Coolify env `TMDB_API_KEY` + `STREAMING_AVAILABILITY_API_KEY` (runtime), then in the container `pnpm selfhost:refresh` = catalogue crawl (20 popular + 3 animation pages = 23 SA requests, ~460 titles) → TMDB metadata → availability from the cache → **stale sweep** (`--stale=5`: re-checks the 5 oldest titles not checked for 7+ days via `/shows/{id}`, so titles that fell out of the popular pages still get deactivated when they leave; `lib/ingest/stale.ts`) → `POST /api/revalidate` (drops the ISR cache; pages otherwise keep an empty render for up to 1 h). Daily: Coolify Scheduled Task `pnpm selfhost:refresh` at `17 3 * * *` (≈ 28 requests/day ≈ 840/month of the 1 000 quota).
+- Alternative: GitHub Actions `ingest` (secrets incl. `INGEST_URL`) or `pnpm ingest:push -- --target=<domain>` from any machine; `/api/ingest` revalidates pages itself after writes.
+- Scripts inside the container (Coolify terminal) use the same file: `SOFO_SQLITE_PATH` is set, so `pnpm ingest:*`, `pnpm seo:sync-pages` work there.
+- Sandbox `docker build` needs proxy + CA (test-only variant); the committed Dockerfile is for a normal network.
+
+## Deploy (Freebuff Sites, ADR 0002 — fallback)
 
 - Site `deploy/freebuff-site.json` (production: https://site-ba9127d751304bfab1b5d5927e2fbb88.freebuff.page). D1 binding `DB` (production), secret `SETUP_TOKEN`.
 - Flow: `sites_prepare_next` → `wrangler dev --config freebuff.wrangler.jsonc` (workerd) test → `sites_deploy` (manifest `freebuff-sites-build/manifest.json`) → `POST /api/setup {"action":"migrate"}` (or `"demo"` while `DEMO_DATA`) with `Authorization: Bearer $SETUP_TOKEN`.

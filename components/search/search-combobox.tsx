@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { track } from "@/lib/client/analytics";
-import { ClockIcon, EnterIcon, LayersIcon, ListIcon, PersonIcon, SearchIcon, TrendingIcon, XIcon } from "../icons";
+import { ClockIcon, EnterIcon, GridIcon, LayersIcon, ListIcon, PersonIcon, SearchIcon, TrendingIcon, XIcon } from "../icons";
+import { ServiceLogo } from "../ui/service-logo";
 import { useRecentSearches } from "./recent-searches";
 import type { SuggestPayload } from "./types";
 
@@ -21,11 +22,11 @@ type Props = {
 type Option =
   | { id: string; kind: "query"; label: string; group: "Recent" | "Trending in Türkiye" | "Did you mean"; rank?: number }
   | { id: string; kind: "title"; t: SuggestPayload["titles"][number] }
-  | { id: string; kind: "item"; label: string; meta: string; href: string; icon: "franchise" | "person" | "list" }
+  | { id: string; kind: "item"; label: string; meta: string; href: string; icon: "franchise" | "person" | "list" | "category" | "platform"; service?: string }
   | { id: string; kind: "all"; label: string };
 
 const DEBOUNCE_MS = 150;
-const EMPTY: SuggestPayload = { q: "", suggestion: null, titles: [], people: [], franchises: [], collections: [], trending: [] };
+const EMPTY: SuggestPayload = { q: "", suggestion: null, titles: [], people: [], franchises: [], collections: [], categories: [], trending: [] };
 
 /**
  * Search box with instant results (combobox + listbox, WAI-ARIA 1.2).
@@ -112,6 +113,9 @@ export function SearchCombobox({ action, variant = "header", defaultValue = "", 
     }
     const out: Option[] = [];
     if (data.suggestion) out.push({ id: `${uid}-dym`, kind: "query", label: data.suggestion.name, group: "Did you mean" });
+    (data.categories ?? []).forEach((c, i) =>
+      out.push({ id: `${uid}-cat${i}`, kind: "item", label: c.name, meta: c.meta, href: c.href, icon: c.meta === "Platform" ? "platform" : "category", service: c.service }),
+    );
     data.titles.forEach((t) => out.push({ id: `${uid}-ti${t.id}`, kind: "title", t }));
     data.franchises.forEach((f, i) => out.push({ id: `${uid}-f${i}`, kind: "item", label: f.name, meta: f.meta, href: f.href, icon: "franchise" }));
     data.collections.forEach((c, i) => out.push({ id: `${uid}-c${i}`, kind: "item", label: c.name, meta: c.meta, href: c.href, icon: "list" }));
@@ -179,7 +183,7 @@ export function SearchCombobox({ action, variant = "header", defaultValue = "", 
 
   const sizes = isPage
     ? "h-14 gap-3 rounded-card pr-2.5 pl-5 text-[17px] md:h-[68px] md:gap-4 md:pr-3.5 md:pl-6 md:text-xl"
-    : "h-10 gap-2.5 rounded-full px-4 text-sm";
+    : "h-12 gap-2.5 rounded-input pr-1.5 pl-4 text-[15px]";
 
   return (
     <div
@@ -198,7 +202,7 @@ export function SearchCombobox({ action, variant = "header", defaultValue = "", 
           e.preventDefault();
           submit(value);
         }}
-        className={`flex min-w-0 items-center border transition duration-200 ease-out focus-within:border-white/60 focus-within:shadow-[0_0_0_4px_rgb(255_255_255/0.08)] ${isPage ? "border-hairline-strong bg-surface hover:border-white/25" : "border-hairline bg-white/[0.06] hover:bg-white/10 focus-within:bg-surface"} ${sizes}`}
+        className={`flex min-w-0 items-center border transition duration-200 ease-out focus-within:border-orange focus-within:bg-ink focus-within:shadow-[0_0_0_4px_rgb(255_90_31/0.14)] ${isPage ? "border-hairline-strong bg-surface hover:border-text/25" : "border-transparent bg-surface hover:bg-surface-2"} ${sizes}`}
       >
         <SearchIcon className={`${isPage ? "size-5 md:size-[22px]" : "size-[18px]"} shrink-0 text-text-2`} />
         <label htmlFor={`${uid}-q`} className="sr-only">
@@ -221,7 +225,7 @@ export function SearchCombobox({ action, variant = "header", defaultValue = "", 
           maxLength={100}
           autoFocus={autoFocus}
           value={value}
-          placeholder={isPage ? "Search movies, series, people…" : "Search titles, people…"}
+          placeholder={isPage ? "Search movies, series, people…" : "Find a movie, series or anime"}
           onChange={(e) => {
             setValue(e.target.value);
             setActive(-1);
@@ -239,16 +243,20 @@ export function SearchCombobox({ action, variant = "header", defaultValue = "", 
               setValue("");
               inputRef.current?.focus();
             }}
-            className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-text-2 transition-colors duration-200 hover:bg-white/8 hover:text-text"
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-text-2 transition-colors duration-200 hover:bg-text/8 hover:text-text"
           >
             <XIcon className="size-[18px]" />
           </button>
         ) : null}
-        {!isPage ? <kbd className="rounded-full bg-white/8 px-2 font-ui text-[11px] leading-5 font-medium text-text-3">/</kbd> : null}
+        {!isPage ? (
+          <button type="submit" aria-label="Search" className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-orange text-text transition-colors hover:bg-orange-hover">
+            <SearchIcon className="size-[18px]" />
+          </button>
+        ) : null}
       </form>
 
       <div
-        className={`absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-card border border-hairline-strong bg-surface-2 shadow-pop ${isPage ? "left-0" : "left-0 xl:-left-24"} ${showList ? "animate-pop-in" : "hidden"}`}
+        className={`absolute top-full right-0 z-50 mt-2 overflow-hidden rounded-card border border-hairline bg-ink shadow-pop ${isPage ? "left-0" : "left-0 xl:-left-24"} ${showList ? "animate-pop-in" : "hidden"}`}
       >
         <ul id={listId} role="listbox" aria-label="Search suggestions" className="max-h-[min(70vh,560px)] overflow-y-auto p-2">
           {q && loading && options.length <= 1 ? <SkeletonRows /> : null}
@@ -301,7 +309,7 @@ function OptionRow({
   onHover: () => void;
   onChoose: () => void;
 }) {
-  const base = `flex cursor-pointer items-center gap-3 rounded-input px-3 transition-colors duration-150 ${selected ? "bg-white/8" : ""}`;
+  const base = `flex cursor-pointer items-center gap-3 rounded-input px-3 transition-colors duration-150 ${selected ? "bg-text/8" : ""}`;
   const handlers = {
     id: o.id,
     role: "option" as const,
@@ -310,7 +318,7 @@ function OptionRow({
     onMouseMove: onHover,
     onClick: onChoose,
   };
-  const iconWrap = "flex size-9 shrink-0 items-center justify-center rounded-full bg-white/6 text-text-2";
+  const iconWrap = "flex size-9 shrink-0 items-center justify-center rounded-full bg-text/6 text-text-2";
 
   const heading = header ? (
     <li lang="en" role="presentation" className="overline px-3 pt-3 pb-1.5 text-text-3">
@@ -344,7 +352,7 @@ function OptionRow({
     const t = o.t;
     return (
       <li {...handlers} className={`${base} py-2`}>
-        <span className="relative h-[54px] w-9 shrink-0 overflow-hidden rounded-[8px] bg-surface-3 ring-1 ring-white/10 ring-inset">
+        <span className="relative h-[54px] w-9 shrink-0 overflow-hidden rounded-[8px] bg-surface-3 ring-1 ring-text/10 ring-inset">
           {t.poster ? <Image src={t.poster} alt="" fill sizes="36px" className="object-cover" /> : null}
         </span>
         <span className="min-w-0 flex-1">
@@ -353,7 +361,7 @@ function OptionRow({
         </span>
         {t.dub || t.sub ? (
           <span className="inline-flex h-6 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[11px] font-medium whitespace-nowrap text-text-2 ring-1 ring-hairline-strong ring-inset">
-            <span aria-hidden="true" className={`size-1.5 rounded-full ${t.dub ? "bg-dub" : "bg-white/70"}`} />
+            <span aria-hidden="true" className={`size-1.5 rounded-full ${t.dub ? "bg-dub" : "bg-text/70"}`} />
             {lang.toUpperCase()} {t.dub ? "dub" : "sub"}
           </span>
         ) : null}
@@ -362,12 +370,16 @@ function OptionRow({
   }
 
   if (o.kind === "item") {
-    const Icon = o.icon === "person" ? PersonIcon : o.icon === "franchise" ? LayersIcon : ListIcon;
+    const Icon = o.icon === "person" ? PersonIcon : o.icon === "franchise" ? LayersIcon : o.icon === "category" ? GridIcon : ListIcon;
     return (
       <li {...handlers} className={`${base} py-2`}>
-        <span className={iconWrap} aria-hidden="true">
-          <Icon className="size-4" />
-        </span>
+        {o.icon === "platform" && o.service ? (
+          <ServiceLogo slug={o.service} name={o.label} size={36} />
+        ) : (
+          <span className={iconWrap} aria-hidden="true">
+            <Icon className="size-4" />
+          </span>
+        )}
         <span className="min-w-0 flex-1 truncate text-[15px] font-medium">{o.label}</span>
         <span className="tnum hidden shrink-0 text-xs text-text-3 sm:inline">{o.meta}</span>
       </li>
@@ -390,10 +402,10 @@ function SkeletonRows() {
     <>
       {[0, 1].map((i) => (
         <li key={i} role="presentation" className="flex items-center gap-3 px-3 py-2" aria-hidden="true">
-          <span className="h-[54px] w-9 animate-pulse rounded-[8px] bg-white/6" />
+          <span className="h-[54px] w-9 animate-pulse rounded-[8px] bg-text/6" />
           <span className="flex-1 space-y-2">
-            <span className="block h-3 w-2/3 animate-pulse rounded-full bg-white/6" />
-            <span className="block h-2.5 w-1/3 animate-pulse rounded-full bg-white/6" />
+            <span className="block h-3 w-2/3 animate-pulse rounded-full bg-text/6" />
+            <span className="block h-2.5 w-1/3 animate-pulse rounded-full bg-text/6" />
           </span>
         </li>
       ))}

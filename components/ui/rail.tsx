@@ -37,7 +37,7 @@ export function Rail({ children, className = "", label }: { children: React.Reac
   };
 
   const arrow =
-    "absolute top-[40%] z-20 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface-3/95 text-text ring-1 ring-white/15 backdrop-blur transition duration-200 ease-out hover:scale-105 hover:bg-white hover:text-ink [@media(hover:hover)]:md:inline-flex";
+    "absolute top-[40%] z-20 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-surface-3/95 text-text ring-1 ring-text/15 backdrop-blur transition duration-200 ease-out hover:scale-105 hover:bg-text hover:text-ink [@media(hover:hover)]:md:inline-flex";
 
   return (
     <div className="group/rail relative">

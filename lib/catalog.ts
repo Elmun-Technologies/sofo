@@ -117,6 +117,7 @@ export function langWhere(e: Edition, kind: "audio" | "subtitle"): Prisma.TitleW
       some: {
         countryCode: e.country,
         isActive: true,
+        seasonId: null,
         languages: { some: { lang: e.contentLang, kind, status: "confirmed_yes" } },
       },
     },

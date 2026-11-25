@@ -4,15 +4,16 @@ type Variant = "primary" | "accent" | "secondary" | "ghost" | "glass" | "quiet";
 type Size = "lg" | "md" | "sm";
 
 const VARIANTS: Record<Variant, string> = {
-  // The default main action: white pill, black text.
-  primary: "bg-white text-ink hover:bg-white/85 hover:text-ink",
-  // Sofo Orange — reserved for the outbound "Watch on <service>" action. Black text on orange (6.4:1).
-  accent: "bg-orange text-ink hover:bg-orange-hover hover:text-ink active:bg-orange-press",
-  secondary: "bg-white/10 text-text hover:bg-white/16 hover:text-text",
-  ghost: "text-text ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text hover:ring-white/30",
-  // On imagery (hero backdrops).
-  glass: "bg-white/12 text-text ring-1 ring-inset ring-white/15 backdrop-blur-md hover:bg-white/20 hover:text-text",
-  quiet: "text-text-2 hover:bg-white/6 hover:text-text",
+  // Main neutral action: graphite fill, white text (DS4 "Sofo Market", light theme).
+  primary: "bg-text text-ink hover:bg-text/85 hover:text-ink",
+  // Sofo Orange — catalogue/search and the outbound "Watch on <service>" action. Dark text on orange (AA).
+  accent: "bg-orange text-text hover:bg-orange-hover hover:text-text active:bg-orange-press",
+  // Soft grey fill (santehnika-style secondary).
+  secondary: "bg-surface text-text hover:bg-surface-2 hover:text-text",
+  ghost: "text-text ring-1 ring-inset ring-hairline-strong hover:bg-surface hover:text-text hover:ring-text/30",
+  // On imagery (hero backdrops): stays dark in every theme.
+  glass: "bg-black/40 text-white ring-1 ring-inset ring-white/20 backdrop-blur-md hover:bg-black/60 hover:text-white",
+  quiet: "text-text-2 hover:bg-text/6 hover:text-text",
 };
 
 const SIZES: Record<Size, string> = {
@@ -41,9 +42,9 @@ export function Button({ variant, size, className = "", ...rest }: { variant?: V
 export function iconButtonClass(size: "md" | "sm" = "md", tone: "surface" | "glass" | "outline" = "surface") {
   return `inline-flex shrink-0 items-center justify-center rounded-full transition duration-200 ease-out active:scale-95 ${size === "md" ? "size-11" : "size-9"} ${
     tone === "glass"
-      ? "bg-black/45 text-text ring-1 ring-inset ring-white/15 backdrop-blur-md hover:bg-black/65 hover:text-text"
+      ? "bg-black/45 text-white ring-1 ring-inset ring-white/20 backdrop-blur-md hover:bg-black/65 hover:text-white"
       : tone === "outline"
-        ? "text-text ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text"
-        : "text-text-2 hover:bg-white/8 hover:text-text"
+        ? "text-text ring-1 ring-inset ring-hairline-strong hover:bg-text/6 hover:text-text"
+        : "bg-surface text-text-2 hover:bg-surface-2 hover:text-text"
   }`;
 }

@@ -2,22 +2,30 @@
 
 Kod va UI tayyor holatga keltirildi (DS3, `docs/design-system.md`). Quyidagilar **faqat sizning tomoningizdan** bog'lanadi — har biri uchun: nima kerak, qayerga qo'yiladi, nimani ochadi.
 
-## 0. Production'ga haqiqiy ma'lumot — qadamma-qadam (2026-11-25)
+## 0. Production — Coolify (o'z serveringiz, ADR 0003, 2026-11-25)
 
-Kod tayyor va lokal sinovdan o'tgan (demo → tozalash → yuklash → takroriy yuklash idempotent). Quyidagilar siz yoki deploy vositasi bor sessiya tomonidan qilinadi:
+Kod Docker'da sinovdan o'tgan (build → konteyner → migratsiya → 314 nom yuklandi → restart'dan keyin saqlangan).
 
-1. **Tasodifiy tokenlar yarating** (har biri 32+ belgi): `SETUP_TOKEN`, `INGEST_TOKEN`. Masalan: `openssl rand -hex 32`.
-2. **Freebuff Sites sirlari:** `SETUP_TOKEN`, `INGEST_TOKEN` (va keyinroq `ADMIN_USER`, `ADMIN_PASSWORD`).
-3. **Deploy** (CLAUDE.md → Deploy), so'ng bazani tayyorlash:
-   - `POST https://<sayt>/api/setup` `{"action":"migrate"}` — servislar jadvali (0002 migratsiya);
-   - `POST https://<sayt>/api/setup` `{"action":"clear-demo"}` — namuna ma'lumotni o'chiradi.
-   Ikkalasida header: `Authorization: Bearer <SETUP_TOKEN>`.
-4. **GitHub → Settings → Secrets and variables → Actions:** `STREAMING_AVAILABILITY_API_KEY`, `TMDB_API_KEY` (uzun `eyJ…` token), `INGEST_TOKEN` (2-qadamdagi bilan bir xil), `INGEST_URL` (`https://<sayt>`).
-5. **Actions → ingest → Run workflow** — birinchi yuklash (~18 so'rov, ~360 nom). Keyin har kuni 06:17 da o'zi ishlaydi.
-6. **Sites o'zgaruvchisi `SOFO_DEMO_DATA=0`** va qayta deploy — demo banner va `noindex` o'chadi, sitemap to'ladi.
-7. **Google Search Console:** sitemap'ni yuboring (`https://<sayt>/sitemap.xml`).
+1. **Coolify → Projects → + New → Resource → Public Repository:** `https://github.com/Elmun-Technologies/sofo`, branch `main`, build pack **Dockerfile**, port **3000**.
+2. **Persistent Storage:** volume, destination path `/data` (baza `sofo.db` shu yerda — o'chirsangiz ma'lumot yo'qoladi).
+3. **Environment variables** (tokenlar 32+ belgi, tasodifiy):
+   - `SOFO_DEMO_DATA=0` — build va runtime;
+   - `NEXT_PUBLIC_SITE_URL=https://<domen>` — build vaqtida (canonical, hreflang, sitemap);
+   - `INGEST_TOKEN`, `SETUP_TOKEN`, `ADMIN_USER`, `ADMIN_PASSWORD` — runtime.
+4. **Domain:** Coolify bergan `*.sslip.io` yoki o'z domeningiz (DNS A → server IP), HTTPS — Coolify avtomatik.
+5. **Deploy.** Log oxirida `[selfhost] … applied 0001_init.sql, 0002_base_services.sql` va `Ready`.
+6. **Bazani to'ldirish (asosiy yo'l — server ichida):** Coolify → sofo-web → Environment Variables: `TMDB_API_KEY`, `STREAMING_AVAILABILITY_API_KEY` (runtime) → Redeploy → Terminal: `pnpm selfhost:refresh` (~5–10 daq.). Kunlik: Scheduled Tasks → `pnpm selfhost:refresh`, `17 3 * * *`.
+   **Muqobil (GitHub Actions yoqilgan bo'lsa):** GitHub → Settings → Secrets → Actions: `STREAMING_AVAILABILITY_API_KEY`, `TMDB_API_KEY` (uzun `eyJ…`), `INGEST_TOKEN` (3-qadamdagi bilan bir xil), `INGEST_URL=https://<domen>` → Actions → **ingest** → Run workflow (~18 so'rov, ~360 nom). Keyin har kuni 03:17 UTC (Türkiye 06:17) o'zi yangilaydi.
+7. **Tekshiruv:** Terminal → `pnpm smoke -- --base=http://localhost:3000` (konteyner ichidan) — barcha belgilar ✓ bo'lishi kerak.
+8. **Google Search Console:** domen tasdiqlang, `https://<domen>/sitemap.xml` yuboring (faqat haqiqiy domen bilan, sslip.io bilan emas).
 
-Limit: Streaming Availability tarifi oyiga 1 000 so'rov; kunlik ishga tushirish ~540/oy sarflaydi.
+Zaxira: Coolify → resource → Backups yoki serverda `/data/sofo.db` nusxasi. Limit: Streaming Availability oyiga 1 000 so'rov; kunlik ishga tushirish ~540/oy.
+
+## 0b. Zaxira yo'l — Freebuff Sites (ADR 0002)
+
+1. `SETUP_TOKEN`, `INGEST_TOKEN` — Sites sirlari; deploy (CLAUDE.md → Deploy, fallback).
+2. `POST https://<sayt>/api/setup` `{"action":"migrate"}`, so'ng `{"action":"clear-demo"}` (header `Authorization: Bearer <SETUP_TOKEN>`).
+3. GitHub secrets va workflow — yuqoridagi 6-qadam; `SOFO_DEMO_DATA=0` va qayta deploy.
 
 ## 1. Haqiqiy ma'lumot (eng muhim — hozir hamma narsa namuna/SAMPLE)
 

@@ -35,7 +35,7 @@ export function History({ data, editionLang, countryName }: { data: TitlePageDat
                 <span className="truncate">{l.label}</span>
               </span>
               <div className="relative h-7">
-                <div className="absolute inset-x-0 bottom-0 h-1.5 rounded-full bg-white/8" />
+                <div className="absolute inset-x-0 bottom-0 h-1.5 rounded-full bg-text/8" />
                 {l.spans.map((s, i) => (
                   <div key={i} className="absolute bottom-0" style={{ left: `${pct(s.from)}%`, width: `${Math.max(1.5, pct(s.to) - pct(s.from))}%` }}>
                     <span className={`absolute bottom-3 text-[11px] whitespace-nowrap text-text-2 ${pct(s.from) > 60 ? "right-0" : "left-0"}`}>
@@ -132,14 +132,14 @@ function describe(e: HistoryEvent, lang: string): { badge: string; text: string;
       };
     }
     case "audio_added":
-      return { badge: `${langName(after.lang ?? lang)} dub added`, text: `On ${e.serviceName}`, tone: "text-[#8ab4ff] ring-dub/45" };
+      return { badge: `${langName(after.lang ?? lang)} dub added`, text: `On ${e.serviceName}`, tone: "text-dub ring-dub/45" };
     case "audio_removed":
-      return { badge: "Dub removed", text: `On ${e.serviceName}`, tone: "text-text-2 ring-white/15" };
+      return { badge: "Dub removed", text: `On ${e.serviceName}`, tone: "text-text-2 ring-text/15" };
     case "subtitle_added":
-      return { badge: "Subtitles added", text: `On ${e.serviceName}`, tone: "text-text ring-white/30" };
+      return { badge: "Subtitles added", text: `On ${e.serviceName}`, tone: "text-text ring-text/30" };
     case "leaving_announced":
       return { badge: `Leaving ${e.serviceName}`, text: after.leavingAt ? `Last day ${formatDate(after.leavingAt)}` : "Leaving soon", tone: "text-leaving ring-leaving/40" };
     default:
-      return { badge: e.type.replace(/_/g, " "), text: e.serviceName, tone: "text-text-2 ring-white/15" };
+      return { badge: e.type.replace(/_/g, " "), text: e.serviceName, tone: "text-text-2 ring-text/15" };
   }
 }

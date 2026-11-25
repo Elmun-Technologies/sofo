@@ -20,11 +20,15 @@
     "ingest:push": "dotenv -e .env.local -- tsx scripts/ingest/push.ts",
     "seo:sync-pages": "dotenv -e .env.local -- tsx scripts/seo/sync-pages.ts",
     "alerts:dispatch": "dotenv -e .env.local -- tsx scripts/alerts/dispatch.ts",
-    "db:migrate": "wrangler d1 migrations apply DB --local --config freebuff.wrangler.jsonc"
+    "db:migrate": "wrangler d1 migrations apply DB --local --config freebuff.wrangler.jsonc",
+    "selfhost:refresh": "pnpm ingest:catalog -- --pages=20 --kids-pages=3 && pnpm ingest:metadata && pnpm ingest:availability -- --from-cache=latest --stale=5 && tsx scripts/selfhost/revalidate.ts",
+    "smoke": "tsx scripts/e2e/smoke.ts"
   },
   "dependencies": {
+    "@prisma/adapter-better-sqlite3": "6.19.3",
     "@prisma/adapter-d1": "6.19.3",
     "@prisma/client": "^6.19.3",
+    "better-sqlite3": "^11.9.0",
     "next": "^16.4.5",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
@@ -33,6 +37,7 @@
     "@cloudflare/workers-types": "^5.20261106.1",
     "@opennextjs/cloudflare": "1.20.12",
     "@tailwindcss/postcss": "^4.3.4",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

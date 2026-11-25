@@ -110,16 +110,16 @@ export default async function FranchisePage({ params, searchParams }: PageProps<
 
           <div className={`flex flex-col justify-end p-5 md:max-w-[780px] md:p-12 ${backdrop ? "min-h-[340px] md:min-h-[460px]" : "min-h-[280px] md:min-h-[380px]"}`}>
             <div className="mb-auto flex flex-wrap gap-2 pb-8">
-              <span className="tag border-white/25 bg-black/30 text-text backdrop-blur-md">Franchise</span>
+              <span className="tag border-text/25 bg-black/30 text-text backdrop-blur-md">Franchise</span>
               {counts.map((c) => (
-                <span key={c} className="tag tnum border-white/25 bg-black/30 text-text backdrop-blur-md">
+                <span key={c} className="tag tnum border-text/25 bg-black/30 text-text backdrop-blur-md">
                   {c}
                 </span>
               ))}
             </div>
             <h1>
               <span className="text-display block">{data.name}: watch order</span>
-              <span className="text-h2 mt-2 block text-white/60 max-md:hidden"> and where to stream every part</span>
+              <span className="text-h2 mt-2 block text-text-3 max-md:hidden"> and where to stream every part</span>
             </h1>
             <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-text-2 md:mt-5 md:text-[17px]">{summary}</p>
             <div className="mt-6 flex flex-wrap items-center gap-2.5 md:mt-8">
@@ -191,7 +191,7 @@ export default async function FranchisePage({ params, searchParams }: PageProps<
                   <li key={s.card.id}>
                     <Link
                       href={paths.title(e, s.card.type, s.card.slug)}
-                      className="tnum inline-flex h-9 items-center rounded-full px-4 text-[13px] font-medium text-text-2 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-white/6 hover:text-text"
+                      className="tnum inline-flex h-9 items-center rounded-full px-4 text-[13px] font-medium text-text-2 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset hover:bg-text/6 hover:text-text"
                     >
                       {s.card.name}
                       {s.card.year ? <span className="text-text-3">&nbsp;· {s.card.year}</span> : null}
@@ -203,7 +203,7 @@ export default async function FranchisePage({ params, searchParams }: PageProps<
           ) : null}
         </div>
 
-        <aside className="flex min-w-0 flex-col gap-2 md:gap-3 lg:sticky lg:top-24 lg:self-start">
+        <aside className="flex min-w-0 flex-col gap-2 md:gap-3 lg:sticky lg:top-36 lg:self-start">
           {cover.services.length > 0 ? (
             <section className="panel p-6 md:p-7">
               <p lang="en" className="overline text-text-3">

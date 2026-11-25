@@ -17,7 +17,7 @@ export function Cast({ data, edition }: { data: TitlePageData; edition: Edition 
       {[...people.values()].slice(0, 12).map((p) => (
         <li key={p.slug} className="w-[200px] shrink-0 md:w-auto">
           <Link href={paths.person(edition, p.slug)} className="card card-hover flex items-center gap-3 p-3">
-            <span aria-hidden="true" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/8 text-sm font-bold text-text-2">
+            <span aria-hidden="true" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-text/8 text-sm font-bold text-text-2">
               {initials(p.name)}
             </span>
             <span className="min-w-0">

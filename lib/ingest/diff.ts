@@ -34,6 +34,8 @@ export type PlannedEvent = {
   offerType: OfferType;
   before: Record<string, unknown> | null;
   after: Record<string, unknown> | null;
+  /** When it happened, if the source says (an offer's availableSince); otherwise "now" at write time. */
+  occurredAt?: Date | null;
 };
 
 export type DiffPlan = {
@@ -87,7 +89,12 @@ function summary(offer: { quality: string | null; price: number | null; currency
   return { quality: offer.quality, price: offer.price, currency: offer.currency, url: offer.url };
 }
 
-export function planDiff(current: CurrentOfferState[], snapshot: SnapshotOffer[]): DiffPlan {
+/**
+ * `baseline`: the title has never had an offer in this country (first time we look). An offer seen then
+ * is only "added" if the source dates it; undated ones get no event — we cannot claim when they arrived,
+ * and a first import must not flood "New this week" with the whole back catalogue.
+ */
+export function planDiff(current: CurrentOfferState[], snapshot: SnapshotOffer[], opts: { baseline?: boolean } = {}): DiffPlan {
   const byKey = new Map(current.map((o) => [offerKey(o), o]));
   const seen = new Set<string>();
   const plan: DiffPlan = { creates: [], updates: [], deactivates: [], events: [] };
@@ -98,7 +105,10 @@ export function planDiff(current: CurrentOfferState[], snapshot: SnapshotOffer[]
     const cur = byKey.get(key);
     if (!cur) {
       plan.creates.push(next);
-      plan.events.push({ serviceSlug: next.serviceSlug, type: "added", offerType: next.type, before: null, after: summary(next) });
+      const since = next.availableSince ?? null;
+      if (since || !opts.baseline) {
+        plan.events.push({ serviceSlug: next.serviceSlug, type: "added", offerType: next.type, before: null, after: summary(next), occurredAt: since });
+      }
       continue;
     }
 

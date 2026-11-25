@@ -62,7 +62,7 @@ export function CollectionItem({ item, rank, edition: e, primary }: { item: Item
         <Link href={href} tabIndex={-1} aria-hidden="true" className="block">
           <PosterImage path={c.posterPath} alt="" sizes="(max-width: 767px) 72px, 112px" />
         </Link>
-        <span aria-hidden="true" className="tnum absolute top-1.5 left-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-black/70 px-1.5 text-[11px] font-semibold text-white ring-1 ring-white/15 backdrop-blur-md md:hidden">
+        <span aria-hidden="true" className="tnum absolute top-1.5 left-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-black/70 px-1.5 text-[11px] font-semibold text-white ring-1 ring-text/15 backdrop-blur-md md:hidden">
           {rank}
         </span>
       </div>
@@ -106,7 +106,7 @@ export function CollectionItem({ item, rank, edition: e, primary }: { item: Item
 
       {/* Phones: the outbound action is a round button; the rest of the row opens the title page. */}
       {outbound && b ? (
-        <OutboundLink {...outbound} className={`relative z-10 flex size-11 items-center justify-center rounded-full transition duration-200 ease-out active:scale-95 md:hidden ${primary ? "bg-orange text-ink hover:bg-orange-hover hover:text-ink" : "bg-white/10 text-text hover:bg-white/16 hover:text-text"}`}>
+        <OutboundLink {...outbound} className={`relative z-10 flex size-11 items-center justify-center rounded-full transition duration-200 ease-out active:scale-95 md:hidden ${primary ? "bg-orange text-ink hover:bg-orange-hover hover:text-ink" : "bg-text/10 text-text hover:bg-text/16 hover:text-text"}`}>
           <ArrowUpRightIcon className="size-[18px]" />
           <span className="sr-only">
             {offerVerb(b.type)} {c.name} on {b.service.name}

@@ -3,6 +3,8 @@
  *
  *   pnpm ingest:availability [-- --edition=tr --limit=50 --dry-run --file=data/titles.csv]
  *   pnpm ingest:availability -- --from-cache=.cache/sa/tr-… (snapshot from `pnpm ingest:catalog`, no API requests)
+ *   pnpm ingest:availability -- --from-cache=latest      (newest crawl of the edition)
+ *   pnpm ingest:availability -- --from-cache=latest --stale=5   (+ re-check 5 titles unchecked for 7+ days)
  *
  * Default title list: every title in the DB (metadata ingest first). Diff semantics:
  * docs/data-model.md §3. Idempotent: an unchanged snapshot writes no events and no offer changes;
@@ -15,7 +17,8 @@ import { normalizeShow } from "../../lib/ingest/normalize";
 import { parseTitleCsv } from "../../lib/ingest/title-list";
 import { editionCodes, getEdition } from "../../lib/editions";
 import { SourceConfigError } from "../../lib/sources/http";
-import { loadCachedShows } from "../../lib/ingest/cache";
+import { latestCacheDir, loadCachedShows } from "../../lib/ingest/cache";
+import { pickStale } from "../../lib/ingest/stale";
 import { getShow, isStreamingAvailabilityConfigured } from "../../lib/sources/streaming-availability";
 import { withNodeDb } from "../../lib/db-node";
 
@@ -28,6 +31,9 @@ const file = value("file");
 const limit = Number(value("limit") ?? 0) || 0;
 const editionCode = value("edition") ?? "tr";
 const fromCache = value("from-cache");
+/** Re-check up to N titles not checked for `--stale-days` (default 7) — see lib/ingest/stale.ts. */
+const staleCount = Math.max(0, Number(value("stale") ?? 0) || 0);
+const staleDays = Math.max(1, Number(value("stale-days") ?? 7) || 7);
 
 const log = (...parts: unknown[]) => console.log("[availability]", ...parts);
 const describe = (err: unknown) => (err instanceof Error ? err.message : String(err));
@@ -35,7 +41,16 @@ const describe = (err: unknown) => (err instanceof Error ? err.message : String(
 async function main() {
   const edition = getEdition(editionCode);
   if (!edition) throw new Error(`unknown edition "${editionCode}" (live: ${editionCodes().join(", ")})`);
-  if (fromCache) return ingestFromCache(fromCache, edition.country);
+  if (fromCache) {
+    // "latest" = newest crawl of this edition (used by the self-hosted daily refresh).
+    const dir = fromCache === "latest" ? await latestCacheDir(".cache/sa", editionCode) : fromCache;
+    await ingestFromCache(dir, edition.country);
+    if (staleCount > 0) {
+      if (!isStreamingAvailabilityConfigured()) log("stale sweep skipped: STREAMING_AVAILABILITY_API_KEY is not set");
+      else await sweepStale(edition.country);
+    }
+    return;
+  }
   if (!isStreamingAvailabilityConfigured()) {
     throw new SourceConfigError("STREAMING_AVAILABILITY_API_KEY is not set — add it to .env.local (never commit it)");
   }
@@ -45,7 +60,29 @@ async function main() {
     : await db.title.findMany({ select: { tmdbId: true, type: true }, orderBy: { id: "asc" } });
   const list = limit > 0 ? rows.slice(0, limit) : rows;
   log(`${list.length} titles · edition ${edition.code} (${edition.country})${dryRun ? " · dry run" : ""}`);
+  await ingestTitles(list, edition.country);
+}
 
+/** Oldest-checked titles with active offers, re-checked one by one (1 API request each). */
+async function sweepStale(country: string) {
+  const cutoff = new Date(Date.now() - staleDays * 86_400_000);
+  const offers = await db.offer.findMany({
+    where: { countryCode: country, isActive: true, seasonId: null, checkedAt: { lt: cutoff } },
+    select: { titleId: true, checkedAt: true, title: { select: { tmdbId: true, type: true } } },
+    orderBy: { checkedAt: "asc" },
+    take: staleCount * 10,
+  });
+  const fresh = await db.offer.findMany({
+    where: { countryCode: country, isActive: true, seasonId: null, titleId: { in: [...new Set(offers.map((o) => o.titleId))].slice(0, 80) }, checkedAt: { gte: cutoff } },
+    select: { titleId: true, checkedAt: true, title: { select: { tmdbId: true, type: true } } },
+  });
+  const rows = [...offers, ...fresh].map((o) => ({ titleId: o.titleId, tmdbId: o.title.tmdbId, type: o.title.type, checkedAt: o.checkedAt }));
+  const picked = pickStale(rows, cutoff, staleCount);
+  log(`stale sweep: ${picked.length} titles not checked for ${staleDays}+ days`);
+  if (picked.length) await ingestTitles(picked, country);
+}
+
+async function ingestTitles(list: { tmdbId: number; type: "movie" | "tv" }[], country: string) {
   const totals = { created: 0, updated: 0, deactivated: 0, unchanged: 0, events: 0, skipped: 0, failed: 0 };
 
   for (const [index, row] of list.entries()) {
@@ -53,16 +90,16 @@ async function main() {
     try {
       const show = await getShow({
         id: `${row.type === "movie" ? "movie" : "tv"}/${row.tmdbId}`,
-        country: edition.country,
+        country,
         language: "en",
-        granularity: "show",
+        granularity: "season",
       });
       if (!show) {
         totals.skipped++;
         log(`${label} not found in Streaming Availability — skipped`);
         continue;
       }
-      const snapshot = normalizeShow(show, { country: edition.country });
+      const snapshot = normalizeShow(show, { country });
       if (!snapshot) {
         totals.skipped++;
         log(`${label} has no TMDB id in the response — skipped`);

@@ -21,7 +21,7 @@ export function FilterBar({ edition: e, base, filters: f, result: r }: Props) {
   const service = r.services.find((s) => s.slug === f.service);
   const audio = [
     { key: "dub" as const, label: cap(dubTerm(e.contentLang)), count: r.audioCounts.dub, dot: "bg-dub" },
-    { key: "sub" as const, label: cap(subTerm(e.contentLang)), count: r.audioCounts.sub, dot: "bg-white/70" },
+    { key: "sub" as const, label: cap(subTerm(e.contentLang)), count: r.audioCounts.sub, dot: "bg-text-2" },
   ];
 
   return (
@@ -29,7 +29,14 @@ export function FilterBar({ edition: e, base, filters: f, result: r }: Props) {
       {audio.map((a) => {
         const on = f.audio === a.key;
         return (
-          <Link key={a.key} href={to({ audio: on ? undefined : a.key })} scroll={false} aria-current={on ? "true" : undefined} className={pillClass(on)}>
+          <Link
+            key={a.key}
+            href={to({ audio: on ? undefined : a.key })}
+            scroll={false}
+            aria-current={on ? "true" : undefined}
+            className={`${pillClass(on)} !rounded-full ${on ? "" : "!bg-transparent ring-1 ring-hairline-strong ring-inset"}`}
+          >
+            <span aria-hidden="true" className="-ml-0.5 text-[15px] leading-none font-bold">{on ? "✓" : "+"}</span>
             <span aria-hidden="true" className={`size-1.5 rounded-full ${on && a.key === "sub" ? "bg-ink/50" : a.dot}`} />
             <span lang={e.hreflang}>{a.label}</span>
             <span className={`tnum text-xs ${on ? "text-ink/55" : "text-text-3"}`}>{a.count.toLocaleString("en-US")}</span>

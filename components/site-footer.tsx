@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { EDITIONS, PLANNED_EDITIONS, paths, type Edition } from "@/lib/editions";
 import { dubTerm, subTerm } from "@/lib/lang";
-import { ShieldCheckIcon } from "./icons";
+import { ShieldCheckIcon, TelegramIcon } from "./icons";
 import { Logo } from "./logo";
 
 const SERVICE_NAMES: Record<string, string> = {
@@ -14,8 +14,19 @@ const cap = (s: string, locale: string) => s.replace(/^./, (c) => c.toLocaleUppe
 export function SiteFooter({ edition }: { edition: Edition }) {
   const r = edition.routes;
   return (
-    <footer className="mt-16 border-t border-hairline bg-ink-2 md:mt-24">
-      <div className="wrap grid gap-10 py-12 md:py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
+    <footer className="mt-16 rounded-t-[28px] bg-surface md:mt-24 md:rounded-t-[40px]">
+      <div className="wrap flex flex-col gap-3 border-b border-hairline py-6 md:flex-row md:items-center md:gap-6">
+        <p className="flex items-center gap-3 text-[17px] font-extrabold tracking-[-0.015em] md:text-[19px]">
+          <span className="inline-flex size-10 items-center justify-center rounded-full bg-[#229ED9] text-white">
+            <TelegramIcon className="size-5" />
+          </span>
+          Get new Turkish dubs first
+        </p>
+        <Link href={`${r.myList}#alerts`} className="inline-flex h-11 w-fit items-center rounded-button bg-text px-5 text-sm font-bold text-ink hover:bg-text/85 hover:text-ink md:ml-auto">
+          Turn on alerts
+        </Link>
+      </div>
+      <div className="wrap grid gap-10 py-12 md:py-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
         <div className="max-w-sm">
           <Link href={r.home} aria-label="sofo — home" className="inline-block hover:text-text">
             <Logo className="text-[28px]" />
@@ -24,7 +35,7 @@ export function SiteFooter({ edition }: { edition: Edition }) {
             Find where to watch any movie or series — in your language. sofo doesn&apos;t host video: every title plays on the
             official service.
           </p>
-          <p className="mt-5 inline-flex items-center gap-2 rounded-chip bg-white/5 py-1.5 pr-3.5 pl-2.5 text-xs font-bold text-text-2 ring-1 ring-hairline ring-inset">
+          <p className="mt-5 inline-flex items-center gap-2 rounded-chip bg-text/5 py-1.5 pr-3.5 pl-2.5 text-xs font-bold text-text-2 ring-1 ring-hairline ring-inset">
             <ShieldCheckIcon className="size-4 text-available" />
             Legal services only · checked daily
           </p>
@@ -68,7 +79,7 @@ export function SiteFooter({ edition }: { edition: Edition }) {
               Editions
             </span>
             {Object.values(EDITIONS).map((e) => (
-              <Link key={e.code} href={e.routes.home} className="inline-flex h-7 items-center gap-1.5 rounded-chip bg-white/8 px-2.5 font-bold text-text hover:text-text">
+              <Link key={e.code} href={e.routes.home} className="inline-flex h-7 items-center gap-1.5 rounded-chip bg-text/8 px-2.5 font-bold text-text hover:text-text">
                 <span aria-hidden="true" className="size-1.5 rounded-full bg-available" />
                 {e.countryName}
               </Link>

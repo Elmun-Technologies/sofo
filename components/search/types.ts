@@ -13,6 +13,9 @@ export type SuggestTitle = {
 
 export type SuggestGroupItem = { name: string; href: string; meta: string };
 
+/** santehnika-style "Category" / "Brand" rows — for us categories and platforms. */
+export type SuggestCategory = { name: string; href: string; meta: "Category" | "Platform"; service?: string };
+
 export type SuggestPayload = {
   q: string;
   suggestion: { name: string; href: string } | null;
@@ -20,6 +23,7 @@ export type SuggestPayload = {
   people: SuggestGroupItem[];
   franchises: SuggestGroupItem[];
   collections: SuggestGroupItem[];
+  categories: SuggestCategory[];
   /** Only for an empty query */
   trending: string[];
 };

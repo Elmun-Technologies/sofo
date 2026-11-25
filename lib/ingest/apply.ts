@@ -64,12 +64,88 @@ async function loadServiceMaps(): Promise<{ idBySlug: Map<string, number>; slugB
   };
 }
 
+type OfferRow = Awaited<ReturnType<typeof db.offer.findMany<{ include: { languages: true } }>>>[number];
+
+const toCurrent = (services: { slugById: Map<number, string> }) => (row: OfferRow): CurrentOfferState => ({
+  id: row.id,
+  serviceSlug: services.slugById.get(row.serviceId) ?? `service-${row.serviceId}`,
+  type: row.type,
+  quality: row.quality,
+  price: row.price === null ? null : Number(row.price),
+  currency: row.currency,
+  url: row.url,
+  leavingAt: row.leavingAt,
+  audio: langMap(row.languages, "audio"),
+  subtitle: langMap(row.languages, "subtitle"),
+});
+
 /**
- * Snapshot → Offer/OfferLanguage/AvailabilityEvent for one title and country.
+ * Snapshot → Offer/OfferLanguage/AvailabilityEvent for one title and country (title level), then the
+ * per-season offers when the snapshot carries seasons.
  * Idempotent: the same snapshot twice produces no creates/updates/events, only a checkedAt refresh.
  */
 export async function ingestTitleAvailability(snapshot: SnapshotTitle, opts: { now?: Date; dryRun?: boolean } = {}): Promise<AvailabilityIngestResult> {
   const now = opts.now ?? new Date();
+  const result = await ingestTitleLevel(snapshot, { ...opts, now });
+  if (!result.titleId || !snapshot.seasons || opts.dryRun) return result;
+  const seasons = await ingestSeasonOffers(result.titleId, snapshot, now);
+  return {
+    ...result,
+    created: result.created + seasons.created,
+    updated: result.updated + seasons.updated,
+    deactivated: result.deactivated + seasons.deactivated,
+    unchanged: result.unchanged + seasons.unchanged,
+  };
+}
+
+/**
+ * Season-level offers (TASK-006): same diff per season, keyed by Season.number. No events — the title-level
+ * history already records when a title arrives or leaves; seasons only refine which seasons carry a dub.
+ * A season that had offers but is missing from the snapshot gets them deactivated.
+ */
+async function ingestSeasonOffers(titleId: number, snapshot: SnapshotTitle, now: Date) {
+  const totals = { created: 0, updated: 0, deactivated: 0, unchanged: 0 };
+  const services = await loadServiceMaps();
+  const seasonRows = await db.season.findMany({ where: { titleId }, select: { id: true, number: true } });
+  const idByNumber = new Map(seasonRows.map((r) => [r.number, r.id]));
+  const incoming = new Map((snapshot.seasons ?? []).map((se) => [se.number, se.offers]));
+  const rows = await db.offer.findMany({
+    where: { titleId, countryCode: snapshot.countryCode, isActive: true, seasonId: { not: null }, episodeId: null },
+    include: { languages: true },
+  });
+  const seasonIds = new Set<number>([...rows.map((r) => r.seasonId!), ...[...incoming.keys()].flatMap((n) => idByNumber.get(n) ?? [])]);
+  for (const seasonId of seasonIds) {
+    const number = seasonRows.find((r) => r.id === seasonId)?.number;
+    const next = (number != null ? incoming.get(number) : undefined) ?? [];
+    const current = rows.filter((r) => r.seasonId === seasonId).map(toCurrent(services));
+    const plan = planDiff(current, next, { baseline: true });
+    for (const offer of plan.creates) {
+      const serviceId = services.idBySlug.get(offer.serviceSlug);
+      if (!serviceId) continue;
+      await db.offer.create({ data: { titleId, seasonId, ...offerFields(offer, serviceId, now), languages: { create: languageRows(offer) } } });
+      totals.created++;
+    }
+    for (const { current: cur, next: offer } of plan.updates) {
+      await db.offer.update({
+        where: { id: cur.id },
+        data: { quality: offer.quality, price: offer.price, currency: offer.currency, url: offer.url, leavingAt: offer.leavingAt, checkedAt: now, languages: { deleteMany: {}, create: languageRows(offer) } },
+      });
+      totals.updated++;
+    }
+    for (const cur of plan.deactivates) {
+      await db.offer.update({ where: { id: cur.id }, data: { isActive: false, checkedAt: now } });
+      totals.deactivated++;
+    }
+    const touched = new Set([...plan.updates.map((u) => u.current.id), ...plan.deactivates.map((d) => d.id)]);
+    const unchanged = current.filter((c) => !touched.has(c.id)).map((c) => c.id);
+    if (unchanged.length) await db.offer.updateMany({ where: { id: { in: unchanged } }, data: { checkedAt: now } });
+    totals.unchanged += unchanged.length;
+  }
+  return totals;
+}
+
+async function ingestTitleLevel(snapshot: SnapshotTitle, opts: { now: Date; dryRun?: boolean }): Promise<AvailabilityIngestResult> {
+  const now = opts.now;
   const title = await db.title.findUnique({
     where: { tmdbId_type: { tmdbId: snapshot.tmdbId, type: snapshot.type } },
     select: { id: true },
@@ -81,20 +157,11 @@ export async function ingestTitleAvailability(snapshot: SnapshotTitle, opts: { n
     where: { titleId: title.id, countryCode: snapshot.countryCode, isActive: true, seasonId: null, episodeId: null },
     include: { languages: true },
   });
-  const current: CurrentOfferState[] = rows.map((row) => ({
-    id: row.id,
-    serviceSlug: services.slugById.get(row.serviceId) ?? `service-${row.serviceId}`,
-    type: row.type,
-    quality: row.quality,
-    price: row.price === null ? null : Number(row.price),
-    currency: row.currency,
-    url: row.url,
-    leavingAt: row.leavingAt,
-    audio: langMap(row.languages, "audio"),
-    subtitle: langMap(row.languages, "subtitle"),
-  }));
+  const current: CurrentOfferState[] = rows.map(toCurrent(services));
 
-  const plan = planDiff(current, snapshot.offers);
+  // Baseline = this title has never had an offer in this country (active or not).
+  const baseline = rows.length === 0 && !(await db.offer.findFirst({ where: { titleId: title.id, countryCode: snapshot.countryCode }, select: { id: true } }));
+  const plan = planDiff(current, snapshot.offers, { baseline });
   const stats = planStats(plan, current.length);
   const result: AvailabilityIngestResult = { titleId: title.id, ...stats };
   if (opts.dryRun) return { ...result, plan };
@@ -149,6 +216,8 @@ export async function ingestTitleAvailability(snapshot: SnapshotTitle, opts: { n
             offerType: event.offerType,
             before: event.before ? (event.before as Prisma.InputJsonValue) : undefined,
             after: event.after ? (event.after as Prisma.InputJsonValue) : undefined,
+            // The source's date when it has one (never in the future), else the write time.
+            occurredAt: event.occurredAt && event.occurredAt <= now ? event.occurredAt : now,
           },
         ];
       });
@@ -176,6 +245,35 @@ async function uniqueFranchiseSlug(tx: Tx, desired: string, collectionId: number
     if (!existing || existing.tmdbCollectionId === collectionId) return slug;
     slug = n === 1 ? `${desired}-${collectionId}` : `${desired}-${collectionId}-${n}`;
   }
+}
+
+async function uniquePersonSlug(tx: Tx, desired: string, tmdbId: number): Promise<string> {
+  const existing = await tx.person.findUnique({ where: { slug: desired }, select: { tmdbId: true } });
+  return !existing || existing.tmdbId === tmdbId ? desired : `${desired}-${tmdbId}`;
+}
+
+/** Persons upserted by TMDB id; the title's credits are replaced as a whole (idempotent). */
+async function replaceCredits(tx: Tx, titleId: number, credits: NonNullable<TitleMetadata["credits"]>): Promise<void> {
+  const personIds = new Map<number, number>();
+  for (const c of credits) {
+    if (personIds.has(c.tmdbId)) continue;
+    const found = await tx.person.findUnique({ where: { tmdbId: c.tmdbId }, select: { id: true, name: true } });
+    if (found) {
+      if (found.name !== c.name) await tx.person.update({ where: { id: found.id }, data: { name: c.name } });
+      personIds.set(c.tmdbId, found.id);
+      continue;
+    }
+    const slug = await uniquePersonSlug(tx, slugify(c.name) || `person-${c.tmdbId}`, c.tmdbId);
+    const created = await tx.person.create({ data: { tmdbId: c.tmdbId, name: c.name, slug, knownFor: c.knownFor } });
+    personIds.set(c.tmdbId, created.id);
+  }
+  await tx.credit.deleteMany({ where: { titleId } });
+  const rows = credits.flatMap((c) => {
+    const personId = personIds.get(c.tmdbId);
+    return personId ? [{ titleId, personId, job: c.job, character: c.character, order: c.order }] : [];
+  });
+  // Small batches: D1 caps a statement at 100 bound values (6 columns × 10 rows).
+  for (let i = 0; i < rows.length; i += 10) await tx.credit.createMany({ data: rows.slice(i, i + 10) });
 }
 
 /** Watch order: release order by year, ties broken by title id. */
@@ -267,6 +365,8 @@ export async function upsertTitleMetadata(meta: TitleMetadata, opts: { dryRun?: 
           update: data,
         });
       }
+
+      if (meta.credits) await replaceCredits(tx, title.id, meta.credits);
 
       let franchiseName: string | null = null;
       if (meta.collection) {

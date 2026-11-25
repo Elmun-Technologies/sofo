@@ -19,12 +19,12 @@ export function ServiceCompare({ edition: e, data }: { edition: Edition; data: S
   const rows: { label: string; dot?: string; cell: (c: (typeof cols)[number]) => string }[] = [
     { label: `Titles in ${e.countryName}`, cell: (c) => fmt(c.stats.titles) },
     { label: `Titles with ${lang} dub`, dot: "bg-dub", cell: (c) => fmt(c.stats.dub) },
-    { label: `Titles with ${lang} subtitles`, dot: "bg-white/70", cell: (c) => fmt(c.stats.sub) },
+    { label: `Titles with ${lang} subtitles`, dot: "bg-text/70", cell: (c) => fmt(c.stats.sub) },
     { label: "Cheapest plan", cell: price },
     { label: "Ad-supported plan", cell: (c) => (c.hasAdsTier ? "Yes" : "—") },
     { label: "Titles in 4K", cell: (c) => fmt(c.stats.uhd) },
   ];
-  const mine = "bg-white/[0.045]";
+  const mine = "bg-text/[0.045]";
 
   return (
     <section id="compare" className="wrap scroll-mt-24 pt-6 pb-14 md:pt-10 md:pb-24">

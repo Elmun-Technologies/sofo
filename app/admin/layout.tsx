@@ -40,7 +40,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               </Link>
             </div>
             <AdminNav />
-            <Link href="/" target="_blank" className="mt-auto hidden h-10 items-center gap-3 rounded-full px-4 text-sm font-medium text-text-3 transition-colors duration-200 hover:bg-white/5 hover:text-text lg:flex">
+            <Link href="/" target="_blank" className="mt-auto hidden h-10 items-center gap-3 rounded-full px-4 text-sm font-medium text-text-3 transition-colors duration-200 hover:bg-text/5 hover:text-text lg:flex">
               <ArrowUpRightIcon className="size-4" />
               View site
             </Link>

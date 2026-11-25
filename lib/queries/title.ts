@@ -139,8 +139,29 @@ const TYPE_ORDER: Record<OfferView["type"], number> = { free: 0, ads: 1, subscri
 export type TitlePageData = NonNullable<Awaited<ReturnType<typeof getTitlePage>>>;
 
 /** "If you liked …": same genre family, prefer edition-language dub, excluding itself. */
-export async function getSimilar(e: Edition, titleId: number, genres: string[], take = 6): Promise<TitleCard[]> {
-  const pool = await getCards(e, { id: { not: titleId }, OR: genres.map((g) => ({ genres: listHas(g) })), offers: { some: { countryCode: e.country, isActive: true } } }, { take: 30 });
+/**
+ * "If you liked …": available titles sharing genres. A kids title only gets kids titles (a family film
+ * must not recommend adult animated sitcoms); otherwise ranked by shared genres, same type, then dub.
+ */
+export async function getSimilar(
+  e: Edition,
+  title: { id: number; genres: string[]; type: "movie" | "tv"; isKids: boolean },
+  take = 6,
+): Promise<TitleCard[]> {
+  const { genres } = title;
+  if (genres.length === 0) return [];
+  const pool = await getCards(
+    e,
+    {
+      id: { not: title.id },
+      ...(title.isKids ? { isKids: true } : {}),
+      OR: genres.map((g) => ({ genres: listHas(g) })),
+      offers: { some: { countryCode: e.country, isActive: true } },
+    },
+    { take: 60 },
+  );
   const overlap = (c: TitleCard) => c.genres.filter((g) => genres.includes(g)).length;
-  return pool.sort((a, b) => Number(b.dub) - Number(a.dub) || overlap(b) - overlap(a)).slice(0, take);
+  const score = (c: TitleCard) => overlap(c) * 2 + (c.type === title.type ? 1 : 0);
+  // Stable over the popularity order from the query: ties keep the more popular title first.
+  return pool.sort((a, b) => score(b) - score(a) || Number(b.dub) - Number(a.dub)).slice(0, take);
 }

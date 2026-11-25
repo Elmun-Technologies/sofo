@@ -61,7 +61,7 @@ export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }
           {/* Hover facts (pointer devices only) */}
           <span
             aria-hidden="true"
-            className="absolute inset-0 hidden flex-col justify-end bg-ink/85 p-3 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100 [@media(hover:hover)]:flex"
+            className="absolute inset-0 hidden flex-col justify-end bg-black/80 p-3 text-white opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100 [@media(hover:hover)]:flex"
           >
             {card.score ? (
               <span className="tnum flex items-center gap-1.5 text-[24px] leading-none font-medium tracking-[-0.03em]">
@@ -70,7 +70,7 @@ export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }
               </span>
             ) : null}
             <span className="tnum mt-2 line-clamp-2 text-xs leading-snug text-white/70">{[card.year, card.genres.slice(0, 2).join(", ")].filter(Boolean).join(" · ")}</span>
-            <span className="mt-2.5 space-y-1 border-t border-white/12 pt-2.5 text-xs font-semibold">
+            <span className="mt-2.5 space-y-1 border-t border-text/12 pt-2.5 text-xs font-semibold">
               <LangLine on={card.dub} tone="dub" label={dubTerm(lang)} localLang={edition.hreflang} />
               <LangLine on={card.sub} tone="sub" label={subTerm(lang)} localLang={edition.hreflang} />
             </span>
@@ -82,11 +82,11 @@ export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }
               {card.services.slice(0, 2).map((s) => (
                 <ServiceLogo key={s.slug} {...s} size={22} className="ring-1 ring-black/50" />
               ))}
-              {extra > 0 ? <span className="tnum flex h-[22px] items-center rounded-full bg-black/75 px-1.5 text-[10px] font-medium text-white ring-1 ring-white/15">+{extra}</span> : null}
+              {extra > 0 ? <span className="tnum flex h-[22px] items-center rounded-full bg-black/75 px-1.5 text-[10px] font-medium text-white ring-1 ring-text/15">+{extra}</span> : null}
             </span>
           ) : null}
         </div>
-        <div className="mt-2.5 truncate text-sm leading-5 font-semibold text-text/95 transition-colors group-hover:text-white">{card.name}</div>
+        <div className="mt-2.5 truncate text-sm leading-5 font-semibold text-text transition-colors group-hover:text-orange-press">{card.name}</div>
         {metaLine ? <div className="tnum truncate text-xs leading-[18px] text-text-3">{metaLine}</div> : null}
       </Link>
       <QuickSave title={{ id: card.id, type: card.type, slug: card.slug, name: card.name, posterPath: card.posterPath, year: card.year }} />
@@ -97,7 +97,7 @@ export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }
 function LangLine({ on, tone, label, localLang }: { on: boolean; tone: "dub" | "sub"; label: string; localLang: string }) {
   return (
     <span className={`flex items-center gap-1.5 ${on ? "text-white" : "text-white/40"}`}>
-      <span className={`size-1.5 shrink-0 rounded-full ${on ? (tone === "dub" ? "bg-dub" : "bg-white") : "bg-white/25"}`} />
+      <span className={`size-1.5 shrink-0 rounded-full ${on ? (tone === "dub" ? "bg-dub" : "bg-text") : "bg-text/25"}`} />
       <span lang={localLang} className="truncate">
         {label}
       </span>

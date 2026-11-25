@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { SubscribeForm } from "@/components/retention/subscribe-form";
 import { WatchlistButton } from "@/components/watchlist-button";
-import { ArrowUpRightIcon, CaptionsIcon, PlayIcon, StarIcon, VolumeIcon } from "@/components/icons";
+import { ArrowUpRightIcon, CaptionsIcon, PlayIcon, VolumeIcon } from "@/components/icons";
 import { OutboundLink } from "@/components/outbound-link";
 import { Pill } from "@/components/ui/badges";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
@@ -24,6 +24,7 @@ import { siteUrl } from "@/lib/site";
 import { Cast } from "./cast";
 import { buildFaq, Faq } from "./faq";
 import { History } from "./history";
+import { TitleTabs } from "./title-tabs";
 import { LangMatrix } from "./lang-matrix";
 import { OfferRow } from "./offer-row";
 import { Seasons } from "./seasons";
@@ -73,12 +74,13 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
   const { edition, data } = await load(params, type);
   const { title, local, en, offers } = data;
   const lang = edition.contentLang;
-  const similar = await getSimilar(edition, title.id, title.genres);
+  const similar = await getSimilar(edition, { id: title.id, genres: title.genres, type: title.type, isKids: title.isKids });
   const routes = edition.routes;
   const listRoute = type === "movie" ? routes.movies : routes.series;
   const hasDub = offers.some((o) => o.audio[lang] === "confirmed_yes");
   const hasSub = offers.some((o) => o.subtitle[lang] === "confirmed_yes");
   const audioLangs = new Set(offers.flatMap((o) => Object.entries(o.audio).filter(([, s]) => s === "confirmed_yes").map(([l]) => l)));
+  const langCount = new Set([...audioLangs, ...offers.flatMap((o) => Object.entries(o.subtitle).filter(([, s]) => s === "confirmed_yes").map(([l]) => l))]).size;
   const uhd = offers.some((o) => o.quality === "uhd");
   const backdrop = imageUrl(title.backdropPath, "w1280");
   const saved = { id: title.id, type: title.type, slug: local.slug, name: local.name, posterPath: title.posterPath, year: title.year };
@@ -118,11 +120,11 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
 
   return (
     <article className="pb-4 max-md:pb-20">
-      {/* Hero: backdrop · poster · the answer · where to watch */}
-      <div className="relative isolate">
+      {/* Hero (ivi-style cinema-dark band): backdrop · poster · the answer · where to watch */}
+      <div className="theme-dark relative isolate bg-ink">
         {backdrop ? (
           <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
-            <Image src={backdrop} alt="" fill priority sizes="100vw" className="object-cover object-[50%_20%] opacity-70" />
+            <Image src={backdrop} alt="" fill priority sizes="100vw" className="object-cover object-[50%_20%] opacity-80" />
             <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-ink/25" />
             <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-ink/55" />
           </div>
@@ -152,8 +154,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
               {title.originalTitle !== local.name ? <p className="mt-1.5 text-sm text-text-2 md:text-[15px]">{title.originalTitle}</p> : null}
               <p className="tnum mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[13px] font-semibold text-text-2 md:text-sm">
                 {title.tmdbScore ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 font-medium text-white" title="TMDB score">
-                    <StarIcon className="size-3 text-leaving" />
+                  <span className="inline-flex items-center gap-1 text-[15px] font-extrabold text-available" title="TMDB score">
                     {Number(title.tmdbScore).toFixed(1)}
                   </span>
                 ) : null}
@@ -215,12 +216,24 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
           />
         </div>
 
-        <div className="wrap pb-2">
+        <div className="wrap pb-8 md:pb-10">
           <ShortAnswerFacts data={data} edition={edition} />
         </div>
       </div>
 
-      <div className="wrap mt-10 grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-12 md:mt-14 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
+      <TitleTabs
+        tabs={[
+          ...(local.overview ? [{ id: "story", label: "Description" }] : []),
+          ...(offers.length ? [{ id: "langs", label: "Audio & subtitles", count: langCount }] : []),
+          ...(type === "tv" && title.seasons.length ? [{ id: "seasons", label: "Seasons", count: title.seasons.length }] : []),
+          ...(title.videos.length ? [{ id: "trailers", label: "Trailers", count: Math.min(title.videos.length, 2) }] : []),
+          { id: "history", label: "Availability history" },
+          ...(title.credits.length ? [{ id: "cast", label: "Cast & crew", count: new Set(title.credits.map((c) => c.personId)).size }] : []),
+          { id: "faq", label: "Questions", count: faq.length },
+        ]}
+      />
+
+      <div className="wrap mt-8 grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-12 md:mt-10 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0 space-y-12 md:space-y-14">
           {local.overview ? (
             <section aria-labelledby="story">
@@ -246,7 +259,15 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
 
           {type === "tv" && title.seasons.length ? (
             <section aria-labelledby="seasons">
-              <SectionHeader id="seasons" title="Seasons & episodes" sub={`${dubTerm(lang)} status per season`} />
+              <SectionHeader
+                id="seasons"
+                title="Seasons & episodes"
+                sub={
+                  title.seasons.some((s) => s.offers.length > 0)
+                    ? `${dubTerm(lang)} status per season`
+                    : `${seasonsCount} seasons · language info above covers the whole series`
+                }
+              />
               <Seasons data={data} edition={edition} />
             </section>
           ) : null}
@@ -267,7 +288,9 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
             </section>
           ) : null}
 
-          <History data={data} editionLang={lang} countryName={edition.countryName} />
+          <div id="history">
+            <History data={data} editionLang={lang} countryName={edition.countryName} />
+          </div>
 
           {title.credits.length ? (
             <section aria-labelledby="cast">
@@ -282,7 +305,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
           </section>
         </div>
 
-        <aside className="min-w-0 space-y-4 lg:sticky lg:top-24 lg:h-fit">
+        <aside className="min-w-0 space-y-4 lg:sticky lg:top-36 lg:h-fit">
           <div id="alerts" className="panel scroll-mt-24 p-5">
             <h2 className="text-h3">Follow {local.name}</h2>
             <p className="mt-1.5 mb-4 text-sm text-text-2">
@@ -350,7 +373,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
 }
 
 function NoOption() {
-  return <p className="rounded-card bg-white/5 p-4 text-sm text-text-2">Not on any subscription or free service here right now.</p>;
+  return <p className="rounded-card bg-text/5 p-4 text-sm text-text-2">Not on any subscription or free service here right now.</p>;
 }
 
 function TitleJsonLd({ data, edition, type, faq }: { data: TitlePageData; edition: Edition; type: "movie" | "tv"; faq: { q: string; a: string }[] }) {

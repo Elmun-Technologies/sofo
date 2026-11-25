@@ -1,12 +1,15 @@
 /**
- * Prisma on Cloudflare D1 (ADR 0002). The client is bound to the request's `env.DB` binding;
- * Node scripts install their own client with `setDb()` (see lib/db-node.ts).
+ * Prisma on Cloudflare D1 (ADR 0002) or, self-hosted, on a SQLite file (ADR 0003, `SOFO_SQLITE_PATH`).
+ * On Workers the client is bound to the request's `env.DB` binding; Node scripts install their own
+ * client with `setDb()` (see lib/db-node.ts).
  * List columns are JSON text in SQLite; reads parse them back to string[] here, writes use `toList()`.
  */
 import type { D1Database } from "@cloudflare/workers-types";
 import { PrismaD1 } from "@prisma/adapter-d1";
 import { PrismaClient } from "@prisma/client";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import type { PrismaBetterSQLite3 } from "@prisma/adapter-better-sqlite3";
+import { nodeRequire, SQLITE_PATH } from "./runtime";
 
 export function parseList(raw: unknown): string[] {
   if (Array.isArray(raw)) return raw.map(String);
@@ -46,6 +49,14 @@ export function createD1Client(binding: D1Database): Db {
   return extendClient(new PrismaClient({ adapter: new PrismaD1(binding) }));
 }
 
+/** Self-hosted: one long-lived client over a SQLite file (better-sqlite3 driver adapter). */
+export function createSqliteClient(path: string): Db {
+  const { PrismaBetterSQLite3: Adapter } = nodeRequire<{ PrismaBetterSQLite3: typeof PrismaBetterSQLite3 }>("@prisma/adapter-better-sqlite3");
+  return extendClient(new PrismaClient({ adapter: new Adapter({ url: `file:${path}`, timeout: 5000 }) }));
+}
+
+const g = globalThis as { __sofoSqliteDb?: Db };
+
 // One client per request (keyed by the request's ExecutionContext): Workers forbid sharing I/O objects
 // across requests, so a module-level client is not safe.
 const byRequest = new WeakMap<object, Db>();
@@ -58,6 +69,7 @@ export function setDb(client: Db | undefined) {
 
 export function getDb(): Db {
   if (override) return override;
+  if (SQLITE_PATH) return (g.__sofoSqliteDb ??= createSqliteClient(SQLITE_PATH));
   const { env, ctx } = getCloudflareContext();
   const binding = (env as { DB?: D1Database }).DB;
   if (!binding) throw new Error("D1 binding DB is not configured");

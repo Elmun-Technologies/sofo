@@ -18,6 +18,8 @@ export type SnapshotOffer = {
   currency: string | null;
   url: string;
   leavingAt: Date | null;
+  /** When the source says the offer appeared on the service — dates the "added" event (never stored on the offer). */
+  availableSince?: Date | null;
   audio: { lang: string; status: LangStatus }[];
   subtitle: { lang: string; status: LangStatus }[];
 };
@@ -27,6 +29,8 @@ export type SnapshotTitle = {
   type: "movie" | "tv";
   countryCode: string;
   offers: SnapshotOffer[];
+  /** Per-season offers when the source sent seasons (series_granularity=season). Absent = leave season rows alone. */
+  seasons?: { number: number; offers: SnapshotOffer[] }[];
 };
 
 /** Streaming Availability service id → our Service.slug (editions.coreServices). */
@@ -138,6 +142,7 @@ function fromOption(option: SaStreamingOption, countryCode: string): SnapshotOff
     currency: option.price?.currency ?? null,
     url: option.link,
     leavingAt: option.expiresOn,
+    availableSince: option.availableSince,
     audio: languages(option.audios),
     subtitle: languages(option.subtitles.map((s) => s.locale)),
   };
@@ -164,7 +169,20 @@ export function normalizeShow(show: SaShow, opts: { country: string }): Snapshot
   if (!tmdbId) return null;
   const countryCode = opts.country.toUpperCase();
 
-  const raw = show.streamingOptions[countryCode.toLowerCase()] ?? [];
+  const offers = mergeOptions(show.streamingOptions[countryCode.toLowerCase()] ?? [], countryCode);
+  const seasons = show.seasons?.map((se) => ({ number: se.number, offers: mergeOptions(se.streamingOptions[countryCode.toLowerCase()] ?? [], countryCode) }));
+
+  return {
+    tmdbId,
+    type: show.showType === "series" ? "tv" : "movie",
+    countryCode,
+    offers,
+    ...(seasons ? { seasons } : {}),
+  };
+}
+
+/** API options for one country → snapshot offers, duplicates (same service/type/quality) merged. */
+function mergeOptions(raw: SaStreamingOption[], countryCode: string): SnapshotOffer[] {
   const merged = new Map<string, SnapshotOffer>();
 
   for (const option of raw) {
@@ -189,10 +207,5 @@ export function normalizeShow(show: SaShow, opts: { country: string }): Snapshot
     });
   }
 
-  return {
-    tmdbId,
-    type: show.showType === "series" ? "tv" : "movie",
-    countryCode,
-    offers: [...merged.values()].sort((a, b) => offerKey(a).localeCompare(offerKey(b))),
-  };
+  return [...merged.values()].sort((a, b) => offerKey(a).localeCompare(offerKey(b)));
 }

@@ -74,7 +74,7 @@ export default async function KidsPage({ params }: PageProps<"/[lang]/cocuk">) {
                     <span className="numeral">{t.big}</span>
                     <span
                       aria-hidden="true"
-                      className="flex size-8 shrink-0 items-center justify-center rounded-full text-text-3 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset group-hover:bg-white group-hover:text-ink group-hover:ring-transparent"
+                      className="flex size-8 shrink-0 items-center justify-center rounded-full text-text-3 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset group-hover:bg-text group-hover:text-ink group-hover:ring-transparent"
                     >
                       <ArrowRightIcon className="size-4 rotate-90" />
                     </span>

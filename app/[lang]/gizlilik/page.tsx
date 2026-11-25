@@ -60,7 +60,7 @@ export default async function PrivacyPage({ params }: PageProps<"/[lang]/gizlili
           <ul className="grid gap-3 sm:grid-cols-2 md:gap-4">
             {SUMMARY.map((t) => (
               <li key={t} className="panel flex gap-3.5 p-5 text-[15px] leading-relaxed text-text-2 md:p-6">
-                <span aria-hidden="true" className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-white/8 text-text">
+                <span aria-hidden="true" className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-text/8 text-text">
                   <CheckIcon className="size-3 stroke-[3]" />
                 </span>
                 <span>{t}</span>

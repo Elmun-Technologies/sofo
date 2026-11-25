@@ -45,7 +45,7 @@ export function AlertButton({ title, alert, label = "Remind me", activeLabel = "
         title={active ? activeLabel : label}
         onClick={toggle}
         className={`inline-flex size-11 shrink-0 items-center justify-center rounded-full ring-1 ring-inset transition duration-200 ease-out active:scale-95 ${
-          active ? "bg-white/10 text-text ring-transparent" : "text-text-2 ring-hairline-strong hover:bg-white/6 hover:text-text"
+          active ? "bg-text/10 text-text ring-transparent" : "text-text-2 ring-hairline-strong hover:bg-text/6 hover:text-text"
         } ${className}`}
       >
         {icon}

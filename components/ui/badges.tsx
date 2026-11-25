@@ -1,62 +1,49 @@
 import type { LangState } from "@/lib/short-answer";
 
-// Poster badges are monochrome glass pills with one semantic dot — the artwork stays the loudest thing on the card.
-const base = "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-black/65 px-2 py-[3px] text-[10.5px] font-medium leading-[14px] text-white ring-1 ring-inset ring-white/12 backdrop-blur-md";
-const dot = "size-1.5 shrink-0 rounded-full";
+// Poster badges (ivi-style): small solid pills, one colour per meaning — language first, it is sofo's wedge.
+const base = "inline-flex items-center whitespace-nowrap rounded-full px-2 py-[2px] text-[10.5px] font-bold leading-[15px] text-white shadow-[0_1px_4px_rgb(0_0_0/0.25)]";
 
 export function DubBadge({ children = "türkçe dublaj", className = "" }: { children?: React.ReactNode; className?: string }) {
   return (
-    <span className={`${base} ${className}`}>
-      <span aria-hidden="true" className={`${dot} bg-dub`} />
-      {children}
-    </span>
+    <span className={`${base} bg-[#2563eb] ${className}`}>{children}</span>
   );
 }
 
 export function SubBadge({ children = "türkçe altyazı", className = "" }: { children?: React.ReactNode; className?: string }) {
   return (
-    <span className={`${base} ${className}`}>
-      <span aria-hidden="true" className={`${dot} bg-white/80`} />
-      {children}
-    </span>
+    <span className={`${base} bg-[#4b5563] ${className}`}>{children}</span>
   );
 }
 
 export function NewBadge({ children = "New dub", className = "" }: { children?: React.ReactNode; className?: string }) {
-  return <span className={`${base} !bg-white !text-ink !ring-0 ${className}`}>{children}</span>;
+  return <span className={`${base} bg-[#16a34a] ${className}`}>{children}</span>;
 }
 
 export function LeavingBadge({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <span className={`${base} ${className}`}>
-      <span aria-hidden="true" className={`${dot} bg-leaving`} />
-      {children}
-    </span>
+    <span className={`${base} bg-[#ea580c] ${className}`}>{children}</span>
   );
 }
 
 export function FreeBadge({ children = "free", className = "" }: { children?: React.ReactNode; className?: string }) {
   return (
-    <span className={`${base} ${className}`}>
-      <span aria-hidden="true" className={`${dot} bg-free`} />
-      {children}
-    </span>
+    <span className={`${base} bg-[#7c3aed] ${className}`}>{children}</span>
   );
 }
 
 export function MutedBadge({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <span className={`${base} ${className}`}>{children}</span>;
+  return <span className={`${base} bg-black/70 ${className}`}>{children}</span>;
 }
 
 /** Soft tinted status pill (text in the semantic colour on a 14% wash) — for dense UI, not on posters. */
 export function Pill({ tone = "muted", children, className = "" }: { tone?: "dub" | "available" | "leaving" | "free" | "orange" | "muted"; children: React.ReactNode; className?: string }) {
   const tones = {
-    dub: "text-[#8ab4ff] ring-dub/40",
+    dub: "text-dub ring-dub/40",
     available: "text-available ring-available/35",
     leaving: "text-leaving ring-leaving/35",
     free: "text-free ring-free/40",
-    orange: "text-orange-hover ring-orange/40",
-    muted: "text-text-2 ring-white/14",
+    orange: "text-orange-press ring-orange/40",
+    muted: "text-text-2 ring-text/14",
   }[tone];
   return <span className={`inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs leading-4 font-medium whitespace-nowrap ring-1 ring-inset ${tones} ${className}`}>{children}</span>;
 }

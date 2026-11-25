@@ -23,6 +23,8 @@ export type SaStreamingOption = {
   price: { amount: number; currency: string } | null;
   /** Unix ms — the date the option is expected to leave the service */
   expiresOn: Date | null;
+  /** When the source first saw the option on the service (API `availableSince`, unix seconds). */
+  availableSince: Date | null;
 };
 
 export type SaShow = {
@@ -35,6 +37,8 @@ export type SaShow = {
   originalTitle: string;
   /** Keyed by lowercase ISO 3166-1 alpha-2 country code */
   streamingOptions: Record<string, SaStreamingOption[]>;
+  /** Only with series_granularity=season: per-season options (own audio/subtitle lists). */
+  seasons?: { number: number; streamingOptions: Record<string, SaStreamingOption[]> }[];
 };
 
 type Json = Record<string, unknown>;
@@ -76,6 +80,7 @@ function parseOption(raw: unknown): SaStreamingOption | null {
   }
 
   const expiresOnSec = asNumber(raw.expiresOn);
+  const availableSinceSec = asNumber(raw.availableSince);
   return {
     service: { id: serviceId, name },
     type,
@@ -85,6 +90,7 @@ function parseOption(raw: unknown): SaStreamingOption | null {
     subtitles,
     price,
     expiresOn: expiresOnSec ? new Date(expiresOnSec * 1000) : null,
+    availableSince: availableSinceSec ? new Date(availableSinceSec * 1000) : null,
   };
 }
 
@@ -99,11 +105,23 @@ export function parseShow(raw: unknown): SaShow {
   if (!originalTitle) throw new SourceValidationError("show: missing originalTitle");
   if (!isRecord(raw.streamingOptions)) throw new SourceValidationError("show: missing streamingOptions");
 
-  const streamingOptions: Record<string, SaStreamingOption[]> = {};
-  for (const [country, list] of Object.entries(raw.streamingOptions)) {
-    if (!Array.isArray(list)) continue;
-    streamingOptions[country.toLowerCase()] = list.map(parseOption).filter((o): o is SaStreamingOption => o !== null);
-  }
+  const optionsByCountry = (src: Json): Record<string, SaStreamingOption[]> => {
+    const out: Record<string, SaStreamingOption[]> = {};
+    for (const [country, list] of Object.entries(src)) {
+      if (!Array.isArray(list)) continue;
+      out[country.toLowerCase()] = list.map(parseOption).filter((o): o is SaStreamingOption => o !== null);
+    }
+    return out;
+  };
+  const streamingOptions = optionsByCountry(raw.streamingOptions);
+  // Seasons come in order; the number is taken from the title ("Season 3") when present.
+  const seasons = Array.isArray(raw.seasons)
+    ? raw.seasons.flatMap((se, i) => {
+        if (!isRecord(se) || !isRecord(se.streamingOptions)) return [];
+        const n = Number(/(\d+)/.exec(asText(se.title) ?? "")?.[1] ?? i + 1);
+        return [{ number: Number.isFinite(n) && n > 0 ? n : i + 1, streamingOptions: optionsByCountry(se.streamingOptions) }];
+      })
+    : undefined;
 
   return {
     itemType: "show",
@@ -113,6 +131,7 @@ export function parseShow(raw: unknown): SaShow {
     tmdbId: asText(raw.tmdbId),
     originalTitle,
     streamingOptions,
+    ...(seasons ? { seasons } : {}),
   };
 }
 
@@ -182,13 +201,15 @@ export async function searchCatalog(opts: {
   /** API genre ids, e.g. ["animation"] */
   genres?: string[];
   language?: string;
+  /** "season" adds per-season streamingOptions (same request cost, larger payload). */
+  granularity?: "show" | "season";
 }): Promise<SaCatalogPage> {
   const qs = new URLSearchParams({
     country: opts.country.toLowerCase(),
     catalogs: opts.catalogs.join(","),
     order_by: opts.orderBy ?? "popularity_1year",
     output_language: opts.language ?? "en",
-    series_granularity: "show",
+    series_granularity: opts.granularity ?? "show",
   });
   if (opts.cursor) qs.set("cursor", opts.cursor);
   if (opts.showType) qs.set("show_type", opts.showType);

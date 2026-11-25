@@ -1,31 +1,32 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { HeroSearch } from "@/components/home/hero-search";
+import { CategoryTiles, type CategoryTile } from "@/components/home/category-tiles";
+import { DarkShelf } from "@/components/home/dark-shelf";
+import { Advantages, FeatureBento, type Feature } from "@/components/home/feature-bento";
+import { LeavingCard } from "@/components/home/leaving-card";
 import { MyServices } from "@/components/home/my-services";
 import { SubscribeSection } from "@/components/home/subscribe-section";
-import { ArrowRightIcon } from "@/components/icons";
+import { ArrowRightIcon, CalendarIcon, CaptionsIcon, ClockIcon, HeartIcon, LayersIcon, ShieldCheckIcon, TelegramIcon, VolumeIcon } from "@/components/icons";
 import { CollectionCard } from "@/components/catalog/collection-card";
 import { PromoSlider, type PromoSlide } from "@/components/home/promo-slider";
-import { DubBadge, LeavingBadge } from "@/components/ui/badges";
+import { DubBadge } from "@/components/ui/badges";
 import { ServiceLogo } from "@/components/ui/service-logo";
-import { ChipLink, ChipRow } from "@/components/ui/chip";
 import { JsonLd } from "@/components/ui/json-ld";
-import { PosterImage } from "@/components/ui/poster-image";
 import { PosterRow } from "@/components/ui/poster-row";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getServices } from "@/lib/catalog";
 import { getEdition, paths } from "@/lib/editions";
-import { daysUntil, formatPrice, formatRuntime } from "@/lib/format";
+import { formatPrice, formatRuntime } from "@/lib/format";
 import { imageUrl } from "@/lib/images";
-import { dubTerm, langName, localLangName, subTerm } from "@/lib/lang";
+import { dubTerm, langName, subTerm } from "@/lib/lang";
 import { getHomeData } from "@/lib/queries/home";
 import { buildAlternates } from "@/lib/seo/hreflang";
 import { siteUrl } from "@/lib/site";
 
 export const revalidate = 3600;
 
-const ACCENT: Record<string, string> = { dub: "bg-dub", sub: "bg-white/80", anime: "bg-free", kids: "bg-available" };
+const ACCENT: Record<string, string> = { dub: "bg-dub", sub: "bg-text-2", anime: "bg-free", kids: "bg-available" };
 
 export async function generateMetadata({ params }: PageProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
@@ -45,7 +46,6 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
   if (!edition) notFound();
   const [data, services] = await Promise.all([getHomeData(edition), getServices(edition)]);
   const r = edition.routes;
-  const L = localLangName(edition.contentLang);
 
   const langCards = data.langCards.map((c) => ({
     ...c,
@@ -78,110 +78,84 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
   }));
   const cap = (t: string) => t.replace(/^./, (c) => c.toLocaleUpperCase(edition.hreflang));
 
+  const tiles: CategoryTile[] = [
+    { href: r.movies, label: "Movies", count: data.typeCards[0]?.count, cards: data.typeCards[0]?.cards ?? [] },
+    { href: r.series, label: "Series", count: data.typeCards[1]?.count, cards: data.typeCards[1]?.cards ?? [] },
+    ...langCards.map((c) => ({ href: c.href, label: c.local ? cap(c.name) : c.name.replace(/ —.*$/, ""), count: c.count, cards: c.cards, lang: c.local ? edition.hreflang : undefined, dot: ACCENT[c.key] })),
+    { href: r.newLeaving, label: "New & leaving", cards: data.newThisWeek.slice(0, 3), dot: "bg-red-500" },
+    { href: r.releases, label: "Coming to digital", cards: data.justDubbed.slice(3, 6).length ? data.justDubbed.slice(3, 6) : data.top.slice(6, 9) },
+    { href: r.trailers, label: "Trailers", cards: data.top.slice(3, 6) },
+  ];
+
+  const features: Feature[] = [
+    {
+      href: r.dubHub,
+      title: `${cap(dubTerm(edition.contentLang))} guide`,
+      text: `${data.langCards[0]?.count ?? 0} titles with a confirmed Turkish dub`,
+      icon: <VolumeIcon className="size-12 text-dub" />,
+      tone: "bg-dub/12",
+      lang: edition.hreflang,
+    },
+    { href: `${r.myList}#alerts`, title: "Telegram alerts", text: "We message you when a title gets a dub or is about to leave", icon: <TelegramIcon className="size-12 text-[#229ED9]" />, tone: "bg-[#229ED9]/12" },
+    { href: r.releases, title: "Coming to digital", text: "Cinema releases and when they reach a service", icon: <CalendarIcon className="size-12 text-free" />, tone: "bg-free/12" },
+    { href: r.about, title: "How we check", text: "Only legal services, re-checked every day — never guessed", icon: <ShieldCheckIcon className="size-12 text-available" />, tone: "bg-available/12" },
+  ];
+
   return (
     <>
-      {slides.length > 1 ? (
-        <div className="pt-4 md:pt-6">
-          <PromoSlider slides={slides} localLang={edition.hreflang} />
-        </div>
-      ) : null}
+      <h1 className="sr-only">
+        Where to watch movies and series in {edition.countryName} — with <span lang={edition.hreflang}>{dubTerm(edition.contentLang)}</span>
+      </h1>
 
-      {/* Search — the one thing sofo does that others don't: where + which language */}
-      <section className="wrap pt-8 pb-2 md:pt-12 md:pb-4">
-        <div className="mx-auto max-w-[860px] text-center">
-          <h1 className="text-display">Every movie. Every service. <span className="text-text-3">Your language.</span></h1>
-          <p className="mx-auto mt-3 max-w-xl text-[15px] text-text-2 md:text-base">
-            Search once — we check {services.length} legal services in {edition.countryName} and tell you where it streams, and whether it has{" "}
-            <span lang={edition.hreflang}>{dubTerm(edition.contentLang)}</span> or subtitles.
-          </p>
-          <HeroSearch action={r.search} langLabel={L} />
-          <ChipRow className="mt-4 md:justify-center">
-            <ChipLink href={r.dubHub}>
-              <span aria-hidden="true" className="size-1.5 rounded-full bg-dub" />
-              <span lang={edition.hreflang}>{cap(dubTerm(edition.contentLang))}</span>
-            </ChipLink>
-            <ChipLink href={r.anime}>Anime</ChipLink>
-            <ChipLink href={r.kids}>Kids</ChipLink>
-            <ChipLink href={r.newLeaving}>
-              <span aria-hidden="true" className="size-1.5 rounded-full bg-leaving" />
-              Leaving soon
-            </ChipLink>
-            <ChipLink href={`${r.movies}?offer=free`}>
-              <span aria-hidden="true" className="size-1.5 rounded-full bg-free" />
-              Free
-            </ChipLink>
-            <ChipLink href={r.releases}>Coming soon</ChipLink>
-          </ChipRow>
-          {data.trending.length ? (
-            <p className="mx-auto mt-4 hidden max-w-3xl text-[13px] text-text-3 md:block">
-              Trending:{" "}
-              {data.trending.map((q, i) => (
-                <span key={q}>
-                  {i > 0 ? <span aria-hidden="true"> · </span> : null}
-                  <Link href={paths.search(edition, q)} className="text-text-2 hover:text-text">
-                    {q}
-                  </Link>
-                </span>
-              ))}
-            </p>
+      {/* Hero: campaign slider + "Last chance" countdown (santehnika "Товары дня") */}
+      <section className="wrap pt-4 md:pt-6">
+        <div className={`grid gap-3 md:gap-4 ${data.leaving ? "lg:grid-cols-[minmax(0,1fr)_360px]" : ""}`}>
+          <div className="min-w-0">{slides.length > 1 ? <PromoSlider slides={slides} localLang={edition.hreflang} contained /> : null}</div>
+          {data.leaving ? (
+            <div className="hidden lg:block">
+              <LeavingCard
+                items={data.leavingList.map((l) => ({
+                  href: paths.title(edition, l.type, l.slug),
+                  name: l.name,
+                  service: l.service,
+                  posterPath: l.posterPath,
+                  leavingAt: l.leavingAt.toISOString(),
+                  year: l.year,
+                }))}
+                listHref={r.newLeaving}
+              />
+            </div>
           ) : null}
         </div>
       </section>
 
-      <PosterRow title={`Top 10 in ${edition.countryName} this week`} cards={data.top} edition={edition} href={r.movies} ranked />
-
-      {/* Browse by service */}
-      <section className="wrap section-y" aria-labelledby="by-service">
-        <SectionHeader id="by-service" title="Browse by service" sub={`What's on each platform in ${edition.countryName} — with language info`} />
-        <ul className="no-scrollbar -mx-4 flex gap-2.5 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-4 md:gap-3 md:overflow-visible md:px-0 xl:grid-cols-8">
-          {services.map((s) => (
-            <li key={s.slug} className="shrink-0">
-              <Link
-                href={paths.service(edition, s.slug)}
-                className="card card-hover flex w-[136px] flex-col items-center gap-3 px-3 py-5 text-center md:w-auto md:py-6"
-              >
-                <ServiceLogo {...s} size={52} />
-                <span className="min-w-0">
-                  <span className="block truncate text-sm font-medium">{s.name}</span>
-                  <span className="tnum block text-xs text-text-3">{s.priceFrom ? `from ${formatPrice(s.priceFrom, s.currency)}/mo` : s.hasAdsTier ? "Free with ads" : "Subscription"}</span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+      <section className="wrap pt-6 md:pt-8" aria-label="Categories">
+        <CategoryTiles tiles={tiles} allHref={r.movies} />
       </section>
 
-      {/* Watch in your language */}
-      <section className="wrap section-y">
-        <SectionHeader title="Watch in your language" sub={`Dubbed and subtitled, on legal services in ${edition.countryName}`} />
-        <ul className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
-          {langCards.map((c) => (
-            <li key={c.key}>
-              <Link href={c.href} className="card card-hover group relative flex h-full min-h-[168px] flex-col justify-between overflow-hidden p-5 md:min-h-[220px] md:p-6">
-                <span aria-hidden="true" className="absolute top-4 right-4 flex md:top-5 md:right-5">
-                  {c.cards.slice(0, 3).map((card, i) => (
-                    <span
-                      key={card.id}
-                      className="-ml-6 block w-[44px] transition duration-300 ease-out first:ml-0 group-hover:-translate-y-1 md:w-[56px]"
-                      style={{ zIndex: 3 - i, rotate: `${(i - 1) * 6}deg`, transitionDelay: `${i * 30}ms` }}
-                    >
-                      <PosterImage path={card.posterPath} alt="" sizes="56px" className="rounded-[8px] ring-2 ring-surface" />
-                    </span>
-                  ))}
+      <DarkShelf
+        title={`Top 10 in ${edition.countryName}`}
+        sub={`The most watched on ${services.length} legal services, with language info on every title.`}
+        cta="Open the catalogue"
+        href={r.movies}
+        cards={data.top}
+        edition={edition}
+        ranked
+      />
+
+      {/* Platforms — santehnika "original brands" strip */}
+      <section className="wrap pb-2" aria-labelledby="by-service">
+        <SectionHeader id="by-service" title={`Platforms in ${edition.countryName}`} href={r.movies} linkLabel="All titles" />
+        <ul className="no-scrollbar -mx-4 flex gap-2.5 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-5 md:gap-3 md:px-0">
+          {services.map((s) => (
+            <li key={s.slug} className="shrink-0">
+              <Link href={paths.service(edition, s.slug)} className="flex h-[68px] w-[210px] items-center gap-3 rounded-card bg-surface px-4 transition-colors hover:bg-surface-2 hover:text-text md:w-auto">
+                <ServiceLogo {...s} size={38} />
+                <span className="min-w-0">
+                  <span className="block truncate text-[15px] font-extrabold">{s.name}</span>
+                  <span className="tnum block text-xs text-text-3">{s.priceFrom ? `from ${formatPrice(s.priceFrom, s.currency)}/mo` : s.hasAdsTier ? "Free with ads" : "Subscription"}</span>
                 </span>
-                <span className="numeral relative">{c.count}</span>
-                <span className="relative mt-auto block pt-8">
-                  <span className="mb-2 flex items-center gap-2">
-                    <span aria-hidden="true" className={`size-1.5 rounded-full ${ACCENT[c.key] ?? "bg-white"}`} />
-                    <span lang="en" className="overline text-text-3">
-                      titles
-                    </span>
-                  </span>
-                  <span lang={c.local ? edition.hreflang : undefined} className="block text-base leading-tight font-medium md:text-lg">
-                    {c.name}
-                  </span>
-                  <span className="mt-1 block text-xs text-text-3 md:text-[13px]">{c.sub}</span>
-                </span>
+                <ArrowRightIcon className="ml-auto size-4 shrink-0 text-text-3" />
               </Link>
             </li>
           ))}
@@ -197,31 +171,9 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
         badge={() => "new-dub"}
       />
 
-      {data.leaving ? (
-        <section className="wrap py-3">
-          <Link
-            href={paths.title(edition, data.leaving.type, data.leaving.slug)}
-            className="panel card-hover group relative flex items-center gap-4 p-4 hover:text-text md:gap-6 md:p-5"
-          >
-            <span className="w-14 shrink-0 md:w-[68px]">
-              <PosterImage path={data.leaving.posterPath} alt="" sizes="68px" className="rounded-[8px]" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <LeavingBadge>
-                <span lang="en">LEAVING IN {daysUntil(data.leaving.leavingAt)} DAYS</span>
-              </LeavingBadge>
-              <span className="mt-2 block text-lg leading-snug font-medium md:text-[26px] md:tracking-[-0.03em]">
-                {data.leaving.name} leaves {data.leaving.service}
-              </span>
-              <span className="mt-0.5 hidden text-sm text-text-2 sm:block">Last chance to watch it with your subscription.</span>
-            </span>
-            <span className="inline-flex h-11 shrink-0 items-center gap-2 rounded-full bg-white/10 px-5 text-sm font-medium text-text transition-colors group-hover:bg-white group-hover:text-ink">
-              <span className="max-sm:sr-only">Watch now</span>
-              <ArrowRightIcon className="size-5 transition-transform duration-200 group-hover:translate-x-1" />
-            </span>
-          </Link>
-        </section>
-      ) : null}
+      <section className="wrap section-y">
+        <FeatureBento items={features} />
+      </section>
 
       <PosterRow title="New this week" sub={`Just added to services in ${edition.countryName}`} cards={data.newThisWeek} edition={edition} href={r.newLeaving} />
       <PosterRow
@@ -249,18 +201,31 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
         </section>
       ) : null}
 
+      <section className="wrap section-y">
+        <SectionHeader title="Why sofo" />
+        <Advantages
+          items={[
+            { title: "Only legal services", text: "No piracy, no mirrors — every link opens the official service.", icon: <ShieldCheckIcon className="size-6" /> },
+            { title: "Checked every day", text: "Each offer shows when we last checked it.", icon: <ClockIcon className="size-6" /> },
+            { title: "Language confirmed", text: "Dub and subtitles only when the service confirms them.", icon: <CaptionsIcon className="size-6" /> },
+            { title: `${services.length} platforms, one search`, text: `Netflix, Prime Video, Disney+ and more in ${edition.countryName}.`, icon: <LayersIcon className="size-6" /> },
+            { title: "Free, no sign-up", text: "Save titles on this device and get alerts on Telegram.", icon: <HeartIcon className="size-6" /> },
+          ]}
+        />
+      </section>
+
       <SubscribeSection langName={langName(edition.contentLang)} />
 
       <section className="wrap section-y" lang={edition.hreflang}>
         <div className="max-w-3xl">
-          <h2 className="text-h3 text-text-2">Türkçe dublaj filmler ve diziler — hangi platformda?</h2>
-          <details className="group mt-2 text-sm leading-relaxed text-text-3">
+          <h2 className="text-h3">Türkçe dublaj filmler ve diziler — hangi platformda?</h2>
+          <details className="group mt-2 text-sm leading-relaxed text-text-2">
             <summary className="list-none">
               <span>
                 sofo; Netflix, Disney+, Prime Video, HBO Max ve Crunchyroll gibi Türkiye&apos;deki yasal platformları her gün kontrol eder ve
                 hangi film ve dizinin Türkçe dublaj ya da altyazıyla izlenebildiğini gösterir…
               </span>
-              <span lang="en" className="mt-2 block font-bold text-text-2 group-open:hidden">
+              <span lang="en" className="mt-2 block font-bold text-orange-press group-open:hidden">
                 Read more
               </span>
             </summary>

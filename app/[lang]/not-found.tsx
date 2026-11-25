@@ -23,7 +23,7 @@ export function NotFoundContent() {
   ];
   return (
     <section className="wrap relative overflow-hidden py-14 md:py-28">
-      <p aria-hidden="true" className="tnum pointer-events-none absolute top-6 right-4 text-[clamp(7rem,30vw,22rem)] leading-[0.8] font-normal tracking-[-0.07em] text-white/[0.05] select-none md:top-16 md:right-7">
+      <p aria-hidden="true" className="tnum pointer-events-none absolute top-6 right-4 text-[clamp(7rem,30vw,22rem)] leading-[0.8] font-normal tracking-[-0.07em] text-text/[0.05] select-none md:top-16 md:right-7">
         404
       </p>
       <div className="relative max-w-2xl">
@@ -38,7 +38,7 @@ export function NotFoundContent() {
         <form
           role="search"
           action={r.search}
-          className="mt-8 flex h-14 max-w-lg items-center gap-3 rounded-full border border-hairline-strong bg-surface pr-1.5 pl-5 transition duration-200 ease-out focus-within:border-white/60 focus-within:shadow-[0_0_0_4px_rgb(255_255_255/0.08)] hover:border-white/25 md:mt-10"
+          className="mt-8 flex h-14 max-w-lg items-center gap-3 rounded-full border border-hairline-strong bg-surface pr-1.5 pl-5 transition duration-200 ease-out focus-within:border-text/60 focus-within:shadow-[0_0_0_4px_rgb(255_255_255/0.08)] hover:border-text/25 md:mt-10"
         >
           <SearchIcon className="size-5 shrink-0 text-text-2" />
           <label htmlFor="nf-q" className="sr-only">

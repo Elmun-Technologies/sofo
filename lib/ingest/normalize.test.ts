@@ -78,3 +78,29 @@ describe("normalizeShow", () => {
     expect(() => parseShow({ showType: "movie" })).toThrow(SourceValidationError);
   });
 });
+
+describe("normalizeShow — seasons", () => {
+  it("keeps per-season offers keyed by the season number from the title", () => {
+    const option = { service: { id: "netflix" }, type: "subscription", link: "https://www.netflix.com/title/1", audios: [{ language: "tur" }], subtitles: [] };
+    const show = parseShow({
+      itemType: "show",
+      showType: "series",
+      id: "1",
+      tmdbId: "tv/100",
+      originalTitle: "Example",
+      streamingOptions: { tr: [option] },
+      seasons: [
+        { title: "Season 1", streamingOptions: { tr: [option] } },
+        { title: "Season 3", streamingOptions: { tr: [{ ...option, audios: [{ language: "eng" }] }] } },
+      ],
+    });
+    const snap = normalizeShow(show, { country: "TR" });
+    expect(snap?.seasons?.map((s) => s.number)).toEqual([1, 3]);
+    expect(snap?.seasons?.[0]?.offers[0]?.audio.map((l) => l.lang)).toEqual(["tr"]);
+    expect(snap?.seasons?.[1]?.offers[0]?.audio.map((l) => l.lang)).toEqual(["en"]);
+  });
+  it("omits seasons when the source sent none", () => {
+    const show = parseShow({ itemType: "show", showType: "series", id: "1", tmdbId: "tv/100", originalTitle: "Example", streamingOptions: { tr: [] } });
+    expect(normalizeShow(show, { country: "TR" })?.seasons).toBeUndefined();
+  });
+});

@@ -3,17 +3,28 @@
  * so the protected /api/setup route applies migrations/*.sql (bundled) and, in demo mode, the sample data.
  * Uses the wrangler `d1_migrations` table, so `wrangler d1 migrations apply` and this route agree.
  */
-import type { D1Database } from "@cloudflare/workers-types";
 import { DEMO_BUILT_AT, DEMO_DATE_COLUMNS, DEMO_SEED, DEMO_WIPE, MIGRATIONS } from "./generated/d1-bundle";
 
 const CHUNK = 50;
 
+/** The slice of the D1 API used here — D1Database satisfies it, and so does lib/sqlite-file.ts (self-hosted). */
+export interface SqlStatement {
+  bind(...values: unknown[]): SqlStatement;
+  all<T = Record<string, unknown>>(): Promise<{ results: T[] }>;
+  first<T = Record<string, unknown>>(): Promise<T | null>;
+  run(): Promise<unknown>;
+}
+export interface SqlDb {
+  exec(sql: string): Promise<unknown>;
+  prepare(sql: string): SqlStatement;
+}
+
 /** exec() takes newline-separated, single-line statements; chunks keep each call small. */
-async function execAll(db: D1Database, statements: string[]) {
+async function execAll(db: SqlDb, statements: string[]) {
   for (let i = 0; i < statements.length; i += CHUNK) await db.exec(statements.slice(i, i + CHUNK).join("\n"));
 }
 
-export async function applyMigrations(db: D1Database): Promise<string[]> {
+export async function applyMigrations(db: SqlDb): Promise<string[]> {
   await db.exec(
     "CREATE TABLE IF NOT EXISTS d1_migrations(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL);",
   );
@@ -29,13 +40,13 @@ export async function applyMigrations(db: D1Database): Promise<string[]> {
 }
 
 /** Real (ingested) data present? Demo data is only ever loaded into a database without it. */
-export async function hasRealData(db: D1Database): Promise<boolean> {
+export async function hasRealData(db: SqlDb): Promise<boolean> {
   const row = await db.prepare("SELECT count(*) AS n FROM offer WHERE source != 'manual'").first<{ n: number }>();
   return (row?.n ?? 0) > 0;
 }
 
 /** Replaces all rows with the bundled sample data, shifted so the newest check is "now". */
-export async function loadDemoData(db: D1Database, now = new Date()): Promise<{ rows: number; shiftedSeconds: number }> {
+export async function loadDemoData(db: SqlDb, now = new Date()): Promise<{ rows: number; shiftedSeconds: number }> {
   await execAll(db, DEMO_WIPE);
   await execAll(db, DEMO_SEED);
   const shift = Math.round((now.getTime() - new Date(DEMO_BUILT_AT).getTime()) / 1000);
@@ -52,7 +63,7 @@ export async function loadDemoData(db: D1Database, now = new Date()): Promise<{ 
  * Removes the demo rows before the first real import, then restores the base reference data
  * (country + services) that the demo wipe deletes. Refuses once ingested offers exist.
  */
-export async function clearDemoData(db: D1Database): Promise<{ wiped: number; restored: number }> {
+export async function clearDemoData(db: SqlDb): Promise<{ wiped: number; restored: number }> {
   await execAll(db, DEMO_WIPE);
   const base = MIGRATIONS.find((m) => m.name.startsWith("0002_"));
   if (base) await execAll(db, base.statements);

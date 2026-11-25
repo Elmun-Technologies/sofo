@@ -116,7 +116,7 @@ export default function EditionPicker() {
               <li key={e.code}>
                 <Link
                   href={e.routes.home}
-                  className="group relative block rounded-hero border border-hairline-strong bg-surface p-6 transition-colors duration-200 hover:border-white/30 hover:bg-surface-2 md:p-10"
+                  className="group relative block rounded-hero border border-hairline-strong bg-surface p-6 transition-colors duration-200 hover:border-text/30 hover:bg-surface-2 md:p-10"
                 >
                   <span className="flex items-center gap-3">
                     <span className="tag !border-available/40 !text-available">
@@ -125,7 +125,7 @@ export default function EditionPicker() {
                     </span>
                     <span className="tnum text-sm text-text-3">{e.country}</span>
                   </span>
-                  <span aria-hidden="true" className="absolute top-5 right-5 flex size-12 items-center justify-center rounded-full bg-white text-ink transition-transform duration-200 ease-out group-hover:scale-105 md:top-9 md:right-9 md:size-14">
+                  <span aria-hidden="true" className="absolute top-5 right-5 flex size-12 items-center justify-center rounded-full bg-text text-ink transition-transform duration-200 ease-out group-hover:scale-105 md:top-9 md:right-9 md:size-14">
                     <ArrowUpRightIcon className="size-5 md:size-6" />
                   </span>
                   <span className="mt-8 grid gap-6 md:mt-14 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-12">
@@ -170,7 +170,7 @@ export default function EditionPicker() {
               <li className="min-w-0">
                 <Link
                   href={`${first.routes.about}#contact`}
-                  className="group flex h-full flex-col justify-between gap-6 rounded-card border border-dashed border-hairline-strong p-4 transition-colors duration-200 hover:border-white/30 md:gap-8 md:p-5"
+                  className="group flex h-full flex-col justify-between gap-6 rounded-card border border-dashed border-hairline-strong p-4 transition-colors duration-200 hover:border-text/30 md:gap-8 md:p-5"
                 >
                   <ArrowRightIcon className="size-4 self-end text-text-3 transition duration-200 group-hover:translate-x-0.5 group-hover:text-text" />
                   <span className="block min-w-0">

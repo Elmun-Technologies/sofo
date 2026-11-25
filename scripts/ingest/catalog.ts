@@ -54,7 +54,8 @@ async function main() {
   const crawl = async (label: string, count: number, genres?: string[]) => {
     let cursor: string | null = null;
     for (let i = 0; i < count; i++) {
-      const page = await searchCatalog({ country: edition.country, catalogs, cursor, genres });
+      // Season granularity: series pages also carry per-season options (same request cost).
+      const page = await searchCatalog({ country: edition.country, catalogs, cursor, genres, granularity: "season" });
       requests++;
       pageNo++;
       for (const show of page.shows) {

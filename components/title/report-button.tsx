@@ -25,7 +25,7 @@ export function ReportButton({ titleId, titleName, offers }: { titleId: number; 
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="text-xs font-semibold text-text-2 underline decoration-white/20 underline-offset-2 hover:text-text">
+      <button type="button" onClick={() => setOpen(true)} className="text-xs font-semibold text-text-2 underline decoration-text/20 underline-offset-2 hover:text-text">
         Something wrong? Tell us
       </button>
       <dialog
@@ -48,7 +48,7 @@ export function ReportButton({ titleId, titleName, offers }: { titleId: number; 
               <fieldset className="mt-4 grid gap-2">
                 <legend className="sr-only">Problem</legend>
                 {KINDS.map(([value, label], i) => (
-                  <label key={value} className="flex cursor-pointer items-center gap-3 rounded-input border border-hairline-strong px-3 py-2.5 text-sm transition-colors hover:bg-white/5 has-[:checked]:border-orange has-[:checked]:bg-orange/8">
+                  <label key={value} className="flex cursor-pointer items-center gap-3 rounded-input border border-hairline-strong px-3 py-2.5 text-sm transition-colors hover:bg-text/5 has-[:checked]:border-orange has-[:checked]:bg-orange/8">
                     <input type="radio" name="kind" value={value} defaultChecked={i === 0} className="accent-[#FF5A1F]" />
                     {label}
                   </label>

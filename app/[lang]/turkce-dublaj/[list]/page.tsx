@@ -104,7 +104,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
           {list.intro}
         </p>
         <p className="mt-5 flex items-center gap-3 text-[13px] text-text-2 md:mt-7 md:text-sm">
-          <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/8 text-[11px] font-semibold text-text">
+          <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-text/8 text-[11px] font-semibold text-text">
             {initials(list.author)}
           </span>
           <span className="tnum">
@@ -150,7 +150,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
           )}
         </div>
 
-        <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 xl:sticky xl:top-24 xl:h-fit xl:grid-cols-[minmax(0,1fr)]">
+        <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 xl:sticky xl:top-36 xl:h-fit xl:grid-cols-[minmax(0,1fr)]">
           <section className="panel p-5 md:p-6">
             <h2 className="text-h3">This list in numbers</h2>
             <dl className="mt-5 grid grid-cols-3 gap-3">

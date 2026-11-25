@@ -28,7 +28,7 @@ export function ServiceHero({ edition: e, data }: { edition: Edition; data: Serv
   const stats: { value: string; label: string; note?: string; dot?: string }[] = [
     { value: fmt(st.titles), label: `Titles in ${e.countryName}` },
     { value: fmt(st.dub), label: `With ${lang} dub`, note: "confirmed by the service", dot: "bg-dub" },
-    { value: fmt(st.sub), label: `With ${lang} subtitles`, note: "confirmed by the service", dot: "bg-white/70" },
+    { value: fmt(st.sub), label: `With ${lang} subtitles`, note: "confirmed by the service", dot: "bg-text/70" },
     price
       ? s.priceFrom === 0
         ? { value: "Free", label: "Cheapest plan", note: s.hasAdsTier ? "ad-supported plan" : undefined }

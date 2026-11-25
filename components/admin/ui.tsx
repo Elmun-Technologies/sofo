@@ -54,7 +54,7 @@ const dot = "size-1.5 shrink-0 rounded-full";
 const EVENT_DOT: Partial<Record<EventType, string>> = {
   added: "bg-available",
   audio_added: "bg-dub",
-  subtitle_added: "bg-white/70",
+  subtitle_added: "bg-text/70",
   leaving_announced: "bg-leaving",
   price_change: "bg-free",
 };
@@ -62,7 +62,7 @@ const EVENT_DOT: Partial<Record<EventType, string>> = {
 export function EventPill({ type }: { type: EventType }) {
   return (
     <span className={`${pill} text-text-2 ring-hairline-strong`}>
-      <span aria-hidden="true" className={`${dot} ${EVENT_DOT[type] ?? "bg-white/30"}`} />
+      <span aria-hidden="true" className={`${dot} ${EVENT_DOT[type] ?? "bg-text/30"}`} />
       {type === "leaving_announced" ? "leaving" : type.replace(/_/g, " ")}
     </span>
   );
@@ -70,9 +70,9 @@ export function EventPill({ type }: { type: EventType }) {
 
 const STATUS_TONE: Record<ReportStatus, { ring: string; dot: string }> = {
   open: { ring: "text-leaving ring-leaving/40", dot: "bg-leaving" },
-  rechecking: { ring: "text-[#8ab4ff] ring-dub/45", dot: "bg-dub" },
+  rechecking: { ring: "text-dub ring-dub/45", dot: "bg-dub" },
   fixed: { ring: "text-available ring-available/35", dot: "bg-available" },
-  rejected: { ring: "text-text-3 ring-hairline-strong", dot: "bg-white/30" },
+  rejected: { ring: "text-text-3 ring-hairline-strong", dot: "bg-text/30" },
 };
 
 export function StatusPill({ status }: { status: ReportStatus }) {
@@ -90,7 +90,7 @@ export function Tag({ children, tone = "default" }: { children: React.ReactNode;
     default: "text-text-2 ring-hairline-strong",
     good: "text-available ring-available/35",
     warn: "text-leaving ring-leaving/35",
-    dub: "text-[#8ab4ff] ring-dub/45",
+    dub: "text-dub ring-dub/45",
   }[tone];
   return <span className={`${pill} ${t}`}>{children}</span>;
 }
@@ -118,7 +118,7 @@ export function TableScroll({ children, className = "max-h-[70vh]" }: { children
 export const tableClass = "w-full border-separate border-spacing-0 text-sm";
 export const thClass = "overline sticky top-0 z-10 border-b border-hairline-strong bg-surface px-3 py-2.5 text-left whitespace-nowrap text-text-3 first:pl-5 last:pr-5 sm:first:pl-6 sm:last:pr-6";
 export const tdClass = "border-b border-hairline px-3 py-3 align-middle first:pl-5 last:pr-5 group-last:border-b-0 sm:first:pl-6 sm:last:pr-6";
-export const trClass = "group transition-colors duration-150 hover:bg-white/[0.025]";
+export const trClass = "group transition-colors duration-150 hover:bg-text/[0.025]";
 
 export function formatAge(hours: number): string {
   if (hours < 1) return `${Math.max(1, Math.round(hours * 60))} m`;
