@@ -4,13 +4,16 @@ import { notFound } from "next/navigation";
 import { FilterIcon, XIcon } from "@/components/icons";
 import { ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { PosterGrid } from "@/components/ui/poster-grid";
+import { PosterImage } from "@/components/ui/poster-image";
 import type { Edition } from "@/lib/editions";
 import { dubTerm, langName, subTerm } from "@/lib/lang";
+import { getMegaMenu } from "@/lib/queries/mega-menu";
 import { getCatalog, parseCatalogParams, type CatalogFilters, type CatalogKind, type CatalogResult } from "@/lib/queries/catalog-pages";
 import { buildAlternates } from "@/lib/seo/hreflang";
-import { cap, catalogHref, decadeLabel, isFiltered, OFFER_LABELS } from "./catalog-url";
-import { FilterBar } from "./filter-bar";
+import { cap, catalogHref, decadeLabel, isFiltered, OFFER_LABELS, SORT_LABELS } from "./catalog-url";
+import { FilterSidebar } from "./filter-sidebar";
 import { FilterSheet } from "./filter-sheet";
 import { Pagination } from "./pagination";
 import { SortMenu } from "./sort-menu";
@@ -85,22 +88,51 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
         ? `${n} ${noun} on ${serviceName} in ${e.countryName}`
         : `${n} ${noun} on ${r.serviceCount} service${r.serviceCount === 1 ? "" : "s"} in ${e.countryName}`;
 
+  const menu = kind === "anime" ? null : await getMegaMenu(e);
+  const genreTiles = menu ? (kind === "movies" ? menu.movie : menu.tv).slice(0, 8) : [];
+  const listHref = kind === "movies" ? e.routes.movies : kind === "series" ? e.routes.series : e.routes.anime;
+
   return (
     <div className="pb-14 md:pb-24">
-      <header className="wrap pt-8 pb-6 md:pt-14 md:pb-9">
-        <p lang="en" className="overline text-text-3">
-          Catalogue
-        </p>
-        <h1 className="text-h1 mt-3 max-w-4xl">{h1}</h1>
-        <p className="tnum mt-3 text-[15px] text-text-2 md:mt-4 md:text-base">{countLine}</p>
+      <Breadcrumbs items={[{ name: "Home", href: e.routes.home }, { name: NOUN[kind].plural, href: listHref }, ...(r.genreName ? [{ name: r.genreName }] : [])]} />
+      <header className="wrap pt-3 pb-5 md:pt-4 md:pb-6">
+        <h1 className="text-h1 max-w-4xl">
+          {h1} <span className="tnum align-middle text-base font-semibold tracking-normal text-text-3 md:text-lg">{n}</span>
+        </h1>
+        <p className="tnum mt-2 text-sm text-text-2">{countLine}</p>
       </header>
 
-      {/* Filters stay within reach while the grid scrolls (sits under the site header). */}
-      <div className="sticky top-16 z-30 border-y border-hairline bg-ink/95 backdrop-blur-xl md:top-[120px]">
-        <div className="wrap flex items-center gap-2 py-2.5 lg:py-3">
-          <div className="hidden min-w-0 flex-1 lg:block">
-            <FilterBar edition={e} base={base} filters={f} result={r} />
-          </div>
+      {genreTiles.length ? (
+        <nav aria-label="Genres" className="wrap pb-5 md:pb-7">
+          <ul className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:grid md:grid-cols-4 md:px-0 xl:grid-cols-8">
+            {genreTiles.map((g) => {
+              const on = f.genre === g.slug;
+              return (
+                <li key={g.slug} className="shrink-0">
+                  <Link
+                    href={to({ genre: on ? undefined : g.slug })}
+                    scroll={false}
+                    aria-current={on ? "true" : undefined}
+                    className={`flex h-[66px] items-center gap-2.5 rounded-card py-2 pr-3 pl-2 transition-colors ${on ? "bg-text text-ink hover:text-ink" : "bg-surface hover:bg-surface-2 hover:text-text"}`}
+                  >
+                    <span className="w-[34px] shrink-0">
+                      <PosterImage path={g.posterPath} alt="" sizes="34px" className="rounded-[6px]" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-[14px] leading-tight font-bold">{g.name}</span>
+                      <span className={`tnum text-xs ${on ? "text-ink/60" : "text-text-3"}`}>{g.count}</span>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : null}
+
+      {/* Mobile / tablet: filter sheet + sort stay within reach. */}
+      <div className="sticky top-16 z-30 border-y border-hairline bg-ink/95 backdrop-blur-xl md:top-[120px] lg:hidden">
+        <div className="wrap flex items-center gap-2 py-2.5">
           <FilterSheet
             base={base}
             filters={f}
@@ -110,42 +142,64 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
             services={r.services}
             genres={r.genres}
             activeCount={active.length}
-            className="max-md:flex-1 lg:hidden"
+            className="max-md:flex-1"
           />
           <SortMenu base={base} filters={f} className="max-md:flex-1 md:ml-auto" />
         </div>
       </div>
 
-      <div className="wrap">
+      <div className="wrap lg:grid lg:grid-cols-[264px_minmax(0,1fr)] lg:gap-8">
+        <div className="hidden lg:block">
+          <FilterSidebar edition={e} base={base} filters={f} result={r} activeCount={active.length} clearHref={clearHref} />
+        </div>
+        <div className="min-w-0">
+          <div className="hidden h-12 items-center gap-5 border-b border-hairline text-sm font-semibold lg:flex">
+            <span className="text-text-3">Sort:</span>
+            {(Object.keys(SORT_LABELS) as (keyof typeof SORT_LABELS)[]).map((k) => (
+              <Link
+                key={k}
+                href={catalogHref(base, { ...f, sort: k, page: 1 })}
+                scroll={false}
+                aria-current={f.sort === k ? "true" : undefined}
+                className={`relative flex h-full items-center ${f.sort === k ? "text-text after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:bg-text" : "text-text-2 hover:text-text"}`}
+              >
+                {SORT_LABELS[k]}
+              </Link>
+            ))}
+            <span className="tnum ml-auto text-text-3">
+              {n} {noun}
+            </span>
+          </div>
+
         {active.length ? (
-          <ul aria-label="Active filters" className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 pt-4 md:mx-0 md:flex-wrap md:px-0 md:pt-5">
+          <ul aria-label="Active filters" className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 pt-4 md:mx-0 md:flex-wrap md:px-0">
             {active.map((a) => (
               <li key={a.label} className="shrink-0">
                 <Link
                   href={a.href}
                   scroll={false}
                   aria-label={`Remove filter ${a.label}`}
-                  className="group/x inline-flex h-9 items-center gap-1.5 rounded-full bg-text/8 pr-2 pl-3.5 text-[13px] font-medium whitespace-nowrap text-text transition duration-200 ease-out hover:bg-text/14"
+                  className="group/x inline-flex h-9 items-center gap-1.5 rounded-full bg-surface pr-2 pl-3.5 text-[13px] font-semibold whitespace-nowrap text-text transition duration-200 ease-out hover:bg-surface-2"
                 >
                   <span lang={a.local ? e.hreflang : undefined}>{a.label}</span>
-                  <span aria-hidden="true" className="flex size-5 items-center justify-center rounded-full text-text-3 transition-colors group-hover/x:bg-text/15 group-hover/x:text-text">
+                  <span aria-hidden="true" className="flex size-5 items-center justify-center rounded-full text-text-3 transition-colors group-hover/x:bg-ink group-hover/x:text-text">
                     <XIcon className="size-3.5" />
                   </span>
                 </Link>
               </li>
             ))}
             <li className="shrink-0">
-              <Link href={clearHref} scroll={false} className="inline-flex h-9 items-center px-2 text-[13px] font-medium whitespace-nowrap text-text-2 underline decoration-hairline-strong underline-offset-4 hover:decoration-current">
+              <Link href={clearHref} scroll={false} className="inline-flex h-9 items-center px-2 text-[13px] font-bold whitespace-nowrap text-orange-press hover:underline">
                 Clear all
               </Link>
             </li>
           </ul>
         ) : null}
 
-        <div className="pt-6 md:pt-8">
+        <div className="pt-5 md:pt-6">
           {r.cards.length ? (
             <>
-              <PosterGrid cards={r.cards} edition={e} />
+              <PosterGrid cards={r.cards} edition={e} dense />
               <Pagination page={f.page} pages={r.pages} href={(p) => catalogHref(base, { ...f, page: p })} />
             </>
           ) : (
@@ -163,7 +217,10 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
             </EmptyState>
           )}
         </div>
+        </div>
+      </div>
 
+      <div className="wrap">
         <section aria-labelledby="about-catalog" className="mt-14 md:mt-24">
           <div className="rule" />
           <div className="grid gap-3 pt-5 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] md:gap-10 md:pt-7">

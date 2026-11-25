@@ -24,6 +24,7 @@ import { siteUrl } from "@/lib/site";
 import { Cast } from "./cast";
 import { buildFaq, Faq } from "./faq";
 import { History } from "./history";
+import { TitleTabs } from "./title-tabs";
 import { LangMatrix } from "./lang-matrix";
 import { OfferRow } from "./offer-row";
 import { Seasons } from "./seasons";
@@ -79,6 +80,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
   const hasDub = offers.some((o) => o.audio[lang] === "confirmed_yes");
   const hasSub = offers.some((o) => o.subtitle[lang] === "confirmed_yes");
   const audioLangs = new Set(offers.flatMap((o) => Object.entries(o.audio).filter(([, s]) => s === "confirmed_yes").map(([l]) => l)));
+  const langCount = new Set([...audioLangs, ...offers.flatMap((o) => Object.entries(o.subtitle).filter(([, s]) => s === "confirmed_yes").map(([l]) => l))]).size;
   const uhd = offers.some((o) => o.quality === "uhd");
   const backdrop = imageUrl(title.backdropPath, "w1280");
   const saved = { id: title.id, type: title.type, slug: local.slug, name: local.name, posterPath: title.posterPath, year: title.year };
@@ -219,7 +221,18 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
         </div>
       </div>
 
-      <div className="wrap mt-10 grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-12 md:mt-14 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
+      <TitleTabs
+        tabs={[
+          ...(local.overview ? [{ id: "story", label: "Description" }] : []),
+          ...(offers.length ? [{ id: "langs", label: "Audio & subtitles", count: langCount }] : []),
+          ...(type === "tv" && title.seasons.length ? [{ id: "seasons", label: "Seasons", count: title.seasons.length }] : []),
+          ...(title.videos.length ? [{ id: "trailers", label: "Trailers", count: Math.min(title.videos.length, 2) }] : []),
+          { id: "history", label: "Availability history" },
+          { id: "faq", label: "Questions", count: faq.length },
+        ]}
+      />
+
+      <div className="wrap mt-8 grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-12 md:mt-10 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0 space-y-12 md:space-y-14">
           {local.overview ? (
             <section aria-labelledby="story">
@@ -274,7 +287,9 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
             </section>
           ) : null}
 
-          <History data={data} editionLang={lang} countryName={edition.countryName} />
+          <div id="history">
+            <History data={data} editionLang={lang} countryName={edition.countryName} />
+          </div>
 
           {title.credits.length ? (
             <section aria-labelledby="cast">

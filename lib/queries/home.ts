@@ -8,7 +8,7 @@ export async function getHomeData(e: Edition) {
   const now = new Date();
   const since = new Date(now.getTime() - 14 * DAY);
 
-  const [top, dubEvents, newEvents, leavingOffer, anime, kids, lists, dubCount, subCount, trending] = await Promise.all([
+  const [top, dubEvents, newEvents, leavingOffers, anime, kids, lists, dubCount, subCount, trending] = await Promise.all([
     getCards(e, availableWhere(e), { take: 10, orderBy: [{ popularity: "desc" }, { id: "asc" }] }),
     db.availabilityEvent.findMany({
       where: { countryCode: e.country, type: "audio_added", occurredAt: { gte: since } },
@@ -22,10 +22,11 @@ export async function getHomeData(e: Edition) {
       select: { titleId: true },
       take: 30,
     }),
-    db.offer.findFirst({
+    db.offer.findMany({
       where: { countryCode: e.country, isActive: true, seasonId: null, leavingAt: { gte: now } },
       orderBy: { leavingAt: "asc" },
       include: { service: true, title: { include: { localizations: { where: { lang: e.contentLang } } } } },
+      take: 12,
     }),
     getCards(e, { ...availableWhere(e), isAnimation: true, originalLang: { in: ["ja", "ko", "zh"] } }, { take: 12 }),
     getCards(e, { ...availableWhere(e), isKids: true }, { take: 12 }),
@@ -72,18 +73,26 @@ export async function getHomeData(e: Edition) {
   const animeCards = anime.slice(0, 3);
   const kidsCards = kids.slice(0, 3);
 
-  const leaving = leavingOffer?.leavingAt && leavingOffer.title.localizations[0]
-    ? {
-        titleId: leavingOffer.title.id,
-        type: leavingOffer.title.type,
-        slug: leavingOffer.title.localizations[0].slug,
-        name: leavingOffer.title.localizations[0].name,
-        posterPath: leavingOffer.title.posterPath,
-        year: leavingOffer.title.year,
-        service: leavingOffer.service.name,
-        leavingAt: leavingOffer.leavingAt,
-      }
-    : null;
+  // Soonest-leaving titles, one entry per title (a title can leave several services).
+  const seen = new Set<number>();
+  const leavingList = leavingOffers.flatMap((o) => {
+    const loc = o.title.localizations[0];
+    if (!o.leavingAt || !loc || seen.has(o.title.id)) return [];
+    seen.add(o.title.id);
+    return [
+      {
+        titleId: o.title.id,
+        type: o.title.type,
+        slug: loc.slug,
+        name: loc.name,
+        posterPath: o.title.posterPath,
+        year: o.title.year,
+        service: o.service.name,
+        leavingAt: o.leavingAt,
+      },
+    ];
+  }).slice(0, 5);
+  const leaving = leavingList[0] ?? null;
 
   return {
     spotlight,
@@ -91,6 +100,7 @@ export async function getHomeData(e: Edition) {
     justDubbed,
     newThisWeek,
     leaving,
+    leavingList,
     anime,
     kids,
     lists,

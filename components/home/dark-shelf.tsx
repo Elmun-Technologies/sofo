@@ -26,7 +26,7 @@ export function DarkShelf({ title, sub, cta, href, cards, edition, ranked }: { t
         </div>
         <Rail className="relative gap-2.5 md:gap-3">
           {cards.map((c, i) => (
-            <li key={c.id} className="w-[38%] shrink-0 snap-start rounded-[14px] bg-ink p-2 text-text sm:w-[27%] md:w-[23%] lg:w-[18.6%]">
+            <li key={c.id} className="w-[38%] shrink-0 snap-start rounded-[14px] bg-ink p-2 text-text sm:w-[27%] md:w-[22%] lg:w-[17%] xl:w-[15.2%]">
               <PosterCard card={c} edition={edition} rank={ranked ? i + 1 : undefined} priority={i < 3} />
             </li>
           ))}

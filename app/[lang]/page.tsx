@@ -114,11 +114,14 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
           {data.leaving ? (
             <div className="hidden lg:block">
               <LeavingCard
-                href={paths.title(edition, data.leaving.type, data.leaving.slug)}
-                name={data.leaving.name}
-                service={data.leaving.service}
-                posterPath={data.leaving.posterPath}
-                leavingAt={data.leaving.leavingAt.toISOString()}
+                items={data.leavingList.map((l) => ({
+                  href: paths.title(edition, l.type, l.slug),
+                  name: l.name,
+                  service: l.service,
+                  posterPath: l.posterPath,
+                  leavingAt: l.leavingAt.toISOString(),
+                  year: l.year,
+                }))}
                 listHref={r.newLeaving}
               />
             </div>
