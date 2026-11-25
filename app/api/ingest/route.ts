@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { safeEqual } from "@/lib/admin/auth";
 import { db } from "@/lib/db";
 import { ingestTitleAvailability, upsertTitleMetadata } from "@/lib/ingest/apply";
@@ -50,6 +51,7 @@ export async function POST(req: Request) {
         errors.push({ tmdbId: meta.tmdbId, error: err instanceof Error ? err.message.slice(0, 300) : String(err) });
       }
     }
+    if (created + updated > 0) revalidatePath("/", "layout");
     return Response.json({ kind: "metadata", created, updated, errors }, { status: errors.length ? 207 : 200 });
   }
 
@@ -70,5 +72,7 @@ export async function POST(req: Request) {
       errors.push({ tmdbId: snapshot.tmdbId, error: err instanceof Error ? err.message.slice(0, 300) : String(err) });
     }
   }
+  // New data → drop cached pages (home, catalogue, service pages revalidate hourly otherwise).
+  if (totals.created + totals.updated + totals.deactivated + totals.events > 0) revalidatePath("/", "layout");
   return Response.json({ kind: "availability", ...totals, errors }, { status: errors.length ? 207 : 200 });
 }

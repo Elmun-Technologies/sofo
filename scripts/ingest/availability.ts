@@ -3,6 +3,7 @@
  *
  *   pnpm ingest:availability [-- --edition=tr --limit=50 --dry-run --file=data/titles.csv]
  *   pnpm ingest:availability -- --from-cache=.cache/sa/tr-… (snapshot from `pnpm ingest:catalog`, no API requests)
+ *   pnpm ingest:availability -- --from-cache=latest      (newest crawl of the edition)
  *
  * Default title list: every title in the DB (metadata ingest first). Diff semantics:
  * docs/data-model.md §3. Idempotent: an unchanged snapshot writes no events and no offer changes;
@@ -15,7 +16,7 @@ import { normalizeShow } from "../../lib/ingest/normalize";
 import { parseTitleCsv } from "../../lib/ingest/title-list";
 import { editionCodes, getEdition } from "../../lib/editions";
 import { SourceConfigError } from "../../lib/sources/http";
-import { loadCachedShows } from "../../lib/ingest/cache";
+import { latestCacheDir, loadCachedShows } from "../../lib/ingest/cache";
 import { getShow, isStreamingAvailabilityConfigured } from "../../lib/sources/streaming-availability";
 import { withNodeDb } from "../../lib/db-node";
 
@@ -35,7 +36,11 @@ const describe = (err: unknown) => (err instanceof Error ? err.message : String(
 async function main() {
   const edition = getEdition(editionCode);
   if (!edition) throw new Error(`unknown edition "${editionCode}" (live: ${editionCodes().join(", ")})`);
-  if (fromCache) return ingestFromCache(fromCache, edition.country);
+  if (fromCache) {
+    // "latest" = newest crawl of this edition (used by the self-hosted daily refresh).
+    const dir = fromCache === "latest" ? await latestCacheDir(".cache/sa", editionCode) : fromCache;
+    return ingestFromCache(dir, edition.country);
+  }
   if (!isStreamingAvailabilityConfigured()) {
     throw new SourceConfigError("STREAMING_AVAILABILITY_API_KEY is not set — add it to .env.local (never commit it)");
   }

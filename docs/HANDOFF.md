@@ -14,7 +14,8 @@ Kod Docker'da sinovdan o'tgan (build → konteyner → migratsiya → 314 nom yu
    - `INGEST_TOKEN`, `SETUP_TOKEN`, `ADMIN_USER`, `ADMIN_PASSWORD` — runtime.
 4. **Domain:** Coolify bergan `*.sslip.io` yoki o'z domeningiz (DNS A → server IP), HTTPS — Coolify avtomatik.
 5. **Deploy.** Log oxirida `[selfhost] … applied 0001_init.sql, 0002_base_services.sql` va `Ready`.
-6. **Bazani to'ldirish:** GitHub → Settings → Secrets → Actions: `STREAMING_AVAILABILITY_API_KEY`, `TMDB_API_KEY` (uzun `eyJ…`), `INGEST_TOKEN` (3-qadamdagi bilan bir xil), `INGEST_URL=https://<domen>` → Actions → **ingest** → Run workflow (~18 so'rov, ~360 nom). Keyin har kuni 03:17 UTC (Türkiye 06:17) o'zi yangilaydi.
+6. **Bazani to'ldirish (asosiy yo'l — server ichida):** Coolify → sofo-web → Environment Variables: `TMDB_API_KEY`, `STREAMING_AVAILABILITY_API_KEY` (runtime) → Redeploy → Terminal: `pnpm selfhost:refresh` (~5–10 daq.). Kunlik: Scheduled Tasks → `pnpm selfhost:refresh`, `17 3 * * *`.
+   **Muqobil (GitHub Actions yoqilgan bo'lsa):** GitHub → Settings → Secrets → Actions: `STREAMING_AVAILABILITY_API_KEY`, `TMDB_API_KEY` (uzun `eyJ…`), `INGEST_TOKEN` (3-qadamdagi bilan bir xil), `INGEST_URL=https://<domen>` → Actions → **ingest** → Run workflow (~18 so'rov, ~360 nom). Keyin har kuni 03:17 UTC (Türkiye 06:17) o'zi yangilaydi.
 7. **Google Search Console:** domen tasdiqlang, `https://<domen>/sitemap.xml` yuboring (faqat haqiqiy domen bilan, sslip.io bilan emas).
 
 Zaxira: Coolify → resource → Backups yoki serverda `/data/sofo.db` nusxasi. Limit: Streaming Availability oyiga 1 000 so'rov; kunlik ishga tushirish ~540/oy.

@@ -210,7 +210,8 @@ pnpm ingest:availability    # 04-ingest
 - Coolify → resource from Git (public repo), build pack **Dockerfile**, port 3000, persistent storage → `/data`.
 - Env: `SOFO_DEMO_DATA=0` (build + runtime), `NEXT_PUBLIC_SITE_URL` (build time — canonical/hreflang/sitemap), `INGEST_TOKEN`, `SETUP_TOKEN`, `ADMIN_USER`, `ADMIN_PASSWORD`. `SOFO_SQLITE_PATH=/data/sofo.db` is the image default.
 - Start: `scripts/selfhost/migrate.ts` (idempotent migrations; demo data only in demo mode on an empty DB) → `next start`. Healthcheck `/robots.txt`.
-- Fill the DB: GitHub Actions `ingest` (secrets incl. `INGEST_URL=https://<coolify domain>`) or `pnpm ingest:push -- --target=https://<domain>` from any machine with the keys.
+- Fill the DB (primary, 2026-11-25 — GitHub Actions is disabled on the founder's account): Coolify env `TMDB_API_KEY` + `STREAMING_AVAILABILITY_API_KEY` (runtime), then in the container `pnpm selfhost:refresh` = catalogue crawl (~18 SA requests) → TMDB metadata → availability from the cache → `POST /api/revalidate` (drops the ISR cache; pages otherwise keep an empty render for up to 1 h). Daily: Coolify Scheduled Task `pnpm selfhost:refresh` at `17 3 * * *`.
+- Alternative: GitHub Actions `ingest` (secrets incl. `INGEST_URL`) or `pnpm ingest:push -- --target=<domain>` from any machine; `/api/ingest` revalidates pages itself after writes.
 - Scripts inside the container (Coolify terminal) use the same file: `SOFO_SQLITE_PATH` is set, so `pnpm ingest:*`, `pnpm seo:sync-pages` work there.
 - Sandbox `docker build` needs proxy + CA (test-only variant); the committed Dockerfile is for a normal network.
 
