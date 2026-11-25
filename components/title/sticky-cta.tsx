@@ -10,10 +10,7 @@ export function StickyCta({ targetId, children }: { targetId: string; children: 
   const [show, setShow] = useState(false);
   useEffect(() => {
     const el = document.getElementById(targetId);
-    if (!el) {
-      setShow(true);
-      return;
-    }
+    if (!el) return;
     const io = new IntersectionObserver(([e]) => setShow(!e!.isIntersecting && e!.boundingClientRect.top < 0), { threshold: 0 });
     io.observe(el);
     return () => io.disconnect();

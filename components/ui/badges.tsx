@@ -61,7 +61,7 @@ export function Pill({ tone = "muted", children, className = "" }: { tone?: "dub
   return <span className={`inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-xs leading-4 font-medium whitespace-nowrap ring-1 ring-inset ${tones} ${className}`}>{children}</span>;
 }
 
-/** ✓ / — / "not confirmed" — the three language states. Never a guess. */
+/** Confirmed / not offered / "not confirmed" — the three language states. Never a guess. */
 export function LangMark({ status }: { status: LangState | undefined }) {
   if (status === "confirmed_yes")
     return (

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StarIcon } from "@/components/icons";
 import { paths, type Edition } from "@/lib/editions";
 import { formatDate } from "@/lib/format";
 import { dubTerm } from "@/lib/lang";
@@ -50,12 +51,12 @@ export function Seasons({ data, edition }: { data: TitlePageData; edition: Editi
                     {ep.airDate ? formatDate(ep.airDate) : ""} {ep.runtimeMin ? `· ${ep.runtimeMin}m` : ""}
                   </span>
                 </span>
-                {ep.tmdbScore ? <span className="tnum text-xs font-bold text-text-2">★ {Number(ep.tmdbScore).toFixed(1)}</span> : null}
+                {ep.tmdbScore ? <span className="tnum inline-flex items-center gap-1 text-xs font-medium text-text-2"><StarIcon className="size-3 text-leaving" />{Number(ep.tmdbScore).toFixed(1)}</span> : null}
               </li>
             ))}
           </ol>
           <Link href={paths.season(edition, data.local.slug, shown.number)} className="link mt-4 inline-block text-sm">
-            All episodes of season {shown.number} →
+            All episodes of season {shown.number}
           </Link>
         </div>
       ) : null}

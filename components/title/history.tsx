@@ -70,7 +70,7 @@ export function History({ data, editionLang, countryName }: { data: TitlePageDat
                   {formatDate(e.occurredAt)}
                 </time>
                 <div>
-                  <span className={`inline-block rounded-[5px] px-1.5 py-0.5 text-[11px] leading-4 font-bold ${v.tone}`}>{v.badge}</span>
+                  <span className={`inline-flex h-6 items-center rounded-full px-2.5 text-[11px] leading-4 font-medium ring-1 ring-inset ${v.tone}`}>{v.badge}</span>
                   <p className="mt-1 text-text-2">{v.text}</p>
                 </div>
               </li>
@@ -120,26 +120,26 @@ function describe(e: HistoryEvent, lang: string): { badge: string; text: string;
   const before = (e.before ?? {}) as { price?: number };
   switch (e.type) {
     case "added":
-      return { badge: `Added to ${e.serviceName}`, text: e.offerType === "rent" || e.offerType === "buy" ? "Rent / buy" : "Included with subscription", tone: "bg-available text-ink" };
+      return { badge: `Added to ${e.serviceName}`, text: e.offerType === "rent" || e.offerType === "buy" ? "Rent / buy" : "Included with subscription", tone: "text-available ring-available/40" };
     case "removed":
-      return { badge: `Left ${e.serviceName}`, text: "No longer on this service", tone: "bg-leaving text-ink" };
+      return { badge: `Left ${e.serviceName}`, text: "No longer on this service", tone: "text-leaving ring-leaving/40" };
     case "price_change": {
       const down = (after.price ?? 0) < (before.price ?? 0);
       return {
         badge: down ? "Price drop" : "Price change",
         text: `${e.serviceName} ${e.offerType ?? ""} ${formatPrice(before.price, "TRY")} → ${formatPrice(after.price, "TRY")}`,
-        tone: "bg-free text-ink",
+        tone: "text-free ring-free/40",
       };
     }
     case "audio_added":
-      return { badge: `${langName(after.lang ?? lang)} dub added`, text: `On ${e.serviceName}`, tone: "bg-dub text-white" };
+      return { badge: `${langName(after.lang ?? lang)} dub added`, text: `On ${e.serviceName}`, tone: "text-[#8ab4ff] ring-dub/45" };
     case "audio_removed":
-      return { badge: "Dub removed", text: `On ${e.serviceName}`, tone: "bg-surface-2 text-text" };
+      return { badge: "Dub removed", text: `On ${e.serviceName}`, tone: "text-text-2 ring-white/15" };
     case "subtitle_added":
-      return { badge: "Subtitles added", text: `On ${e.serviceName}`, tone: "bg-white text-ink" };
+      return { badge: "Subtitles added", text: `On ${e.serviceName}`, tone: "text-text ring-white/30" };
     case "leaving_announced":
-      return { badge: `Leaving ${e.serviceName}`, text: after.leavingAt ? `Last day ${formatDate(after.leavingAt)}` : "Leaving soon", tone: "bg-leaving text-ink" };
+      return { badge: `Leaving ${e.serviceName}`, text: after.leavingAt ? `Last day ${formatDate(after.leavingAt)}` : "Leaving soon", tone: "text-leaving ring-leaving/40" };
     default:
-      return { badge: e.type.replace(/_/g, " "), text: e.serviceName, tone: "bg-surface-2 text-text" };
+      return { badge: e.type.replace(/_/g, " "), text: e.serviceName, tone: "text-text-2 ring-white/15" };
   }
 }
