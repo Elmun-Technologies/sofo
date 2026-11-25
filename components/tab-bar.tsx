@@ -16,7 +16,7 @@ export function TabBar({ routes }: { routes: EditionRoutes }) {
   ];
 
   return (
-    <nav aria-label="Tabs" className="glass fixed inset-x-0 bottom-0 z-40 border-t border-hairline pb-[env(safe-area-inset-bottom)] md:hidden">
+    <nav aria-label="Tabs" className="fixed inset-x-0 bottom-0 z-40 border-t border-hairline bg-ink shadow-[0_-8px_24px_-12px_rgb(16_24_40/0.15)] pb-[env(safe-area-inset-bottom)] md:hidden">
       <ul className="mx-auto grid max-w-md grid-cols-4">
         {tabs.map(({ href, label, Icon }) => {
           const active = pathname === href;

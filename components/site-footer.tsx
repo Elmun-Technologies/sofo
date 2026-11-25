@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { EDITIONS, PLANNED_EDITIONS, paths, type Edition } from "@/lib/editions";
 import { dubTerm, subTerm } from "@/lib/lang";
-import { ShieldCheckIcon } from "./icons";
+import { ShieldCheckIcon, TelegramIcon } from "./icons";
 import { Logo } from "./logo";
 
 const SERVICE_NAMES: Record<string, string> = {
@@ -14,8 +14,19 @@ const cap = (s: string, locale: string) => s.replace(/^./, (c) => c.toLocaleUppe
 export function SiteFooter({ edition }: { edition: Edition }) {
   const r = edition.routes;
   return (
-    <footer className="mt-16 border-t border-hairline bg-ink-2 md:mt-24">
-      <div className="wrap grid gap-10 py-12 md:py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
+    <footer className="mt-16 rounded-t-[28px] bg-surface md:mt-24 md:rounded-t-[40px]">
+      <div className="wrap flex flex-col gap-3 border-b border-hairline py-6 md:flex-row md:items-center md:gap-6">
+        <p className="flex items-center gap-3 text-[17px] font-extrabold tracking-[-0.015em] md:text-[19px]">
+          <span className="inline-flex size-10 items-center justify-center rounded-full bg-[#229ED9] text-white">
+            <TelegramIcon className="size-5" />
+          </span>
+          Get new Turkish dubs first
+        </p>
+        <Link href={`${r.myList}#alerts`} className="inline-flex h-11 w-fit items-center rounded-button bg-text px-5 text-sm font-bold text-ink hover:bg-text/85 hover:text-ink md:ml-auto">
+          Turn on alerts
+        </Link>
+      </div>
+      <div className="wrap grid gap-10 py-12 md:py-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
         <div className="max-w-sm">
           <Link href={r.home} aria-label="sofo — home" className="inline-block hover:text-text">
             <Logo className="text-[28px]" />
