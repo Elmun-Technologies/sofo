@@ -30,7 +30,7 @@ Gaps are anime: Crunchyroll options carry **no audio/subtitle lists at all** (At
 
 1. **TOD, tabii, Exxen, Gain** have no data source. Options: (a) keep their service pages but show only manually verified titles (admin curation), (b) check Watchmode as a second source, (c) drop them from the MVP service list until a source exists.
 2. **Crunchyroll and Mubi** are covered but not in our service map. Crunchyroll matters for the anime section (with "language not confirmed" until the API lists languages).
-3. Plan/price of the API at the volume we need (≈500 titles × daily refresh) — check the plan limits before the cron runs daily.
+3. **Quota: the current plan grants 1 000 requests / month** (`X-Quota-Granted`, resets on the 1st). Per-title refresh of 500 titles daily would need ~15 000/month — impossible. The catalogue crawl (`pnpm ingest:catalog`, 20 titles per request) refreshes ~360 titles with 18 requests, i.e. ~540/month daily. A paid plan is needed before going past that.
 
 ## How the key is used in this environment
 
@@ -39,3 +39,12 @@ Keys are saved as session network secrets (proxy-injected headers), not in env v
 ```bash
 TMDB_API_KEY=eyJproxy-injected STREAMING_AVAILABILITY_API_KEY=proxy-injected pnpm ingest:availability -- --limit=5 --dry-run
 ```
+
+## First real ingest (local D1, 2026-11-25)
+
+Decision: TOD/tabii/Exxen/Gain out of the MVP list, Crunchyroll in. Crawl: 18 requests → 360 shows (343 unique titles incl. the 36 earlier ones); 29 titles the crawl missed fetched per title.
+
+- TMDB metadata: 343 / 343 ok
+- Offers: 472 active offers across Netflix, Prime Video, Disney+, HBO Max, Crunchyroll
+- Sitemap (quality gate passed): 394 indexable URLs
+- Quota used so far this month: ~113 / 1 000

@@ -295,6 +295,7 @@ const SERVICE_HOME: Record<string, string> = {
   "prime-video": "https://www.primevideo.com/",
   "disney-plus": "https://www.disneyplus.com/tr-tr",
   "hbo-max": "https://www.hbomax.com/tr/tr",
+  crunchyroll: "https://www.crunchyroll.com/",
   tod: "https://www.tod.tv/",
   tabii: "https://www.tabii.com/",
   exxen: "https://www.exxen.com/",

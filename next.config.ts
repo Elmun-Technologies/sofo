@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Sandboxed dev only: the optimizer's fetch ignores HTTPS_PROXY, so let the browser load TMDB images directly.
+    unoptimized: process.env.SOFO_IMAGES_UNOPTIMIZED === "1",
     remotePatterns: [{ protocol: "https", hostname: "image.tmdb.org", pathname: "/t/p/**" }],
   },
   // Prisma ships workerd-specific builds; OpenNext patches them when they stay external.

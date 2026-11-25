@@ -6,7 +6,7 @@ import { Logo } from "./logo";
 
 const SERVICE_NAMES: Record<string, string> = {
   netflix: "Netflix", "prime-video": "Prime Video", "disney-plus": "Disney+", "hbo-max": "HBO Max",
-  tod: "TOD", tabii: "tabii", exxen: "Exxen", gain: "Gain",
+  crunchyroll: "Crunchyroll", tod: "TOD", tabii: "tabii", exxen: "Exxen", gain: "Gain",
 };
 
 const cap = (s: string, locale: string) => s.replace(/^./, (c) => c.toLocaleUpperCase(locale));

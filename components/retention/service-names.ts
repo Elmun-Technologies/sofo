@@ -1,9 +1,10 @@
-/** Display names for the 8 core services — used where no DB row is at hand (client modals). */
+/** Display names for the core services — used where no DB row is at hand (client modals). */
 export const SERVICE_NAMES: Record<string, string> = {
   netflix: "Netflix",
   "prime-video": "Prime Video",
   "disney-plus": "Disney+",
   "hbo-max": "HBO Max",
+  crunchyroll: "Crunchyroll",
   tod: "TOD",
   tabii: "tabii",
   exxen: "Exxen",

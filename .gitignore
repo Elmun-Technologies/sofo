@@ -13,3 +13,4 @@ artifacts/
 /.open-next/
 /.wrangler/
 .secrets/
+/.cache/

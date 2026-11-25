@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
+  '@prisma/adapter-d1@6.19.3':
+    hash: cgpz5aed5fp2gfebvpttzfkagu
+    path: patches/@prisma__adapter-d1@6.19.3.patch
   next@16.4.5:
     hash: kfjsc7hkfsdczml6w5erdydwky
     path: patches/next@16.4.5.patch
@@ -15,7 +18,7 @@ importers:
     dependencies:
       '@prisma/adapter-d1':
         specifier: 6.19.3
-        version: 6.19.3
+        version: 6.19.3(patch_hash=cgpz5aed5fp2gfebvpttzfkagu)
       '@prisma/client':
         specifier: ^6.19.3
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
@@ -5250,7 +5253,7 @@ snapshots:
 
   '@poppinss/exception@1.2.3': {}
 
-  '@prisma/adapter-d1@6.19.3':
+  '@prisma/adapter-d1@6.19.3(patch_hash=cgpz5aed5fp2gfebvpttzfkagu)':
     dependencies:
       '@cloudflare/workers-types': 4.20260702.1
       '@prisma/driver-adapter-utils': 6.19.3

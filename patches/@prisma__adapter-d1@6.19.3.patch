@@ -1,0 +1,26 @@
+diff --git a/dist/index.js b/dist/index.js
+index d1f9bbd54783b817d9c93262a2f2bcf88788a380..77722656d5c6ff7e7c5dcbf3b40e306fb9864e64 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -93,7 +93,7 @@ var bgWhite = init(47, 49);
+ var import_ky = __toESM(require("ky"));
+ 
+ // src/constants.ts
+-var MAX_BIND_VALUES = 98;
++var MAX_BIND_VALUES = 80; // sofo patch: D1 caps bound params at 100 and Prisma adds relation filters on top of each chunk
+ var GENERIC_SQLITE_ERROR = 1;
+ 
+ // src/conversion.ts
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 6023c9c96f9a1a5dc8f305f23ccba10c4b124edf..0ba524ac085f897cb7b8ca6fa97ae20046bf78b9 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -59,7 +59,7 @@ var bgWhite = init(47, 49);
+ import ky from "ky";
+ 
+ // src/constants.ts
+-var MAX_BIND_VALUES = 98;
++var MAX_BIND_VALUES = 80; // sofo patch: D1 caps bound params at 100 and Prisma adds relation filters on top of each chunk
+ var GENERIC_SQLITE_ERROR = 1;
+ 
+ // src/conversion.ts

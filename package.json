@@ -16,6 +16,7 @@
     "search:bench": "dotenv -e .env.local -- tsx scripts/search-bench.ts",
     "ingest:metadata": "dotenv -e .env.local -- tsx scripts/ingest/metadata.ts",
     "ingest:availability": "dotenv -e .env.local -- tsx scripts/ingest/availability.ts",
+    "ingest:catalog": "dotenv -e .env.local -- tsx scripts/ingest/catalog.ts",
     "seo:sync-pages": "dotenv -e .env.local -- tsx scripts/seo/sync-pages.ts",
     "alerts:dispatch": "dotenv -e .env.local -- tsx scripts/alerts/dispatch.ts",
     "db:migrate": "wrangler d1 migrations apply DB --local --config freebuff.wrangler.jsonc"
@@ -46,7 +47,8 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "next@16.4.5": "patches/next@16.4.5.patch"
+      "next@16.4.5": "patches/next@16.4.5.patch",
+      "@prisma/adapter-d1@6.19.3": "patches/@prisma__adapter-d1@6.19.3.patch"
     }
   }
 }

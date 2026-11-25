@@ -73,7 +73,9 @@ const tr: Edition = {
     privacy: "/tr/gizlilik",
   },
   segments: { movie: "film", tv: "dizi", season: "sezon", list: "turkce-dublaj", franchise: "seri", person: "kisi" },
-  coreServices: ["netflix", "prime-video", "disney-plus", "hbo-max", "tod", "tabii", "exxen", "gain"],
+  // 2026-11-25: services the Streaming Availability API covers in TR (TASK-006). TOD, tabii, Exxen, Gain
+  // return once a data source exists — docs/research/2026-11-25-streaming-availability-tr.md.
+  coreServices: ["netflix", "prime-video", "disney-plus", "hbo-max", "crunchyroll"],
 };
 
 /** Live editions. Only TR in MVP. */
