@@ -182,6 +182,35 @@ async function uniqueFranchiseSlug(tx: Tx, desired: string, collectionId: number
   }
 }
 
+async function uniquePersonSlug(tx: Tx, desired: string, tmdbId: number): Promise<string> {
+  const existing = await tx.person.findUnique({ where: { slug: desired }, select: { tmdbId: true } });
+  return !existing || existing.tmdbId === tmdbId ? desired : `${desired}-${tmdbId}`;
+}
+
+/** Persons upserted by TMDB id; the title's credits are replaced as a whole (idempotent). */
+async function replaceCredits(tx: Tx, titleId: number, credits: NonNullable<TitleMetadata["credits"]>): Promise<void> {
+  const personIds = new Map<number, number>();
+  for (const c of credits) {
+    if (personIds.has(c.tmdbId)) continue;
+    const found = await tx.person.findUnique({ where: { tmdbId: c.tmdbId }, select: { id: true, name: true } });
+    if (found) {
+      if (found.name !== c.name) await tx.person.update({ where: { id: found.id }, data: { name: c.name } });
+      personIds.set(c.tmdbId, found.id);
+      continue;
+    }
+    const slug = await uniquePersonSlug(tx, slugify(c.name) || `person-${c.tmdbId}`, c.tmdbId);
+    const created = await tx.person.create({ data: { tmdbId: c.tmdbId, name: c.name, slug, knownFor: c.knownFor } });
+    personIds.set(c.tmdbId, created.id);
+  }
+  await tx.credit.deleteMany({ where: { titleId } });
+  const rows = credits.flatMap((c) => {
+    const personId = personIds.get(c.tmdbId);
+    return personId ? [{ titleId, personId, job: c.job, character: c.character, order: c.order }] : [];
+  });
+  // Small batches: D1 caps a statement at 100 bound values (6 columns × 10 rows).
+  for (let i = 0; i < rows.length; i += 10) await tx.credit.createMany({ data: rows.slice(i, i + 10) });
+}
+
 /** Watch order: release order by year, ties broken by title id. */
 async function reorderFranchise(tx: Tx, franchiseId: number): Promise<void> {
   const items = await tx.franchiseItem.findMany({
@@ -271,6 +300,8 @@ export async function upsertTitleMetadata(meta: TitleMetadata, opts: { dryRun?: 
           update: data,
         });
       }
+
+      if (meta.credits) await replaceCredits(tx, title.id, meta.credits);
 
       let franchiseName: string | null = null;
       if (meta.collection) {

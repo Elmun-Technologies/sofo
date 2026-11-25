@@ -26,6 +26,9 @@ export type MetadataVideo = {
   publishedAt: Date | null;
 };
 
+/** One person on a title. Directors/creators sort first (order −1), then billed cast. */
+export type MetadataCredit = { tmdbId: number; name: string; knownFor: string | null; job: "Actor" | "Director" | "Creator"; character: string | null; order: number };
+
 export type TitleMetadata = {
   tmdbId: number;
   type: "movie" | "tv";
@@ -45,6 +48,8 @@ export type TitleMetadata = {
   localizations: MetadataLocalization[];
   seasons: MetadataSeason[];
   videos: MetadataVideo[];
+  /** Absent in payloads from older runners — then existing credits are left untouched. */
+  credits?: MetadataCredit[];
 };
 
 type TmdbCommon = {
@@ -144,6 +149,25 @@ function videosOf(local: TmdbCommon, en: TmdbCommon): MetadataVideo[] {
   return [...out.values()];
 }
 
+const MAX_CAST = 10;
+
+/** TMDB credits → directors (movie) / creators (tv) + top-billed cast. English names (Latin script). */
+export function creditsOf(details: { credits?: { cast?: { id: number; name: string; character?: string | null; order?: number; known_for_department?: string }[]; crew?: { id: number; name: string; job?: string; known_for_department?: string }[] }; created_by?: { id: number; name: string }[] }, type: "movie" | "tv"): MetadataCredit[] {
+  const out: MetadataCredit[] = [];
+  const seen = new Set<string>();
+  const push = (c: MetadataCredit) => {
+    const key = `${c.tmdbId}:${c.job}`;
+    if (!c.name || seen.has(key)) return;
+    seen.add(key);
+    out.push(c);
+  };
+  const leads = type === "movie" ? (details.credits?.crew ?? []).filter((c) => c.job === "Director").slice(0, 2) : (details.created_by ?? []).slice(0, 2);
+  for (const d of leads) push({ tmdbId: d.id, name: d.name, knownFor: type === "movie" ? "Directing" : "Writing", job: type === "movie" ? "Director" : "Creator", character: null, order: -1 });
+  const cast = [...(details.credits?.cast ?? [])].sort((a, b) => (a.order ?? 999) - (b.order ?? 999)).slice(0, MAX_CAST);
+  for (const c of cast) push({ tmdbId: c.id, name: c.name, knownFor: c.known_for_department ?? "Acting", job: "Actor", character: text(c.character), order: c.order ?? 999 });
+  return out;
+}
+
 function baseMeta(local: TmdbMovieDetails | TmdbTvDetails, en: TmdbMovieDetails | TmdbTvDetails, type: TitleMetadata["type"]) {
   const genres = genresOf(local, en);
   return {
@@ -176,6 +200,7 @@ export function mapMovie(tr: TmdbMovieDetails, en: TmdbMovieDetails): TitleMetad
       localization("en", en, englishName, en.overview),
     ],
     seasons: [],
+    credits: creditsOf(en, "movie"),
   };
 }
 
@@ -207,5 +232,6 @@ export function mapTv(tr: TmdbTvDetails, en: TmdbTvDetails): TitleMetadata {
       localization("en", en, englishName, en.overview),
     ],
     seasons,
+    credits: creditsOf(en, "tv"),
   };
 }

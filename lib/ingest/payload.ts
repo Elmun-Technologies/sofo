@@ -52,6 +52,7 @@ function reviveMetadata(v: unknown, i: number): TitleMetadata {
   if (typeof m.originalTitle !== "string" || !m.originalTitle) fail(`${where}: missing originalTitle`);
   if (!Array.isArray(m.localizations) || m.localizations.length === 0) fail(`${where}: missing localizations`);
   if (!Array.isArray(m.seasons) || !Array.isArray(m.videos) || !Array.isArray(m.genres)) fail(`${where}: seasons, videos and genres must be arrays`);
+  if (m.credits !== undefined && !Array.isArray(m.credits)) fail(`${where}: credits must be an array`);
   return {
     ...m,
     seasons: m.seasons.map((s: MetadataSeason, j: number) => ({ ...s, airDate: dateOrNull(s.airDate, `${where}.seasons[${j}].airDate`) })),

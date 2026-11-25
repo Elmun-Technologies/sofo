@@ -228,6 +228,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
           ...(type === "tv" && title.seasons.length ? [{ id: "seasons", label: "Seasons", count: title.seasons.length }] : []),
           ...(title.videos.length ? [{ id: "trailers", label: "Trailers", count: Math.min(title.videos.length, 2) }] : []),
           { id: "history", label: "Availability history" },
+          ...(title.credits.length ? [{ id: "cast", label: "Cast & crew", count: new Set(title.credits.map((c) => c.personId)).size }] : []),
           { id: "faq", label: "Questions", count: faq.length },
         ]}
       />

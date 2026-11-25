@@ -4,7 +4,7 @@ import enMovie from "./fixtures/tmdb-movie-en.json";
 import trMovie from "./fixtures/tmdb-movie-tr.json";
 import enTv from "./fixtures/tmdb-tv-en.json";
 import trTv from "./fixtures/tmdb-tv-tr.json";
-import { isKidsGenres, mapMovie, mapTv, readableName } from "./metadata";
+import { creditsOf, isKidsGenres, mapMovie, mapTv, readableName } from "./metadata";
 import { parseTitleCsv } from "./title-list";
 
 const movieTr = trMovie as unknown as TmdbMovieDetails;
@@ -93,5 +93,33 @@ describe("readableName", () => {
     expect(readableName("ドラゴンボール超 ビルス", "Dragon Ball Super: Beerus", "ドラゴンボール超 ビルス")).toBe("Dragon Ball Super: Beerus");
     expect(readableName("Şeytan Marka Giyer 2", "The Devil Wears Prada 2", "The Devil Wears Prada 2")).toBe("Şeytan Marka Giyer 2");
     expect(readableName(null, "Ghosts", "Ghosts")).toBe("Ghosts");
+  });
+});
+
+describe("creditsOf", () => {
+  it("puts directors first, then billed cast, without duplicates", () => {
+    const credits = creditsOf(
+      {
+        credits: {
+          crew: [
+            { id: 1, name: "Denis Villeneuve", job: "Director" },
+            { id: 1, name: "Denis Villeneuve", job: "Director" },
+            { id: 9, name: "Hans Zimmer", job: "Original Music Composer" },
+          ],
+          cast: [
+            { id: 3, name: "Zendaya", character: "Chani", order: 1 },
+            { id: 2, name: "Timothée Chalamet", character: "Paul Atreides", order: 0 },
+          ],
+        },
+      },
+      "movie",
+    );
+    expect(credits.map((c) => `${c.job}:${c.name}`)).toEqual(["Director:Denis Villeneuve", "Actor:Timothée Chalamet", "Actor:Zendaya"]);
+    expect(credits[1]?.character).toBe("Paul Atreides");
+  });
+  it("uses created_by as creators for series", () => {
+    expect(creditsOf({ created_by: [{ id: 5, name: "Seth MacFarlane" }] }, "tv")).toEqual([
+      { tmdbId: 5, name: "Seth MacFarlane", knownFor: "Writing", job: "Creator", character: null, order: -1 },
+    ]);
   });
 });
