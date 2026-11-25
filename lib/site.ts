@@ -2,10 +2,10 @@ export const SITE_NAME = "sofo";
 
 /**
  * Demo mode: the database holds SAMPLE data (prisma/sample-data.ts), not verified availability.
- * Shows a site-wide banner, noindexes every page and empties the sitemap. Turn off after the first
- * real ingest (04) — /api/setup also refuses to load demo data once ingested offers exist.
+ * Shows a site-wide banner, noindexes every page and empties the sitemap. On by default; set
+ * `SOFO_DEMO_DATA=0` (env / Sites var) once the database holds ingested data (04) — /api/setup also refuses to load demo data once ingested offers exist.
  */
-export const DEMO_DATA = true;
+export const DEMO_DATA = process.env.SOFO_DEMO_DATA !== "0";
 
 /**
  * Rendered share cards (next/og → resvg PNG) need more CPU than a Worker request allows on Freebuff Sites,

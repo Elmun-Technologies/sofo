@@ -156,3 +156,54 @@ export async function getShow(opts: {
     throw err;
   }
 }
+
+export type SaCatalogPage = {
+  shows: SaShow[];
+  /** The raw page items, for caching: replay them later through parseShow without spending quota. */
+  rawShows: unknown[];
+  rejected: number;
+  hasMore: boolean;
+  nextCursor: string | null;
+};
+
+/**
+ * GET /shows/search/filters — one page (up to 20 shows) of a country catalogue, each show with its full
+ * streamingOptions for that country (audios/subtitles included). Budget-friendly: one request covers
+ * 20 titles, where /shows/{id} costs one request per title (the plan quota is per request).
+ * A malformed show is dropped (counted in `rejected`); the page still returns.
+ */
+export async function searchCatalog(opts: {
+  country: string;
+  /** API service ids, e.g. ["netflix", "prime", "disney", "hbo", "crunchyroll"] */
+  catalogs: string[];
+  cursor?: string | null;
+  orderBy?: "popularity_1year" | "popularity_1month" | "popularity_alltime" | "rating";
+  showType?: "movie" | "series";
+  /** API genre ids, e.g. ["animation"] */
+  genres?: string[];
+  language?: string;
+}): Promise<SaCatalogPage> {
+  const qs = new URLSearchParams({
+    country: opts.country.toLowerCase(),
+    catalogs: opts.catalogs.join(","),
+    order_by: opts.orderBy ?? "popularity_1year",
+    output_language: opts.language ?? "en",
+    series_granularity: "show",
+  });
+  if (opts.cursor) qs.set("cursor", opts.cursor);
+  if (opts.showType) qs.set("show_type", opts.showType);
+  if (opts.genres?.length) qs.set("genres", opts.genres.join(","));
+
+  const raw = await fetchJson<unknown>(`${baseUrl()}/shows/search/filters?${qs}`, { headers: authHeaders(), minIntervalMs: 600 });
+  if (!isRecord(raw) || !Array.isArray(raw.shows)) throw new SourceValidationError("search: missing shows");
+  let rejected = 0;
+  const shows: SaShow[] = [];
+  for (const item of raw.shows) {
+    try {
+      shows.push(parseShow(item));
+    } catch {
+      rejected++;
+    }
+  }
+  return { shows, rawShows: raw.shows, rejected, hasMore: raw.hasMore === true, nextCursor: asText(raw.nextCursor) };
+}

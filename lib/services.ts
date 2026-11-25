@@ -7,6 +7,7 @@ const STYLES: Record<string, ServiceStyle> = {
   "disney-plus": { bg: "#0B2A5B", fg: "#FFFFFF", short: "D+" },
   "hbo-max": { bg: "#5B2BD6", fg: "#FFFFFF", short: "max" },
   tod: { bg: "#3A0CA3", fg: "#FFFFFF", short: "TOD" },
+  crunchyroll: { bg: "#F47521", fg: "#FFFFFF", short: "CR" },
   tabii: { bg: "#0F7B5F", fg: "#FFFFFF", short: "tabii" },
   exxen: { bg: "#FFC400", fg: "#111111", short: "exx" },
   gain: { bg: "#FF2D55", fg: "#FFFFFF", short: "gain" },

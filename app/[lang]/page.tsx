@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]">): Promis
   const home = edition.routes.home;
   return {
     title: { absolute: `Türkçe dublaj filmler ve diziler hangi platformda? · sofo ${edition.countryName}` },
-    description: `Netflix, Disney+, Prime Video, HBO Max, TOD, tabii ve diğer yasal platformlarda hangi film ve dizinin Türkçe dublaj ya da altyazıyla olduğunu her gün kontrol ediyoruz.`,
+    description: `Netflix, Disney+, Prime Video, HBO Max ve diğer yasal platformlarda hangi film ve dizinin Türkçe dublaj ya da altyazıyla olduğunu her gün kontrol ediyoruz.`,
     alternates: buildAlternates(home, { [edition.hreflang]: home }),
   };
 }
@@ -257,7 +257,7 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
           <details className="group mt-2 text-sm leading-relaxed text-text-3">
             <summary className="list-none">
               <span>
-                sofo; Netflix, Disney+, Prime Video, HBO Max, TOD, tabii, Exxen ve Gain gibi Türkiye&apos;deki yasal platformları her gün kontrol eder ve
+                sofo; Netflix, Disney+, Prime Video, HBO Max ve Crunchyroll gibi Türkiye&apos;deki yasal platformları her gün kontrol eder ve
                 hangi film ve dizinin Türkçe dublaj ya da altyazıyla izlenebildiğini gösterir…
               </span>
               <span lang="en" className="mt-2 block font-bold text-text-2 group-open:hidden">

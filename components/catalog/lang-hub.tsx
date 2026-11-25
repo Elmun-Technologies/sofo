@@ -75,7 +75,7 @@ export async function langHubMetadata(e: Edition, k: LangKindKey): Promise<Metad
   const hub = await getLangHub(e, k);
   return {
     title: `${cap(c.term)} — ${fmt(hub.total)} movies & series with ${c.what} in ${e.countryName}`,
-    description: `Every movie and series with ${c.what} confirmed by the service in ${e.countryName}: Netflix, Disney+, Prime Video, HBO Max, TOD, tabii, Exxen and Gain. Checked every day.`,
+    description: `Every movie and series with ${c.what} confirmed by the service in ${e.countryName}: Netflix, Disney+, Prime Video, HBO Max and Crunchyroll. Checked every day.`,
     alternates: buildAlternates(c.path, { [e.hreflang]: c.path }),
   };
 }

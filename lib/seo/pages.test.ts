@@ -78,7 +78,7 @@ describe("buildPageInventory", () => {
       data({
         services: [
           { id: 1, slug: "netflix", activeOffers: 10, lastCheckedAt: checked },
-          { id: 2, slug: "gain", activeOffers: 0, lastCheckedAt: null },
+          { id: 2, slug: "crunchyroll", activeOffers: 0, lastCheckedAt: null },
           { id: 3, slug: "not-core", activeOffers: 3, lastCheckedAt: checked },
         ],
         lists: [{ id: 7, slug: "aile", updatedAt: now, items: 3, availableItems: 0 }],
@@ -87,7 +87,7 @@ describe("buildPageInventory", () => {
       now,
     );
     expect(pages.find((p) => p.path === "/tr/netflix")?.index).toBe(true);
-    expect(pages.find((p) => p.path === "/tr/gain")).toMatchObject({ index: false, reasons: [REASON.noOffers] });
+    expect(pages.find((p) => p.path === "/tr/crunchyroll")).toMatchObject({ index: false, reasons: [REASON.noOffers] });
     expect(pages.some((p) => p.path === "/tr/not-core")).toBe(false);
     expect(pages.find((p) => p.type === "list")).toMatchObject({ path: "/tr/turkce-dublaj/aile", index: false });
     expect(pages.find((p) => p.type === "franchise")).toMatchObject({ path: "/tr/seri/toy-story", index: true });

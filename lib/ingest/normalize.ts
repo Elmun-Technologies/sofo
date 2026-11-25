@@ -35,6 +35,7 @@ export const SERVICE_MAP: Record<string, string> = {
   prime: "prime-video",
   disney: "disney-plus",
   hbo: "hbo-max",
+  crunchyroll: "crunchyroll",
   tod: "tod",
   tabii: "tabii",
   exxen: "exxen",
