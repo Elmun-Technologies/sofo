@@ -73,7 +73,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
   const { edition, data } = await load(params, type);
   const { title, local, en, offers } = data;
   const lang = edition.contentLang;
-  const similar = await getSimilar(edition, title.id, title.genres);
+  const similar = await getSimilar(edition, { id: title.id, genres: title.genres, type: title.type, isKids: title.isKids });
   const routes = edition.routes;
   const listRoute = type === "movie" ? routes.movies : routes.series;
   const hasDub = offers.some((o) => o.audio[lang] === "confirmed_yes");

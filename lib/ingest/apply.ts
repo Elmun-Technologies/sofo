@@ -94,7 +94,9 @@ export async function ingestTitleAvailability(snapshot: SnapshotTitle, opts: { n
     subtitle: langMap(row.languages, "subtitle"),
   }));
 
-  const plan = planDiff(current, snapshot.offers);
+  // Baseline = this title has never had an offer in this country (active or not).
+  const baseline = rows.length === 0 && !(await db.offer.findFirst({ where: { titleId: title.id, countryCode: snapshot.countryCode }, select: { id: true } }));
+  const plan = planDiff(current, snapshot.offers, { baseline });
   const stats = planStats(plan, current.length);
   const result: AvailabilityIngestResult = { titleId: title.id, ...stats };
   if (opts.dryRun) return { ...result, plan };
@@ -149,6 +151,8 @@ export async function ingestTitleAvailability(snapshot: SnapshotTitle, opts: { n
             offerType: event.offerType,
             before: event.before ? (event.before as Prisma.InputJsonValue) : undefined,
             after: event.after ? (event.after as Prisma.InputJsonValue) : undefined,
+            // The source's date when it has one (never in the future), else the write time.
+            occurredAt: event.occurredAt && event.occurredAt <= now ? event.occurredAt : now,
           },
         ];
       });

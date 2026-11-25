@@ -35,6 +35,25 @@ describe("planDiff", () => {
     expect(plan.events[0]?.after).toMatchObject({ quality: "hd", price: null });
   });
 
+  it("dates `added` with the source's availableSince when present", () => {
+    const since = new Date("2025-03-01T00:00:00Z");
+    const plan = planDiff([], [offer({ availableSince: since })]);
+    expect(plan.events[0]).toMatchObject({ type: "added", occurredAt: since });
+  });
+
+  it("first import (baseline): undated offers are created without an `added` event", () => {
+    const plan = planDiff([], [offer(), offer({ serviceSlug: "disney-plus", availableSince: new Date("2024-06-12T00:00:00Z") })], { baseline: true });
+    expect(plan.creates).toHaveLength(2);
+    // Only the dated offer is reported as added — we never invent an arrival date.
+    expect(plan.events).toHaveLength(1);
+    expect(plan.events[0]).toMatchObject({ serviceSlug: "disney-plus", type: "added" });
+  });
+
+  it("after the baseline, a new undated offer is still an `added` event (dated at write time)", () => {
+    const plan = planDiff(currentFrom([offer()]), [offer(), offer({ serviceSlug: "hbo-max" })]);
+    expect(plan.events).toEqual([expect.objectContaining({ serviceSlug: "hbo-max", type: "added", occurredAt: null })]);
+  });
+
   it("is idempotent: the same snapshot twice changes nothing", () => {
     const snapshot = [offer(), offer({ serviceSlug: "prime-video", type: "rent", quality: "hd", price: 49.9, currency: "TRY" })];
     let nextId = 0;

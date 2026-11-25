@@ -23,6 +23,8 @@ export type SaStreamingOption = {
   price: { amount: number; currency: string } | null;
   /** Unix ms — the date the option is expected to leave the service */
   expiresOn: Date | null;
+  /** When the source first saw the option on the service (API `availableSince`, unix seconds). */
+  availableSince: Date | null;
 };
 
 export type SaShow = {
@@ -76,6 +78,7 @@ function parseOption(raw: unknown): SaStreamingOption | null {
   }
 
   const expiresOnSec = asNumber(raw.expiresOn);
+  const availableSinceSec = asNumber(raw.availableSince);
   return {
     service: { id: serviceId, name },
     type,
@@ -85,6 +88,7 @@ function parseOption(raw: unknown): SaStreamingOption | null {
     subtitles,
     price,
     expiresOn: expiresOnSec ? new Date(expiresOnSec * 1000) : null,
+    availableSince: availableSinceSec ? new Date(availableSinceSec * 1000) : null,
   };
 }
 

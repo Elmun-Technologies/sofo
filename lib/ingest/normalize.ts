@@ -18,6 +18,8 @@ export type SnapshotOffer = {
   currency: string | null;
   url: string;
   leavingAt: Date | null;
+  /** When the source says the offer appeared on the service — dates the "added" event (never stored on the offer). */
+  availableSince?: Date | null;
   audio: { lang: string; status: LangStatus }[];
   subtitle: { lang: string; status: LangStatus }[];
 };
@@ -138,6 +140,7 @@ function fromOption(option: SaStreamingOption, countryCode: string): SnapshotOff
     currency: option.price?.currency ?? null,
     url: option.link,
     leavingAt: option.expiresOn,
+    availableSince: option.availableSince,
     audio: languages(option.audios),
     subtitle: languages(option.subtitles.map((s) => s.locale)),
   };

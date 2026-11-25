@@ -69,7 +69,7 @@ function reviveSnapshot(v: unknown, i: number): SnapshotTitle {
     const w = `${where}.offers[${j}]`;
     if (!isRecord(o) || typeof o.serviceSlug !== "string" || typeof o.type !== "string" || typeof o.url !== "string") fail(`${w}: missing serviceSlug, type or url`);
     if (!Array.isArray(o.audio) || !Array.isArray(o.subtitle)) fail(`${w}: audio and subtitle must be arrays`);
-    return { ...o, leavingAt: dateOrNull(o.leavingAt, `${w}.leavingAt`) };
+    return { ...o, leavingAt: dateOrNull(o.leavingAt, `${w}.leavingAt`), availableSince: dateOrNull(o.availableSince, `${w}.availableSince`) };
   });
   return { ...key, countryCode: s.countryCode, offers };
 }
