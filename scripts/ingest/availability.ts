@@ -8,15 +8,15 @@
  * docs/data-model.md §3. Idempotent: an unchanged snapshot writes no events and no offer changes;
  * only checkedAt is refreshed (that is the "checked" proof shown on pages).
  */
-import { readdir, readFile } from "node:fs/promises";
-import path from "node:path";
+import { readFile } from "node:fs/promises";
 import { db } from "../../lib/db";
 import { ingestTitleAvailability } from "../../lib/ingest/apply";
 import { normalizeShow } from "../../lib/ingest/normalize";
 import { parseTitleCsv } from "../../lib/ingest/title-list";
 import { editionCodes, getEdition } from "../../lib/editions";
 import { SourceConfigError } from "../../lib/sources/http";
-import { getShow, isStreamingAvailabilityConfigured, parseShow, type SaShow } from "../../lib/sources/streaming-availability";
+import { loadCachedShows } from "../../lib/ingest/cache";
+import { getShow, isStreamingAvailabilityConfigured } from "../../lib/sources/streaming-availability";
 import { withNodeDb } from "../../lib/db-node";
 
 const args = process.argv.slice(2);
@@ -94,23 +94,9 @@ async function main() {
 
 /** Replays a cached catalogue crawl (raw API pages) through the same normalize → diff → apply path. */
 async function ingestFromCache(dir: string, country: string) {
-  const files = (await readdir(dir)).filter((f) => /^page-\d+\.json$/.test(f)).sort();
-  if (files.length === 0) throw new Error(`no page-*.json files in ${dir} — run pnpm ingest:catalog first`);
-  const shows = new Map<string, SaShow>();
-  let rejected = 0;
-  for (const f of files) {
-    const page = JSON.parse(await readFile(path.join(dir, f), "utf8")) as { shows?: unknown[] };
-    for (const raw of page.shows ?? []) {
-      try {
-        const show = parseShow(raw);
-        shows.set(show.tmdbId ?? show.id, show);
-      } catch {
-        rejected++;
-      }
-    }
-  }
-  const list = limit > 0 ? [...shows.values()].slice(0, limit) : [...shows.values()];
-  log(`${list.length} titles from ${files.length} cached pages (${dir})${rejected ? ` · ${rejected} rejected` : ""}${dryRun ? " · dry run" : ""}`);
+  const { shows, pages, rejected } = await loadCachedShows(dir);
+  const list = limit > 0 ? shows.slice(0, limit) : shows;
+  log(`${list.length} titles from ${pages} cached pages (${dir})${rejected ? ` · ${rejected} rejected` : ""}${dryRun ? " · dry run" : ""}`);
 
   const totals = { created: 0, updated: 0, deactivated: 0, unchanged: 0, events: 0, skipped: 0, failed: 0 };
   for (const [index, show] of list.entries()) {

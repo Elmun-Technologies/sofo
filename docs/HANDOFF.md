@@ -2,6 +2,23 @@
 
 Kod va UI tayyor holatga keltirildi (DS3, `docs/design-system.md`). Quyidagilar **faqat sizning tomoningizdan** bog'lanadi — har biri uchun: nima kerak, qayerga qo'yiladi, nimani ochadi.
 
+## 0. Production'ga haqiqiy ma'lumot — qadamma-qadam (2026-11-25)
+
+Kod tayyor va lokal sinovdan o'tgan (demo → tozalash → yuklash → takroriy yuklash idempotent). Quyidagilar siz yoki deploy vositasi bor sessiya tomonidan qilinadi:
+
+1. **Tasodifiy tokenlar yarating** (har biri 32+ belgi): `SETUP_TOKEN`, `INGEST_TOKEN`. Masalan: `openssl rand -hex 32`.
+2. **Freebuff Sites sirlari:** `SETUP_TOKEN`, `INGEST_TOKEN` (va keyinroq `ADMIN_USER`, `ADMIN_PASSWORD`).
+3. **Deploy** (CLAUDE.md → Deploy), so'ng bazani tayyorlash:
+   - `POST https://<sayt>/api/setup` `{"action":"migrate"}` — servislar jadvali (0002 migratsiya);
+   - `POST https://<sayt>/api/setup` `{"action":"clear-demo"}` — namuna ma'lumotni o'chiradi.
+   Ikkalasida header: `Authorization: Bearer <SETUP_TOKEN>`.
+4. **GitHub → Settings → Secrets and variables → Actions:** `STREAMING_AVAILABILITY_API_KEY`, `TMDB_API_KEY` (uzun `eyJ…` token), `INGEST_TOKEN` (2-qadamdagi bilan bir xil), `INGEST_URL` (`https://<sayt>`).
+5. **Actions → ingest → Run workflow** — birinchi yuklash (~18 so'rov, ~360 nom). Keyin har kuni 06:17 da o'zi ishlaydi.
+6. **Sites o'zgaruvchisi `SOFO_DEMO_DATA=0`** va qayta deploy — demo banner va `noindex` o'chadi, sitemap to'ladi.
+7. **Google Search Console:** sitemap'ni yuboring (`https://<sayt>/sitemap.xml`).
+
+Limit: Streaming Availability tarifi oyiga 1 000 so'rov; kunlik ishga tushirish ~540/oy sarflaydi.
+
 ## 1. Haqiqiy ma'lumot (eng muhim — hozir hamma narsa namuna/SAMPLE)
 
 | Nima | Qayerga | Natija |
