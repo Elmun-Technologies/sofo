@@ -92,7 +92,7 @@ async function ingestTitles(list: { tmdbId: number; type: "movie" | "tv" }[], co
         id: `${row.type === "movie" ? "movie" : "tv"}/${row.tmdbId}`,
         country,
         language: "en",
-        granularity: "show",
+        granularity: "season",
       });
       if (!show) {
         totals.skipped++;

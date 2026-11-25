@@ -69,7 +69,7 @@ export function TrailerPlayer({
   const big = playSize === "lg";
 
   return (
-    <div className={`group relative isolate overflow-hidden rounded-card bg-surface ${aspect} ${className}`}>
+    <div className={`group relative isolate overflow-hidden rounded-card bg-[#16171b] ${aspect} ${className}`}>
       {/* Resting surface: reads as a deliberate title card until (or unless) the thumbnail arrives. */}
       <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(135deg,rgb(255_255_255/0.07)_0%,transparent_55%)]" />
       {thumb ? null : (

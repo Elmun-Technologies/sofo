@@ -206,6 +206,7 @@ async function audioTitleIds(e: Edition, audio: AudioFilter): Promise<Set<number
     where: {
       countryCode: e.country,
       isActive: true,
+      seasonId: null,
       languages: { some: { lang: e.contentLang, kind: audio === "dub" ? "audio" : "subtitle", status: "confirmed_yes" } },
     },
     select: { titleId: true },

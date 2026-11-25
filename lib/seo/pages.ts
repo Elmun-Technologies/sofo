@@ -223,7 +223,7 @@ export async function loadInventoryData(e: Edition): Promise<InventoryData> {
     }),
     db.offer.groupBy({
       by: ["serviceId"],
-      where: { countryCode: e.country, isActive: true },
+      where: activeTitleOffer,
       _count: { _all: true },
       _max: { checkedAt: true },
     }),
