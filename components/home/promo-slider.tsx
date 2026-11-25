@@ -145,14 +145,14 @@ function Slide({ slide: s, index, total, current, localLang, onSelect, contained
     <article
       aria-roledescription="slide"
       aria-label={`${index + 1} of ${total}: ${s.name}`}
-      className={`relative shrink-0 snap-center overflow-hidden rounded-hero bg-surface ${contained ? "aspect-[4/5] w-full sm:aspect-[16/9] lg:aspect-auto lg:h-full lg:min-h-[400px]" : "aspect-[4/5] w-[88%] sm:aspect-[16/9] sm:w-[84%] md:w-full md:max-w-[1216px] lg:aspect-[1216/460]"}`}
+      className={`relative shrink-0 snap-center overflow-hidden rounded-hero bg-surface ${contained ? "aspect-[4/5] w-full sm:aspect-[16/9] lg:aspect-auto lg:h-full lg:min-h-[440px]" : "aspect-[4/5] w-[88%] sm:aspect-[16/9] sm:w-[84%] md:w-full md:max-w-[1216px] lg:aspect-[1216/460]"}`}
     >
       <Image src={s.backdrop} alt="" fill priority={index === 0} sizes="(max-width: 768px) 88vw, 1216px" className="object-cover object-[70%_20%]" />
       <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/90 from-15% via-black/60 via-55% to-black/0 md:bg-gradient-to-r md:from-black/85 md:from-0% md:via-black/45 md:via-50% md:to-transparent" />
       <div aria-hidden="true" className="absolute inset-x-0 bottom-0 hidden h-1/2 bg-gradient-to-t from-black/50 to-transparent md:block" />
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-hero ring-1 ring-text/10 ring-inset" />
 
-      <div className="absolute inset-0 flex flex-col justify-end p-5 text-white [text-shadow:0_1px_14px_rgb(0_0_0/0.55)] md:max-w-[620px] md:justify-center md:p-10 lg:p-14">
+      <div className="absolute inset-0 flex flex-col justify-end p-5 text-white [&>*]:shrink-0 [text-shadow:0_1px_14px_rgb(0_0_0/0.55)] md:max-w-[620px] md:justify-center md:p-10 lg:p-14">
         <p className="tnum flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-semibold text-white/70">
           {s.score ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-text/14 px-2 py-0.5 font-medium text-white backdrop-blur">
@@ -167,13 +167,17 @@ function Slide({ slide: s, index, total, current, localLang, onSelect, contained
             </span>
           ))}
         </p>
-        <h2 className="mt-2.5 line-clamp-2 pb-[0.14em] text-[30px] leading-[1.12] font-extrabold tracking-[-0.03em] md:text-[44px] lg:text-[52px]">
+        <h2
+          className={`mt-2.5 line-clamp-2 pb-[0.14em] leading-[1.12] font-extrabold tracking-[-0.03em] ${
+            s.name.length > 24 ? "text-[26px] md:text-[34px] lg:text-[40px]" : "text-[30px] md:text-[44px] lg:text-[52px]"
+          }`}
+        >
           <Link href={s.href} className="hover:text-white">
             {s.name}
           </Link>
         </h2>
         {s.overview ? (
-          <p lang={localLang} className="mt-3 line-clamp-2 max-w-[520px] text-sm leading-relaxed text-white/75 md:line-clamp-3 md:text-[15px]">
+          <p lang={localLang} className="mt-3 line-clamp-2 max-w-[520px] text-sm leading-relaxed text-white/75 md:text-[15px]">
             {s.overview}
           </p>
         ) : null}

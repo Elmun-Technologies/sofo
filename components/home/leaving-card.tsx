@@ -55,7 +55,7 @@ export function LeavingCard({ items, listHref }: { items: LeavingItem[]; listHre
           <span className="inline-flex w-fit items-center rounded-full bg-[#ea580c] px-2 py-0.5 text-[11px] font-extrabold text-white">
             {days === 0 ? "Last day" : `${days} ${days === 1 ? "day" : "days"} left`}
           </span>
-          <span className="mt-2 line-clamp-3 text-[18px] leading-snug font-extrabold group-hover:text-orange-press">{item.name}</span>
+          <span className="mt-2 line-clamp-3 shrink-0 pb-0.5 text-[18px] leading-snug font-extrabold group-hover:text-orange-press">{item.name}</span>
           <span className="mt-1 text-[13px] text-text-2">
             Leaves {item.service}
             {item.year ? ` · ${item.year}` : ""}
