@@ -148,6 +148,7 @@ URL hajmi: MVP ≈ 510 indekslanadigan (TR), 12 oyda ≈ 30 000 (TR+US+FR). Mobi
 - Unit: slug, transliteratsiya, availability normalizatsiyasi.
 - Integration: ingest → DB (mock API javoblari bilan).
 - E2E (Playwright): title sahifa render, hreflang, schema, outbound link.
+- Smoke (2026-11-25, brauzersiz, istalgan deploy'ga qarshi): `pnpm smoke -- --base=<url>` (`scripts/e2e/smoke.ts`) — asosiy sahifalar 200, 404, robots → sitemap, title sahifada bitta H1, canonical, hreflang, JSON-LD Movie/TVSeries + WatchAction, outbound havola `noopener nofollow`, checked sana, pirat havola yo'q, sitemap URL'lari 200 va indexable. Har deploy'dan keyin Coolify terminalida yoki lokal ishga tushiriladi.
 
 ## Common commands
 
@@ -160,6 +161,7 @@ pnpm lint && pnpm typecheck && pnpm test
 python3 scripts/d1/build-bundle.py   # after schema/seed changes: regenerate lib/generated/d1-bundle.ts
 pnpm ingest:metadata        # 04-ingest
 pnpm ingest:availability    # 04-ingest
+pnpm smoke -- --base=http://localhost:3000   # HTTP smoke test (also against production)
 ```
 
 ## Setup decisions (01-setup, 2026-11-05)
