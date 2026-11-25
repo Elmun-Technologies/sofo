@@ -216,7 +216,7 @@ pnpm ingest:availability    # 04-ingest
 
 ## TODO / Known limitations
 
-- Streaming Availability API'ning TR qamrovi va narxi tasdiqlanmagan (TASK-006).
+- TASK-006 tekshirildi (2026-11-25, `docs/research/2026-11-25-streaming-availability-tr.md`): API TR'da Netflix, Prime Video, Disney+, HBO Max (+ Mubi, Crunchyroll, Curiosity, Zee5) — **TOD, tabii, Exxen, Gain yo'q**. 30 nomdan 30 tasi mavjud, 26 tasida türkçe dublaj, 28 tasida altyazı tasdiqlangan; Crunchyroll anime'da til ro'yxati bo'sh (= unknown). Qaror kerak: 4 mahalliy servis uchun manba. API tarif/limit narxi hali tasdiqlanmagan.
 - TMDB tijoriy litsenziyasi (TASK-005).
 - Brend: **Sofo** (founder qarori, 2026-11-03). "Sof" — toza/halol (legal), "sofa" — uyda tomosha. Sub-brendlar: Sofo Cinema, Serial, Toons, Kids, Anime. Domenlar (RDAP bo'sh, 2026-11-03): sofo.tv (asosiy), sofocinema.com, sofoserial.com, sofotoons.com, sofokids.com, sofoanime.com, sofowatch.com, sofodub.com — sub-domenlar 301 redirect → sofo.tv/{bo'lim}. Ro'yxatdan o'tkazish — founder. Logo (tasdiqlangan 2026-11-03): to'q sariq kvadrat ikonka ichida oq "s" + "sofo" yozuvi, shrift Nunito Black 900, ikonka burchagi 27%. Asosiy rang — Sofo Orange #FF5A1F (yalpiz #1FD1A5 o'rniga). Semantik ranglar: dublaj #3B82F6, mavjud #4ADE80, ketayotgan #FBBF24, bepul #A78BFA. Interfeys shrifti — Manrope. TM tekshiruvi: USPTO'da SOFO belgilari boshqa sinflarda (19, 35, 7, 17, 25) — 9/38/41/42 bo'yicha to'qnashuv topilmadi; TÜRKPATENT/EUIPO rasmiy qidiruv kerak.
 
