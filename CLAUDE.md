@@ -30,11 +30,12 @@ Legal "qayerda ko'rish" gidi: film yoki serialni qaysi legal servisda, qaysi dav
 
 ## Tech stack
 
-Qaror va sabablar: `docs/adr/0001-tech-stack.md`, **`docs/adr/0002-cloudflare-d1.md` (2026-11-06, ustun)**.
+Qaror va sabablar: `docs/adr/0001-tech-stack.md`, `docs/adr/0002-cloudflare-d1.md` (2026-11-06), **`docs/adr/0003-self-host-coolify.md` (2026-11-25, production)**.
 
 - Next.js (App Router, ISR), TypeScript
 - **Cloudflare D1 (SQLite) + Prisma 6 (`@prisma/adapter-d1`)** — ADR 0002
-- Hosting: **Freebuff Sites** (Cloudflare Workers, OpenNext) — `deploy/freebuff-site.json`
+- Hosting: **Coolify (founder serveri, Docker)** — `Dockerfile`, SQLite fayl `/data/sofo.db` (ADR 0003). Zaxira yo'l: Freebuff Sites (Workers + D1) — `deploy/freebuff-site.json`
+- DB tanlovi: `SOFO_SQLITE_PATH` bor → better-sqlite3 adapter (self-host); yo'q → D1 binding (`lib/runtime.ts`)
 - Ingest: Node/TypeScript skriptlar; production'ga `pnpm ingest:push` → `POST /api/ingest` (Bearer `INGEST_TOKEN`), GitHub Actions har kuni (`.github/workflows/ingest.yml`)
 - Qidiruv: TypeScript trigram reyting (`lib/search.ts`), alohida dvigatelsiz
 - Analytics: GA4 + Google Search Console
@@ -103,6 +104,7 @@ Founder qarori (2026-11-24): DS2 UI "multfilm/detskiy" ko'rindi. Yangi yo'nalish
 SETUP_TOKEN=            # Sites secret — /api/setup (D1 has no URL)
 INGEST_TOKEN=           # Sites secret — /api/ingest; same value in GitHub Actions (+ INGEST_URL)
 SOFO_DEMO_DATA=         # Sites var — 0 once real data is loaded
+SOFO_SQLITE_PATH=       # self-host only (Docker default /data/sofo.db); unset = Cloudflare D1
 STREAMING_AVAILABILITY_API_KEY=
 TMDB_API_KEY=
 NEXT_PUBLIC_SITE_URL=
@@ -203,7 +205,16 @@ pnpm ingest:availability    # 04-ingest
 - Idempotency: the same snapshot twice → 0 creates/updates/deactivations/events; only `checkedAt` is refreshed (that is the page's "checked" proof). `lib/ingest/diff.ts` is pure and unit-tested: `planDiff` → `applyPlanToState` → `planDiff` is empty.
 - TASK-006 (season/episode languages): the v4 schema does expose per-season and per-episode `streamingOptions` with their own `audios`/`subtitles` (`series_granularity=season|episode`), so the data exists. We still ingest title-level only (MVP pages read title-level offers); season-level dub rows are a follow-up. TR coverage/price of the API stays unverified without a live key.
 
-## Deploy (Freebuff Sites, ADR 0002)
+## Deploy (Coolify, ADR 0003 — production)
+
+- Coolify → resource from Git (public repo), build pack **Dockerfile**, port 3000, persistent storage → `/data`.
+- Env: `SOFO_DEMO_DATA=0` (build + runtime), `NEXT_PUBLIC_SITE_URL` (build time — canonical/hreflang/sitemap), `INGEST_TOKEN`, `SETUP_TOKEN`, `ADMIN_USER`, `ADMIN_PASSWORD`. `SOFO_SQLITE_PATH=/data/sofo.db` is the image default.
+- Start: `scripts/selfhost/migrate.ts` (idempotent migrations; demo data only in demo mode on an empty DB) → `next start`. Healthcheck `/robots.txt`.
+- Fill the DB: GitHub Actions `ingest` (secrets incl. `INGEST_URL=https://<coolify domain>`) or `pnpm ingest:push -- --target=https://<domain>` from any machine with the keys.
+- Scripts inside the container (Coolify terminal) use the same file: `SOFO_SQLITE_PATH` is set, so `pnpm ingest:*`, `pnpm seo:sync-pages` work there.
+- Sandbox `docker build` needs proxy + CA (test-only variant); the committed Dockerfile is for a normal network.
+
+## Deploy (Freebuff Sites, ADR 0002 — fallback)
 
 - Site `deploy/freebuff-site.json` (production: https://site-ba9127d751304bfab1b5d5927e2fbb88.freebuff.page). D1 binding `DB` (production), secret `SETUP_TOKEN`.
 - Flow: `sites_prepare_next` → `wrangler dev --config freebuff.wrangler.jsonc` (workerd) test → `sites_deploy` (manifest `freebuff-sites-build/manifest.json`) → `POST /api/setup {"action":"migrate"}` (or `"demo"` while `DEMO_DATA`) with `Authorization: Bearer $SETUP_TOKEN`.

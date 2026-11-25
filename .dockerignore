@@ -1,0 +1,15 @@
+node_modules
+.next
+.open-next
+.wrangler
+.cache
+.git
+freebuff-sites-build
+*.zip
+.env
+.env.*
+!.env.example
+tsconfig.tsbuildinfo
+.secrets
+artifacts
+coverage

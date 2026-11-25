@@ -1,8 +1,8 @@
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { safeEqual } from "@/lib/admin/auth";
 import { db } from "@/lib/db";
 import { ingestTitleAvailability, upsertTitleMetadata } from "@/lib/ingest/apply";
 import { parseIngestBatch, PayloadError } from "@/lib/ingest/payload";
+import { runtimeEnv } from "@/lib/runtime";
 
 export const dynamic = "force-dynamic";
 
@@ -15,8 +15,7 @@ export const dynamic = "force-dynamic";
  * 404 when INGEST_TOKEN is not configured.
  */
 export async function POST(req: Request) {
-  const { env } = getCloudflareContext();
-  const token = (env as unknown as { INGEST_TOKEN?: string }).INGEST_TOKEN ?? process.env.INGEST_TOKEN;
+  const token = (runtimeEnv().INGEST_TOKEN as string | undefined) ?? process.env.INGEST_TOKEN;
   if (!token) return new Response("Not found", { status: 404 });
 
   const given = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? "";
