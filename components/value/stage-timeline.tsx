@@ -1,11 +1,12 @@
 import type { ReleaseStage } from "@prisma/client";
+import { CheckIcon } from "@/components/icons";
 import { formatDate } from "@/lib/format";
 import { langName } from "@/lib/lang";
 import { STAGE_ORDER, type TrackStage } from "@/lib/queries/value-pages";
 
 type State = "done" | "confirmed" | "estimate" | "unknown";
 
-function stageLabel(stage: ReleaseStage, editionLang: string, type: "movie" | "tv") {
+export function stageLabel(stage: ReleaseStage, editionLang: string, type: "movie" | "tv") {
   switch (stage) {
     case "theatrical":
       return type === "tv" ? "Premiere" : "In theaters";
@@ -18,75 +19,80 @@ function stageLabel(stage: ReleaseStage, editionLang: string, type: "movie" | "t
   }
 }
 
-function stateOf(s: TrackStage | undefined): State {
+export function stageState(s: TrackStage | undefined): State {
   if (!s || !s.date) return "unknown";
   if (s.past) return "done";
   return s.isEstimate ? "estimate" : "confirmed";
 }
 
-function when(s: TrackStage | undefined, state: State) {
-  if (!s || !s.date) return "not announced";
-  const d = formatDate(s.date, { month: "short", year: "numeric", timeZone: "UTC" });
-  const exact = formatDate(s.date, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
-  const date = state === "estimate" ? `~ ${d}` : state === "done" ? d : exact;
-  return s.service ? `${date} · ${s.service}` : date;
+/** Date label for a stage. Estimates are month-only and always carry "~" (never shown as a confirmed date). */
+export function stageWhen(s: TrackStage | undefined, state: State = stageState(s)) {
+  if (!s || !s.date) return "Not announced";
+  const month = formatDate(s.date, { month: "short", year: "numeric", timeZone: "UTC" });
+  if (state === "estimate") return `~ ${month}`;
+  if (state === "done") return month;
+  return formatDate(s.date, { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
 
-const DOT: Record<State, string> = {
-  done: "bg-surface-2 text-available",
-  confirmed: "bg-orange text-ink",
-  estimate: "bg-leaving text-ink",
-  unknown: "bg-surface-2 text-text-3",
-};
-
-function Dot({ state }: { state: State }) {
-  return (
-    <span className={`relative z-10 inline-flex size-6 shrink-0 items-center justify-center rounded-full text-[12px] font-extrabold ${DOT[state]}`} aria-hidden="true">
-      {state === "done" || state === "confirmed" ? (
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-          <path d="m5 12.5 4.5 4.5L19 7.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      ) : state === "estimate" ? (
-        "~"
-      ) : (
-        "?"
-      )}
-    </span>
-  );
+/** Where a date comes from, in words ("estimate: typical window" → "typical window"). */
+export function stageSource(s: TrackStage) {
+  return s.source.replace(/^estimate:\s*/i, "");
 }
 
 const STATE_TEXT: Record<State, string> = { done: "done", confirmed: "confirmed date", estimate: "our estimate", unknown: "not announced" };
 
+const NODE: Record<State, string> = {
+  done: "bg-surface-3 text-text-2",
+  confirmed: "bg-white text-ink",
+  estimate: "text-leaving ring-1 ring-leaving ring-inset",
+  unknown: "ring-1 ring-hairline-strong ring-inset",
+};
+
+function Node({ state }: { state: State }) {
+  return (
+    <span aria-hidden="true" className={`relative z-10 flex size-5 shrink-0 items-center justify-center rounded-full text-[13px] leading-none font-medium ${NODE[state]}`}>
+      {state === "done" ? <CheckIcon className="size-3 stroke-[3]" /> : state === "confirmed" ? <span className="size-1.5 rounded-full bg-ink" /> : state === "estimate" ? "~" : null}
+    </span>
+  );
+}
+
+const WHEN: Record<State, string> = { done: "text-text-2", confirmed: "text-text", estimate: "text-leaving", unknown: "text-text-3" };
+
 /**
- * theatrical → digital → subscription → dub. Past stages muted, confirmed upcoming orange,
- * estimates amber with "~" (V5: never shown as a confirmed date).
+ * theatrical → digital → subscription → dub as a stepper: a row on desktop, a column on phones.
+ * Past stages are quiet, the confirmed upcoming stage is white, estimates are amber with "~"
+ * and their source spelled out (V5: never shown as a confirmed date).
  */
 export function StageTimeline({ stages, editionLang, type }: { stages: TrackStage[]; editionLang: string; type: "movie" | "tv" }) {
   const byStage = new Map(stages.map((s) => [s.stage, s]));
   return (
-    <ol className="flex flex-col gap-3 md:grid md:grid-cols-4 md:gap-0">
+    <ol className="grid grid-cols-1 md:grid-cols-4">
       {STAGE_ORDER.map((stage, i) => {
         const s = byStage.get(stage);
-        const state = stateOf(s);
-        const next = byStage.get(STAGE_ORDER[i + 1]!);
-        const lineDone = state === "done" && stateOf(next) === "done";
+        const state = stageState(s);
+        const last = i === STAGE_ORDER.length - 1;
+        const reached = state === "done" && stageState(byStage.get(STAGE_ORDER[i + 1]!)) !== "unknown";
+        const line = reached ? "bg-white/30" : "bg-hairline-strong";
+        const detail = s && s.date ? [s.service, state === "estimate" ? `estimate — ${stageSource(s)}` : state === "confirmed" ? stageSource(s) : null].filter(Boolean).join(" · ") : "";
         return (
-          <li key={stage} className="relative flex items-center gap-3 md:block" title={s?.isEstimate ? `Estimate — ${s.source}` : s?.source}>
-            {i < STAGE_ORDER.length - 1 ? (
-              <span
-                aria-hidden="true"
-                className={`absolute top-3 right-3 left-9 hidden h-0.5 md:block ${lineDone ? "bg-available/50" : state === "unknown" ? "bg-line" : "bg-leaving/40"}`}
-              />
-            ) : null}
-            <Dot state={state} />
-            <div className={`flex min-w-0 grow items-baseline justify-between gap-3 md:mt-2.5 md:block md:pr-4 ${state === "done" ? "opacity-60" : ""}`}>
-              <p className="text-sm font-extrabold md:text-[15px]">{stageLabel(stage, editionLang, type)}</p>
-              <p
-                className={`text-right text-[13px] md:mt-0.5 md:text-left ${state === "estimate" ? "text-leaving" : state === "confirmed" ? "text-orange" : "text-text-2"}`}
-              >
-                {when(s, state)}
-                <span className="sr-only"> ({STATE_TEXT[state]})</span>
-              </p>
+          <li key={stage} className={`relative flex gap-3.5 md:block md:pr-5 ${last ? "" : "pb-4 md:pb-0"}`} title={s?.isEstimate ? `Estimate — ${s.source}` : s?.source}>
+            {/* connector: vertical on phones, horizontal from md */}
+            {last ? null : (
+              <>
+                <span aria-hidden="true" className={`absolute top-5 bottom-0 left-[9.5px] w-px md:hidden ${line}`} />
+                <span aria-hidden="true" className={`absolute top-[9.5px] right-0 left-5 hidden h-px md:block ${line}`} />
+              </>
+            )}
+            <Node state={state} />
+            <div className="min-w-0 flex-1 md:mt-3">
+              <div className="flex items-baseline justify-between gap-3 md:block">
+                <p className="text-[13px] leading-5 text-text-3">{stageLabel(stage, editionLang, type)}</p>
+                <p className={`tnum text-sm leading-5 font-medium whitespace-nowrap md:mt-0.5 md:text-[15px] ${WHEN[state]}`}>
+                  {stageWhen(s, state)}
+                  <span className="sr-only"> ({STATE_TEXT[state]})</span>
+                </p>
+              </div>
+              {detail ? <p className="mt-0.5 text-right text-xs leading-4 text-text-3 md:text-left">{detail}</p> : null}
             </div>
           </li>
         );

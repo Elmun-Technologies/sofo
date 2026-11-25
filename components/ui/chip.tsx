@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 const cls = (active?: boolean) =>
-  `inline-flex h-9 shrink-0 items-center gap-1.5 rounded-chip px-3.5 text-sm font-bold whitespace-nowrap transition ${
-    active ? "bg-white text-ink hover:text-ink" : "border border-line bg-surface text-text hover:border-text-3 hover:text-text"
+  `inline-flex h-9 shrink-0 items-center gap-2 rounded-chip px-4 text-[13px] font-medium whitespace-nowrap select-none transition duration-200 ease-out active:scale-[0.97] ${
+    active ? "bg-white text-ink hover:text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text hover:ring-white/30"
   }`;
 
 export function ChipLink({ href, active, children, scroll }: { href: string; active?: boolean; children: React.ReactNode; scroll?: boolean }) {
@@ -21,6 +21,7 @@ export function Chip({ active, children, ...rest }: { active?: boolean; children
   );
 }
 
+/** One line of chips: swipeable to the screen edge on phones, wraps from md. */
 export function ChipRow({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0 ${className}`}>{children}</div>;
+  return <div className={`no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 py-0.5 md:mx-0 md:flex-wrap md:px-0 ${className}`}>{children}</div>;
 }

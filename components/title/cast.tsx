@@ -13,15 +13,17 @@ export function Cast({ data, edition }: { data: TitlePageData; edition: Edition 
   }
   if (people.size === 0) return null;
   return (
-    <ul className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 [scrollbar-width:none] md:mx-0 md:flex-wrap md:gap-6 md:px-0">
+    <ul className="no-scrollbar -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-3 md:gap-3 md:overflow-visible md:px-0 xl:grid-cols-4">
       {[...people.values()].slice(0, 12).map((p) => (
-        <li key={p.slug} className="w-[92px] shrink-0 text-center md:w-[112px]">
-          <Link href={paths.person(edition, p.slug)} className="group block hover:text-text">
-            <span aria-hidden="true" className="mx-auto flex size-[72px] items-center justify-center rounded-full bg-orange-deep text-2xl font-extrabold text-orange ring-orange transition group-hover:ring-2 md:size-[84px] md:text-[28px]">
+        <li key={p.slug} className="w-[200px] shrink-0 md:w-auto">
+          <Link href={paths.person(edition, p.slug)} className="card card-hover flex items-center gap-3 p-3">
+            <span aria-hidden="true" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-white/8 text-sm font-bold text-text-2">
               {initials(p.name)}
             </span>
-            <span className="mt-2 block truncate text-sm font-bold">{p.name}</span>
-            <span className="block truncate text-xs text-text-2 capitalize">{p.roles.join(", ")}</span>
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-semibold">{p.name}</span>
+              <span className="block truncate text-xs text-text-3 capitalize">{p.roles.join(", ")}</span>
+            </span>
           </Link>
         </li>
       ))}

@@ -4,10 +4,14 @@ import { notFound } from "next/navigation";
 import { cap } from "@/components/catalog/catalog-url";
 import { CollectionCard } from "@/components/catalog/collection-card";
 import { CollectionItem } from "@/components/catalog/collection-item";
+import { ChevronRightIcon, FilterIcon, LayersIcon } from "@/components/icons";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { ButtonLink } from "@/components/ui/button";
 import { ChipLink, ChipRow } from "@/components/ui/chip";
 import { EmptyState } from "@/components/ui/empty-state";
 import { JsonLd } from "@/components/ui/json-ld";
+import { SectionHeader } from "@/components/ui/section-header";
+import { ServiceLogo } from "@/components/ui/service-logo";
 import { getPublishedLists } from "@/lib/catalog";
 import { getEdition, paths } from "@/lib/editions";
 import { formatDate, initials } from "@/lib/format";
@@ -54,8 +58,8 @@ export default async function CollectionPage({ params, searchParams }: PageProps
   const path = paths.list(e, list.slug);
 
   // "This list in numbers"
-  const byService = new Map<string, { name: string; n: number }>();
-  for (const i of list.items) for (const s of i.card.services) byService.set(s.slug, { name: s.name, n: (byService.get(s.slug)?.n ?? 0) + 1 });
+  const byService = new Map<string, { slug: string; name: string; logoPath: string | null; n: number }>();
+  for (const i of list.items) for (const s of i.card.services) byService.set(s.slug, { ...s, n: (byService.get(s.slug)?.n ?? 0) + 1 });
   const services = [...byService.values()].sort((a, b) => b.n - a.n);
   const dubCount = list.items.filter((i) => i.audio === "confirmed_yes").length;
   const others = allLists.filter((l) => l.slug !== list.slug);
@@ -88,64 +92,107 @@ export default async function CollectionPage({ params, searchParams }: PageProps
         }}
       />
 
-      <div className="mx-auto max-w-site px-4 pt-3 pb-12 md:px-7 md:pt-5 lg:grid lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-8">
-        <div>
-          <header>
-            <h1 className="text-[28px] leading-[1.1] font-extrabold tracking-[-0.03em] md:text-[48px]">{list.name}</h1>
-            <p className="mt-2 flex items-center gap-2 text-[13px] text-text-2 md:mt-4 md:text-sm">
-              <span aria-hidden="true" className="hidden size-7 items-center justify-center rounded-full bg-orange-deep text-[10px] font-extrabold text-orange md:inline-flex">
-                {initials(list.author)}
-              </span>
-              <span>
-                <span className="font-bold text-text">{list.author}</span> · updated {formatDate(list.updatedAt)}
-                <span className="hidden md:inline"> · every title checked daily</span>
-              </span>
-            </p>
-            <p className="mt-4 hidden max-w-3xl text-base leading-relaxed text-text md:block">{list.intro}</p>
-          </header>
+      <header className="wrap pt-6 pb-7 md:pt-10 md:pb-12">
+        <p className="tag">
+          <LayersIcon className="size-3.5" />
+          Collection
+        </p>
+        <h1 lang={e.hreflang} className="text-display mt-5 max-w-[20ch] md:mt-7">
+          {list.name}
+        </h1>
+        <p lang={e.hreflang} className="mt-5 max-w-2xl text-base leading-relaxed text-text-2 md:mt-7 md:text-lg">
+          {list.intro}
+        </p>
+        <p className="mt-5 flex items-center gap-3 text-[13px] text-text-2 md:mt-7 md:text-sm">
+          <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white/8 text-[11px] font-semibold text-text">
+            {initials(list.author)}
+          </span>
+          <span className="tnum">
+            <span className="font-semibold text-text">{list.author}</span> · updated {formatDate(list.updatedAt)}
+            <span className="hidden sm:inline"> · every title checked daily</span>
+          </span>
+        </p>
+      </header>
 
-          <ChipRow className="mt-4 md:mt-5">
+      <div className="wrap grid grid-cols-[minmax(0,1fr)] gap-x-10 gap-y-10 pb-12 md:pb-20 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0">
+          <ChipRow className="mb-5 md:mb-7">
             <ChipLink href={path} active={!filter} scroll={false}>
-              All {list.items.length}
+              All <span className="tnum opacity-60">{list.items.length}</span>
             </ChipLink>
             <ChipLink href={`${path}?f=free`} active={filter === "free"} scroll={false}>
-              Free · {list.items.filter(isFree).length}
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-free" />
+              Free <span className="tnum opacity-60">{list.items.filter(isFree).length}</span>
             </ChipLink>
             <ChipLink href={`${path}?f=short`} active={filter === "short"} scroll={false}>
-              Under 100 min · {list.items.filter(isShort).length}
+              Under 100 min <span className="tnum opacity-60">{list.items.filter(isShort).length}</span>
             </ChipLink>
           </ChipRow>
 
           {items.length ? (
-            <ol className="mt-4 space-y-3 md:mt-5 md:space-y-4">
+            <ol className="border-b border-hairline-strong">
               {items.map((item, n) => (
                 <CollectionItem key={item.card.id} item={item} rank={list.items.indexOf(item) + 1} edition={e} primary={n === 0} />
               ))}
             </ol>
           ) : (
-            <div className="mt-5">
-              <EmptyState title="No titles match" action={<ChipLink href={path}>Show all {list.items.length}</ChipLink>} />
-            </div>
+            <EmptyState
+              icon={<FilterIcon className="size-5" />}
+              title="No titles match"
+              action={
+                <ButtonLink href={path} variant="primary">
+                  Show all {list.items.length}
+                </ButtonLink>
+              }
+            >
+              Nothing in this collection fits that filter right now.
+            </EmptyState>
           )}
-          <p className="mt-5 text-[15px] leading-relaxed text-text-2 md:hidden">{list.intro}</p>
         </div>
 
-        <aside className="mt-8 space-y-4 lg:mt-0">
-          <section className="rounded-panel border border-line bg-surface p-5">
-            <h2 className="text-[15px] font-extrabold">This list in numbers</h2>
-            <p className="mt-2 text-sm text-text-2">
-              {list.items.length} titles · {services.length} services · {dubCount} with confirmed {dubTerm(e.contentLang)}
-            </p>
-            {services.length ? <p className="mt-1 text-sm text-text-2">{services.map((s) => `${s.name} ${s.n}`).join(" · ")}</p> : null}
+        <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 xl:sticky xl:top-24 xl:h-fit xl:grid-cols-[minmax(0,1fr)]">
+          <section className="panel p-5 md:p-6">
+            <h2 className="text-h3">This list in numbers</h2>
+            <dl className="mt-5 grid grid-cols-3 gap-3">
+              {[
+                { n: list.items.length, label: "titles" },
+                { n: services.length, label: services.length === 1 ? "service" : "services" },
+                { n: dubCount, label: `confirmed ${dubTerm(e.contentLang)}`, local: true, dot: true },
+              ].map((s) => (
+                <div key={s.label} className="flex flex-col-reverse justify-end gap-2">
+                  <dt className="text-xs leading-snug text-text-3">
+                    {s.dot ? <span aria-hidden="true" className="mr-1.5 inline-block size-1.5 rounded-full bg-dub align-middle" /> : null}
+                    <span lang={s.local ? e.hreflang : undefined}>{s.label}</span>
+                  </dt>
+                  <dd className="text-[40px] leading-[0.9] font-normal tracking-[-0.05em]">{s.n}</dd>
+                </div>
+              ))}
+            </dl>
+            {services.length ? (
+              <ul className="mt-5 divide-y divide-hairline border-t border-hairline">
+                {services.map((s) => (
+                  <li key={s.slug}>
+                    <Link href={paths.service(e, s.slug)} className="flex items-center gap-3 py-2.5 text-sm text-text-2 hover:text-text">
+                      <ServiceLogo slug={s.slug} name="" logoPath={s.logoPath} size={24} />
+                      <span className="min-w-0 flex-1 truncate font-medium text-text">{s.name}</span>
+                      <span className="tnum text-xs text-text-3">
+                        {s.n} title{s.n === 1 ? "" : "s"}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </section>
           {others.length ? (
-            <section className="rounded-panel border border-line bg-surface p-5">
-              <h2 className="text-[15px] font-extrabold">Related lists</h2>
-              <ul className="mt-2 space-y-2">
+            <section className="panel p-5 md:p-6">
+              <h2 className="text-h3">Related lists</h2>
+              <ul lang={e.hreflang} className="mt-3 divide-y divide-hairline">
                 {others.slice(0, 5).map((l) => (
                   <li key={l.id}>
-                    <Link href={paths.list(e, l.slug)} className="text-sm font-bold text-text">
-                      {l.name} →
+                    <Link href={paths.list(e, l.slug)} className="group flex items-center gap-3 py-3 text-sm leading-snug font-medium text-text-2 hover:text-text">
+                      <span className="min-w-0 flex-1">{l.name}</span>
+                      <ChevronRightIcon className="size-4 shrink-0 text-text-3 transition duration-200 group-hover:translate-x-0.5 group-hover:text-text" />
                     </Link>
                   </li>
                 ))}
@@ -156,11 +203,10 @@ export default async function CollectionPage({ params, searchParams }: PageProps
       </div>
 
       {others.length ? (
-        <section className="mx-auto max-w-site px-4 pb-12 md:px-7" aria-labelledby="more-collections">
-          <h2 id="more-collections" className="mb-4 text-xl font-extrabold tracking-[-0.02em] md:text-2xl">
-            More collections
-          </h2>
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 md:gap-4">
+        <section className="wrap pb-14 md:pb-24" aria-labelledby="more-collections">
+          <div className="rule mb-6 md:mb-8" />
+          <SectionHeader id="more-collections" title="More collections" sub="Picked by our editors" href={e.routes.collections} linkLabel="All collections" />
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
             {others.slice(0, 4).map((l) => (
               <li key={l.id}>
                 <CollectionCard edition={e} list={l} />

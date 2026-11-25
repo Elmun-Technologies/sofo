@@ -86,7 +86,7 @@ export function SubscribeForm({ titleId, kinds, alerts, variant = "inline", edit
 
   if (result?.ok) {
     return (
-      <div role="status" className={`rounded-card border border-available/30 bg-available/10 p-4 text-sm ${variant === "compact" ? "" : "md:p-5"}`}>
+      <div role="status" className={`animate-fade-up rounded-card border border-available/30 bg-available/10 p-4 text-sm ${variant === "compact" ? "" : "md:p-5"}`}>
         <p className="font-bold text-text">{result.message}</p>
         {result.telegramLink ? (
           <a href={result.telegramLink} target="_blank" rel="noopener" className={`${buttonClass("primary", "sm")} mt-3`}>
@@ -104,10 +104,10 @@ export function SubscribeForm({ titleId, kinds, alerts, variant = "inline", edit
   const stacked = variant === "card";
 
   return (
-    <form onSubmit={onSubmit} noValidate className={variant === "card" ? "rounded-panel border border-line bg-surface p-5" : ""}>
+    <form onSubmit={onSubmit} noValidate className={variant === "card" ? "panel p-5 md:p-6" : ""}>
       {variant === "card" ? (
         <>
-          <p className="text-lg font-extrabold">Get alerts on Telegram</p>
+          <p className="text-h3">Get alerts on Telegram</p>
           <p className="mt-1 text-sm text-text-2">New Turkish dubs and titles leaving your services. Email gets a Friday digest.</p>
         </>
       ) : null}
@@ -130,7 +130,7 @@ export function SubscribeForm({ titleId, kinds, alerts, variant = "inline", edit
           placeholder="you@email.com or @telegram"
           aria-invalid={!!error}
           aria-describedby={`${id}-help`}
-          className={`min-w-0 flex-1 rounded-input border border-line bg-ink px-4 text-sm font-medium outline-none placeholder:text-text-3 focus:border-orange ${variant === "compact" ? "h-10" : "h-12"}`}
+          className={`field ${stacked ? "" : "flex-1"} ${variant === "compact" ? "!h-10 !text-sm" : "!h-12"}`}
         />
         {/* Honeypot */}
         <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
@@ -138,7 +138,7 @@ export function SubscribeForm({ titleId, kinds, alerts, variant = "inline", edit
           {busy ? "Saving…" : submitLabel}
         </button>
       </div>
-      <p id={`${id}-help`} className={`mt-2 text-xs ${error ? "text-leaving" : "text-text-3"}`} aria-live="polite">
+      <p id={`${id}-help`} className={`mt-2.5 text-xs leading-relaxed ${error ? "font-semibold text-leaving" : "text-text-3"}`} aria-live="polite">
         {error ?? "Telegram: instant, max 3 a day. Email: Friday digest. No password, unsubscribe anytime (KVKK)."}
       </p>
     </form>

@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckIcon } from "@/components/icons";
 import { ServiceLogo } from "@/components/ui/service-logo";
 import { usePrefs } from "@/lib/client/prefs";
 
@@ -11,15 +12,20 @@ export function MyServices({ services }: { services: Service[] }) {
   const toggle = (slug: string) =>
     setPrefs((p) => ({ ...p, services: p.services.includes(slug) ? p.services.filter((s) => s !== slug) : [...p.services, slug] }));
   return (
-    <section className="mx-auto max-w-site px-4 py-5 md:px-7">
-      <div className="rounded-panel bg-gradient-to-br from-orange-deep to-surface p-5 md:flex md:items-center md:gap-8 md:p-7">
-        <div className="md:w-[300px] md:shrink-0">
-          <h2 className="text-xl font-extrabold md:text-2xl">Which services do you have?</h2>
-          <p className="mt-1 text-sm text-text-2">
-            {prefs.services.length ? `${prefs.services.length} selected — we'll highlight what's on them.` : "Tap yours — we'll show what you can watch right now."}
+    <section className="wrap section-y">
+      <div className="panel glow-orange grid gap-6 p-5 md:grid-cols-[minmax(0,320px)_1fr] md:items-center md:gap-10 md:p-8">
+        <div>
+          <p lang="en" className="overline text-orange">
+            Personalise
+          </p>
+          <h2 className="text-h2 mt-2">Which services do you have?</h2>
+          <p className="mt-2 text-sm text-text-2" aria-live="polite">
+            {prefs.services.length
+              ? `${prefs.services.length} selected — we'll highlight what's on them.`
+              : "Tap yours — we'll show what you can watch right now. Saved on this device only."}
           </p>
         </div>
-        <ul className="mt-4 flex flex-wrap gap-2.5 md:mt-0">
+        <ul className="grid grid-cols-4 gap-2 sm:grid-cols-8 md:grid-cols-4 lg:grid-cols-8">
           {services.map((s) => {
             const on = prefs.services.includes(s.slug);
             return (
@@ -28,12 +34,17 @@ export function MyServices({ services }: { services: Service[] }) {
                   type="button"
                   aria-pressed={on}
                   onClick={() => toggle(s.slug)}
-                  title={s.name}
-                  className={`relative rounded-[14px] p-0.5 transition ${on ? "ring-2 ring-orange" : "opacity-80 hover:opacity-100"}`}
+                  className={`relative flex w-full flex-col items-center gap-2 rounded-card px-1 py-3 text-[11px] leading-tight font-bold transition duration-150 ease-out active:scale-95 ${
+                    on ? "bg-orange/14 text-text ring-2 ring-orange ring-inset" : "bg-white/5 text-text-2 ring-1 ring-hairline ring-inset hover:bg-white/10 hover:text-text"
+                  }`}
                 >
-                  <ServiceLogo {...s} size={48} />
-                  {on ? <span className="absolute -top-1.5 -right-1.5 flex size-5 items-center justify-center rounded-full bg-orange text-[11px] font-extrabold text-ink">✓</span> : null}
-                  <span className="sr-only">{s.name}</span>
+                  <ServiceLogo {...s} size={40} />
+                  <span className="max-w-full truncate">{s.name}</span>
+                  {on ? (
+                    <span className="absolute top-1.5 right-1.5 flex size-4 items-center justify-center rounded-full bg-orange text-ink">
+                      <CheckIcon className="size-3 stroke-[3.5]" />
+                    </span>
+                  ) : null}
                 </button>
               </li>
             );

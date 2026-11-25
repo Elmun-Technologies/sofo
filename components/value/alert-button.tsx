@@ -1,8 +1,9 @@
 "use client";
 
+import { BellIcon, CheckIcon, PlusIcon } from "@/components/icons";
+import { buttonClass } from "@/components/ui/button";
 import { track } from "@/lib/client/analytics";
 import { useWatchlist, type SavedTitle } from "@/lib/client/watchlist";
-import { buttonClass } from "@/components/ui/button";
 
 type Props = {
   title: Omit<SavedTitle, "addedAt" | "alerts" | "watched">;
@@ -12,11 +13,13 @@ type Props = {
   activeLabel?: string;
   variant?: "primary" | "secondary" | "ghost" | "link";
   size?: "md" | "sm";
+  /** Icon-only round button (label stays as the accessible name) */
+  iconOnly?: boolean;
   className?: string;
 };
 
 /** "Remind me" / "Notify me": saves the title to My list (localStorage) with an alert kind. */
-export function AlertButton({ title, alert, label = "Remind me", activeLabel = "✓ Reminder set", variant = "secondary", size = "md", className = "" }: Props) {
+export function AlertButton({ title, alert, label = "Remind me", activeLabel = "Reminder set", variant = "secondary", size = "md", iconOnly, className = "" }: Props) {
   const list = useWatchlist();
   const saved = list.get(title.id);
   const active = !!saved?.alerts?.includes(alert);
@@ -31,13 +34,33 @@ export function AlertButton({ title, alert, label = "Remind me", activeLabel = "
     track("alert_add", { title: title.name, kind: alert });
   }
 
+  const icon = active ? <CheckIcon className="size-4 text-available" /> : <BellIcon className="size-4" />;
+
+  if (iconOnly)
+    return (
+      <button
+        type="button"
+        aria-pressed={active}
+        aria-label={`${active ? activeLabel : label}: ${title.name}`}
+        title={active ? activeLabel : label}
+        onClick={toggle}
+        className={`inline-flex size-11 shrink-0 items-center justify-center rounded-full ring-1 ring-inset transition duration-200 ease-out active:scale-95 ${
+          active ? "bg-white/10 text-text ring-transparent" : "text-text-2 ring-hairline-strong hover:bg-white/6 hover:text-text"
+        } ${className}`}
+      >
+        {icon}
+      </button>
+    );
+
   const cls =
     variant === "link"
-      ? `text-sm font-extrabold whitespace-nowrap ${active ? "text-available" : "text-leaving"} hover:text-orange-tint`
-      : buttonClass(variant, size);
+      ? "inline-flex items-center gap-1.5 text-[13px] font-medium whitespace-nowrap text-text-2 hover:text-text"
+      : // An active reminder steps back to the quiet style whatever the resting variant was.
+        buttonClass(active ? "secondary" : variant, size);
 
   return (
     <button type="button" aria-pressed={active} onClick={toggle} className={`${cls} ${className}`}>
+      {icon}
       {active ? activeLabel : label}
     </button>
   );
@@ -56,9 +79,10 @@ export function AddAllButton({ titles, label, className = "" }: { titles: Omit<S
         for (const t of titles) list.add(t);
         track("list_add", { title: `${titles.length} titles`, source: "franchise" });
       }}
-      className={`${buttonClass("primary")} disabled:opacity-100 ${className}`}
+      className={`${buttonClass(allSaved ? "secondary" : "primary")} disabled:opacity-100 ${className}`}
     >
-      {allSaved ? "✓ All in my list" : label}
+      {allSaved ? <CheckIcon className="size-4 text-available" /> : <PlusIcon className="size-4" />}
+      {allSaved ? "All in my list" : label}
     </button>
   );
 }

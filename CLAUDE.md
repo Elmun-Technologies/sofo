@@ -70,18 +70,21 @@ Qaror va sabablar: `docs/adr/0001-tech-stack.md`, **`docs/adr/0002-cloudflare-d1
 - Har bir title sahifasida `hreflang` (tr, en, x-default).
 - Slug: lotin, kichik harf, defis; TR harflari transliteratsiya (ç→c, ğ→g, ı→i, ö→o, ş→s, ü→u).
 
-## Design (yakunlangan, 2026-11-04)
+## Design (DS3 "clean", 2026-11-24 — DS2 o'rniga)
 
-Canvas: https://claude.ai/artifact/QjjfE8kYPKjasiVwjSFEUS → sahifa "YAGONA USLUB". Eski variantlar "ARXIV ·" sahifalarida.
-- 20 sahifa turi: kompyuter (20) + telefon (21 ekran), holatlar, oynalar, KVKK banner.
-- Dizayn tizimi v2 (board DS2): Sofo Orange #FF5A1F (hover #FF7A47, pressed #E04A12, tint #FFD5C7, deep #2A150D), fon #0A0A0D, surface #15151B/#1C1C24, line #26262F; semantik: dub #3B82F6, available #4ADE80, leaving #FBBF24, free #A78BFA. Shrift: Manrope (UI), Nunito Black (logo). Bo'shliq 4 px qadam; radius: chip 999, input/button/poster 12, card 16, panel 20, hero 24.
-- Kontrast: CTA'da qora matn to'q sariq ustida (6,4:1). Oq matn to'q sariqda faqat ≥ 18 px qalin yoki logo.
-- Responsivlik (board Responsive): xs 360–479 (3 poster/qator, chetdan 16), sm 480–767 (4), md 768–1023 (5), lg 1024–1279 (6), xl 1280+ (6–7, max 1360). xs/sm — pastki tab bar (Home, Search, New, My list); filtrlar va modallar — bottom sheet; title sahifada sticky CTA.
-- Eslatmalar (board Alerts): Telegram — asosiy, email — haftalik dayjest (juma 18:00), kuniga max 3 Telegram xabar.
-- Admin (boards AdminDash, AdminQA, AdminLists): ingest holati va KPI, "Something wrong?" navbati (SLA 24 soat), TMDB bog'lash, to'plam muharriri.
+Founder qarori (2026-11-24): DS2 UI "multfilm/detskiy" ko'rindi. Yangi yo'nalish — toza, tipografiyaga tayangan, IVI (imagery-led dark katalog) + QClay agentlik deki (havodor, yirik yengil shrift, pill kontrollar, bento bloklar). To'liq qoidalar: **`docs/design-system.md`**. Eski canvas (https://claude.ai/artifact/QjjfE8kYPKjasiVwjSFEUS) tarixiy.
+- Rang: neytral qora (`#09090B`, surface `#131316`), tint yo'q. Oq = asosiy tugma (pill). Sofo Orange `#FF5A1F` faqat tashqi "Watch on <service>" tugmasi (`buttonClass("accent")`) va logo. Semantik ranglar (dub #3B82F6, available #4ADE80, leaving #FBBF24, free #A78BFA) — faqat 6 px nuqta/kontur/matn, to'ldirilgan blok emas.
+- Shrift: Manrope 400/500/600 (og'irligi remap qilingan: `font-bold`=600, `font-extrabold`=600), Nunito Black — faqat logo. Yirik yengil sarlavhalar (`text-display/h1/h2`, 500, manfiy tracking).
+- Radius: chip/button/tag — to'liq pill; input 14, card 20, panel 24, hero 28, poster 12. Soyalar yo'q (panel), glow/gradient-matn yo'q.
+- Layout: `wrap` konteyner, `section-y` ritm, bento bloklar, nozik `rule`, `numeral` hisoblagichlar. Responsivlik (xs 360 → xl 1280+) va mobil tab bar/bottom sheet/sticky CTA o'zgarmadi.
+- Kontrast: CTA'da qora matn orange/oq ustida. Oq matn orange'da faqat ≥18 px yoki logo.
+- Eslatmalar: Telegram — asosiy, email — haftalik dayjest (juma 18:00), kuniga max 3 Telegram xabar.
+- Admin (AdminDash, AdminQA, AdminLists): ingest holati va KPI, "Something wrong?" navbati (SLA 24 soat), TMDB bog'lash, to'plam muharriri — shu tizimda, zich va sokin.
 
 ## Key documents
 
+- `docs/design-system.md` — DS3 dizayn tizimi (tokenlar, utility, komponentlar, sahifa andozalari).
+- `docs/HANDOFF.md` — founder tomonidan ulanadigan narsalar ro'yxati.
 - `docs/PRD.md` — PRD v2 (Sofo, 20 sahifa turi, qiymatlar, bosqichlar, acceptance criteria).
 - `docs/data-model.md` — ma'lumotlar modeli, ingest diff → event, qisqa javob algoritmi, sifat darvozasi.
 - `prisma/schema.prisma` — sxema (PostgreSQL + pg_trgm + unaccent).
@@ -182,7 +185,7 @@ pnpm ingest:availability    # 04-ingest
 ## Ingest (04, 2026-11-05)
 
 - `lib/sources/tmdb.ts` — TMDB v3 (details + `videos,alternative_titles,external_ids`, `tr-TR`/`en-US`). `lib/sources/streaming-availability.ts` — Streaming Availability API v4 `/shows/{id}?country&output_language&series_granularity=show`. Both go through `lib/sources/http.ts#fetchJson` (retry + per-host rate limit). Responses are validated by hand (`parseShow`, one bad option is dropped, the run continues) — zod was not added, keep the ingest dependency-free until a source changes shape.
-- Keys only in `.env.local` / GitHub Actions secrets: `TMDB_API_KEY`, `STREAMING_AVAILABILITY_API_KEY`. `STREAMING_AVAILABILITY_API_URL` switches the base URL (RapidAPI host → `X-RapidAPI-Key`). Without a key the scripts exit with a config message; seed data stays untouched.
+- Keys only in `.env.local` / GitHub Actions secrets: `TMDB_API_KEY` (v3 key → `?api_key=`, or v4 read token `eyJ…` → `Authorization: Bearer`, preferred: keeps the secret out of URLs), `STREAMING_AVAILABILITY_API_KEY`. `STREAMING_AVAILABILITY_API_URL` switches the base URL (RapidAPI host → `X-RapidAPI-Key`). Without a key the scripts exit with a config message; seed data stays untouched.
 - Title list: `data/titles.csv` (`tmdb_id,type`, `#` comments, duplicates ignored). Commands: `pnpm ingest:metadata [-- --limit=50 --dry-run --file=…]` and `pnpm ingest:availability [-- --edition=tr --limit=50 --dry-run --file=…]` (default list = every title in the DB). Cron: `.github/workflows/ingest.yml` — availability daily, metadata dispatch-only.
 - Metadata → `Title`, `TitleLocalization` (tr/en, `altNames` from TMDB alternative titles, slug = `slugify(name)` + tmdb id suffix on collision), `Season` (specials skipped), official YouTube `Video` (fan uploads/other sites dropped), `Franchise`/`FranchiseItem` (release order by year, recomputed after each upsert). Credits/persons are not ingested yet. `isKids` = TMDB genre Family/Kids (section placement heuristic, not an availability claim).
 - Availability → title-level `Offer` (`seasonId` null) + `OfferLanguage` + `AvailabilityEvent`. Offer key = service × offer type × quality; a quality change is `removed` + `added`. Service map: netflix, prime→prime-video, disney→disney-plus, hbo→hbo-max, tod, tabii, exxen, gain; `addon` options and unmapped services are skipped. Prices only come from `rent`/`buy` options (never plan prices).

@@ -1,6 +1,6 @@
 import { BarList } from "@/components/admin/bar-list";
 import { EditionLabel } from "@/components/admin/edition-label";
-import { AdminHeader, EventPill, formatAge, Kpi, nf, Panel } from "@/components/admin/ui";
+import { AdminHeader, EventPill, formatAge, Kpi, nf, Panel, TableScroll, tableClass, tdClass, thClass, trClass } from "@/components/admin/ui";
 import { adminEdition } from "@/lib/admin/edition";
 import { FRESH_HOURS, getDashboard, REPORT_SLA_HOURS } from "@/lib/admin/queries";
 import { formatDate } from "@/lib/format";
@@ -20,7 +20,7 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
     <>
       <AdminHeader title="Dashboard" right={<EditionLabel edition={e} />} />
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5 xl:gap-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         <Kpi label={`Titles (${e.code.toUpperCase()})`} value={nf(d.titles)} sub={`+${d.titlesNew} this week`} />
         <Kpi label="Active offers" value={nf(d.offersActive)} sub={`${d.services.length} services`} />
         <Kpi
@@ -46,59 +46,61 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
         />
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-[1.45fr_1fr]">
+      <div className="mt-3 grid gap-3 xl:grid-cols-[1.45fr_1fr]">
         <Panel
           title="Ingest — offer freshness by service"
           right={
-            <span className={`text-xs font-bold ${ingestAgeH != null && ingestAgeH > 26 ? "text-leaving" : "text-text-3"}`}>
+            <span className={`tnum text-xs ${ingestAgeH != null && ingestAgeH > 26 ? "text-leaving" : "text-text-3"}`}>
               Last ingest: {d.lastIngestAt ? `${formatDate(d.lastIngestAt)} ${time(d.lastIngestAt)}` : "never"}
             </span>
           }
         >
-          <div className="relative overflow-x-auto">
-            <table className="w-full min-w-[520px] text-sm">
+          <TableScroll className="-mb-2">
+            <table className={`${tableClass} min-w-[520px]`}>
               <thead>
-                <tr className="border-b border-line text-left text-[11px] font-extrabold tracking-wider text-text-3 uppercase">
-                  <th className="py-2 pr-3 font-extrabold">Service</th>
-                  <th className="py-2 pr-3 text-right font-extrabold">Offers</th>
-                  <th className="py-2 pr-3 text-right font-extrabold">≤ {FRESH_HOURS} h</th>
-                  <th className="py-2 pr-3 font-extrabold">Last check</th>
-                  <th className="py-2 font-extrabold">Oldest</th>
+                <tr>
+                  <th className={thClass}>Service</th>
+                  <th className={`${thClass} !text-right`}>Offers</th>
+                  <th className={`${thClass} !text-right`}>≤ {FRESH_HOURS} h</th>
+                  <th className={thClass}>Last check</th>
+                  <th className={thClass}>Oldest</th>
                 </tr>
               </thead>
               <tbody>
                 {d.services.map((s) => {
                   const pct = s.offers ? (s.fresh / s.offers) * 100 : 0;
                   return (
-                    <tr key={s.name} className="border-b border-line-soft last:border-0">
-                      <td className="py-2.5 pr-3 font-bold">{s.name}</td>
-                      <td className="py-2.5 pr-3 text-right tabular-nums">{s.offers}</td>
-                      <td className={`py-2.5 pr-3 text-right font-bold tabular-nums ${pct >= 99 ? "text-available" : "text-leaving"}`}>
-                        <span aria-hidden="true">{pct >= 99 ? "✓ " : "! "}</span>
-                        {pct.toFixed(0)}%
+                    <tr key={s.name} className={trClass}>
+                      <td className={`${tdClass} font-medium`}>{s.name}</td>
+                      <td className={`${tdClass} tnum text-right text-text-2`}>{s.offers}</td>
+                      <td className={`${tdClass} tnum text-right font-medium ${pct >= 99 ? "text-text" : "text-leaving"}`}>
+                        <span className="inline-flex items-center justify-end gap-2">
+                          <span aria-hidden="true" className={`size-1.5 rounded-full ${pct >= 99 ? "bg-available" : "bg-leaving"}`} />
+                          {pct.toFixed(0)}%
+                        </span>
                       </td>
-                      <td className="py-2.5 pr-3 text-text-2">{s.lastCheckedAt ? `${formatDate(s.lastCheckedAt, { day: "numeric", month: "short" })} ${time(s.lastCheckedAt)}` : "—"}</td>
-                      <td className="py-2.5 text-text-2">{s.oldestCheckedAt ? formatDate(s.oldestCheckedAt, { day: "numeric", month: "short" }) : "—"}</td>
+                      <td className={`${tdClass} tnum whitespace-nowrap text-text-2`}>{s.lastCheckedAt ? `${formatDate(s.lastCheckedAt, { day: "numeric", month: "short" })} ${time(s.lastCheckedAt)}` : "—"}</td>
+                      <td className={`${tdClass} tnum whitespace-nowrap text-text-2`}>{s.oldestCheckedAt ? formatDate(s.oldestCheckedAt, { day: "numeric", month: "short" }) : "—"}</td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
-          </div>
+          </TableScroll>
         </Panel>
 
         <Panel title="Latest events">
           {d.latestEvents.length === 0 ? (
-            <p className="py-3 text-sm text-text-3">No events yet</p>
+            <p className="py-2 text-sm text-text-3">No events yet</p>
           ) : (
-            <ul>
+            <ul className="-my-1">
               {d.latestEvents.map((ev) => (
-                <li key={ev.id} className="flex items-center gap-3 border-b border-line-soft py-2.5 last:border-0">
+                <li key={ev.id} className="flex items-center gap-3 border-b border-hairline py-2.5 last:border-0">
                   <EventPill type={ev.type} />
                   <span className="min-w-0 grow truncate text-sm">
                     {ev.title} · <span className="text-text-2">{ev.service}</span>
                   </span>
-                  <span className="shrink-0 text-xs text-text-3 tabular-nums">
+                  <span className="tnum shrink-0 text-xs text-text-3">
                     {sameDay(ev.occurredAt, d.now) ? time(ev.occurredAt) : formatDate(ev.occurredAt, { day: "numeric", month: "short" })}
                   </span>
                 </li>
@@ -108,7 +110,7 @@ export default async function AdminDashboard({ searchParams }: PageProps<"/admin
         </Panel>
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         <Panel title="Noindex reasons">
           <BarList
             rows={Object.entries(d.inventory.reasons)

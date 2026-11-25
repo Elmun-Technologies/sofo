@@ -70,16 +70,16 @@ export function Dialog({ open, onClose, labelledBy, children, className = "md:ma
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center md:p-6">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]" aria-hidden="true" onClick={onClose} />
+      <div className="animate-fade-in absolute inset-0 bg-black/70 backdrop-blur-sm" aria-hidden="true" onClick={onClose} />
       <div
         ref={panel}
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelledBy}
         tabIndex={-1}
-        className={`relative max-h-[92dvh] w-full overflow-y-auto rounded-t-panel border border-line bg-surface pb-[env(safe-area-inset-bottom)] shadow-2xl outline-none md:rounded-panel ${className}`}
+        className={`animate-sheet-up relative max-h-[92dvh] w-full overflow-y-auto rounded-t-hero border border-hairline-strong bg-surface pb-[env(safe-area-inset-bottom)] shadow-pop outline-none md:rounded-panel ${className}`}
       >
-        <div className="mx-auto mt-2.5 h-1 w-10 rounded-chip bg-line md:hidden" aria-hidden="true" />
+        <div className="mx-auto mt-2.5 h-1 w-10 rounded-chip bg-white/20 md:hidden" aria-hidden="true" />
         {children}
       </div>
     </div>
@@ -92,7 +92,7 @@ export function CloseButton({ onClick, label = "Close" }: { onClick: () => void;
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="inline-flex size-8 shrink-0 items-center justify-center rounded-chip bg-surface-2 text-text-2 hover:text-text"
+      className="inline-flex size-9 shrink-0 items-center justify-center rounded-chip bg-white/8 text-text-2 transition hover:bg-white/14 hover:text-text"
     >
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />

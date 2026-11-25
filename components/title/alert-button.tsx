@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { BellIcon } from "@/components/icons";
 import { buttonClass } from "@/components/ui/button";
 import { track } from "@/lib/client/analytics";
 import { useWatchlist, type SavedTitle } from "@/lib/client/watchlist";
@@ -15,20 +16,22 @@ export function AlertButton({ title, kinds, label }: { title: Omit<SavedTitle, "
 
   if (following)
     return (
-      <Link href={`/${lang}/listem#alerts`} className={buttonClass("secondary")}>
-        🔔 Following · manage
+      <Link href={`/${lang}/listem#alerts`} className={`${buttonClass("glass", "lg")} max-sm:w-full`}>
+        <BellIcon className="size-[18px] fill-current" />
+        Following · manage
       </Link>
     );
   return (
     <button
       type="button"
-      className={buttonClass("secondary")}
+      className={`${buttonClass("glass", "lg")} max-sm:w-full`}
       onClick={() => {
         if (saved) list.update(title.id, { alerts: kinds });
         else list.add({ ...title, alerts: kinds });
         track("alert_subscribe", { title: title.name, kinds: kinds.join(",") });
       }}
     >
+      <BellIcon className="size-[18px]" />
       {label}
     </button>
   );

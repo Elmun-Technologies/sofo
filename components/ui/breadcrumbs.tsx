@@ -9,17 +9,21 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
   const base = siteUrl();
   return (
     <>
-      <nav aria-label="Breadcrumb" className="mx-auto max-w-site px-4 pt-4 text-[13px] text-text-2 md:px-7 md:pt-6">
-        <ol className="flex flex-wrap items-center gap-1">
+      <nav aria-label="Breadcrumb" className="wrap pt-4 text-[13px] font-semibold text-text-3 md:pt-5">
+        <ol className="no-scrollbar flex items-center gap-1.5 overflow-x-auto whitespace-nowrap">
           {items.map((c, i) => (
-            <li key={i} className="flex items-center gap-1">
-              {i > 0 ? <span aria-hidden="true">/</span> : null}
+            <li key={i} className="flex items-center gap-1.5">
+              {i > 0 ? (
+                <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" className="opacity-60">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              ) : null}
               {c.href && i < items.length - 1 ? (
-                <Link href={c.href} className="text-text-2">
+                <Link href={c.href} className="text-text-3 hover:text-text">
                   {c.name}
                 </Link>
               ) : (
-                <span className="text-text" aria-current={i === items.length - 1 ? "page" : undefined}>
+                <span className="text-text-2" aria-current={i === items.length - 1 ? "page" : undefined}>
                   {c.name}
                 </span>
               )}

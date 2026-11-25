@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRightIcon, ArrowUpRightIcon, GlobeIcon } from "@/components/icons";
 import { Logo } from "@/components/logo";
 import { EditionSuggest } from "@/components/retention/edition-suggest";
+import { serviceOptions } from "@/components/retention/service-names";
+import { buttonClass } from "@/components/ui/button";
+import { ServiceLogo } from "@/components/ui/service-logo";
 import { EDITIONS } from "@/lib/editions";
 import { localLangName } from "@/lib/lang";
 import { buildAlternates } from "@/lib/seo/hreflang";
@@ -30,71 +34,186 @@ const PLANNED: { code: string; name: string; langs: string }[] = [
   { code: "KZ", name: "Қазақстан", langs: "Қазақша · Русский" },
 ];
 
+const PROMISES = [
+  { title: "Legal services only", body: "Every link opens the title on the official service. We never host video and never link to pirate sites." },
+  { title: "Your language, confirmed", body: "Audio and subtitles are shown only when the service confirms them. Otherwise you see “not confirmed” — never a guess." },
+  { title: "Checked daily", body: "Catalogs, prices and languages are re-checked every day, and every result shows when it was last checked." },
+];
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
 // Edition picker at "/". No IP auto-redirect — the user chooses (the banner only suggests).
 export default function EditionPicker() {
   const live = Object.values(EDITIONS);
   const first = live[0];
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="border-b border-line-soft">
-        <div className="mx-auto flex h-16 max-w-site items-center justify-between px-4 md:h-[70px] md:px-7">
-          <Link href="/" aria-label="sofo — home" className="hover:text-text">
-            <Logo className="text-[26px] md:text-[28px]" />
-          </Link>
-          <span className="rounded-button bg-surface px-3 py-2 text-xs font-extrabold text-text md:text-sm">UI · English</span>
-        </div>
+      <header className="wrap flex h-16 items-center justify-between md:h-20">
+        <Link href="/" aria-label="sofo — home">
+          <Logo className="text-[26px] md:text-[28px]" />
+        </Link>
+        <span className="tag">
+          <GlobeIcon className="size-3.5" />
+          UI · English
+        </span>
       </header>
 
-      <main className="mx-auto w-full max-w-site grow px-4 pt-5 pb-12 md:px-7 md:pt-6">
-        <EditionSuggest
-          editions={live.map((e) => ({ code: e.code, country: e.country, countryName: e.countryName, home: e.routes.home, langs: [e.contentLang] }))}
-        />
-
-        <div className="mt-6 flex flex-col gap-1 md:mt-12 md:flex-row md:items-baseline md:gap-3">
-          <h1 className="text-[30px] leading-tight font-extrabold tracking-[-0.03em] md:text-[28px]">Choose your edition</h1>
-          <p className="text-sm text-text-2 md:text-[15px]">Each country has its own catalog, prices and languages</p>
+      <main className="grow">
+        <div className="wrap">
+          <EditionSuggest
+            editions={live.map((e) => ({ code: e.code, country: e.country, countryName: e.countryName, home: e.routes.home, langs: [e.contentLang] }))}
+          />
         </div>
 
-        <ul className="mt-5 grid gap-2.5 sm:grid-cols-2 md:gap-3 lg:grid-cols-4">
-          {live.map((e) => (
-            <li key={e.code}>
-              <Link
-                href={e.routes.home}
-                className="flex h-[78px] items-center gap-3.5 rounded-card border border-orange bg-orange-deep px-4 hover:border-orange-hover hover:text-text md:px-5"
-              >
-                <CodeBadge code={e.country} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-[17px] font-extrabold">{e.countryName}</span>
-                  <span className="block truncate text-xs text-text-2 md:text-sm">{localLangName(e.contentLang)} · English</span>
-                </span>
-                <span className="rounded-chip bg-orange px-2 py-0.5 text-[11px] font-extrabold text-ink">LIVE</span>
-              </Link>
+        {/* The promise */}
+        <section className="wrap pt-12 pb-14 md:pt-24 md:pb-24">
+          <ul className="flex flex-wrap gap-2">
+            <li className="tag">
+              <span aria-hidden="true" className="size-1.5 rounded-full bg-available" />
+              Legal services only
             </li>
-          ))}
-          {PLANNED.map((p) => (
-            <li
-              key={p.code}
-              className="flex h-[78px] items-center gap-3.5 rounded-card border border-line bg-surface px-4 md:px-5"
-            >
-              <CodeBadge code={p.code} />
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-[17px] font-extrabold text-text">{p.name}</span>
-                <span className="block truncate text-xs text-text-2 md:text-sm">{p.langs}</span>
-              </span>
-              <span className="text-xs font-bold text-text-3">Soon<span className="sr-only"> — not available yet</span></span>
-            </li>
-          ))}
-        </ul>
+            <li className="tag">Checked daily</li>
+            <li className="tag max-sm:hidden">Free · no account</li>
+          </ul>
+          <div className="mt-7 grid gap-8 md:mt-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)] lg:items-end lg:gap-16">
+            <h1 className="text-display max-w-[13ch]">
+              Every movie. Every service. <span className="text-text-3">Your language.</span>
+            </h1>
+            <div>
+              <p className="max-w-md text-base text-text-2 md:text-lg md:leading-relaxed">
+                sofo shows where a movie or series is streaming legally — and whether it has audio or subtitles in your language.
+              </p>
+              {first ? (
+                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+                  <Link href={first.routes.home} className={`${buttonClass("primary", "lg")} max-sm:w-full`}>
+                    Open sofo {first.countryName}
+                    <ArrowRightIcon className="size-[18px]" />
+                  </Link>
+                  <a href="#editions" className="link !font-medium max-sm:hidden">
+                    All editions
+                  </a>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </section>
 
-        <p className="mt-8 max-w-2xl text-sm text-text-2">
-          sofo shows where a movie or series is streaming legally — and whether it has audio or subtitles in your language. We never host
-          video and never guess a language the service doesn&apos;t confirm.
-        </p>
+        {/* 01 — editions */}
+        <section id="editions" aria-labelledby="editions-h" className="wrap scroll-mt-6 pb-14 md:pb-24">
+          <div className="rule" />
+          <div className="grid gap-x-10 gap-y-3 pt-6 pb-8 md:grid-cols-[160px_minmax(0,1fr)] md:pt-8 md:pb-12 lg:grid-cols-[240px_minmax(0,1fr)_minmax(0,360px)]">
+            <span aria-hidden="true" className="tnum text-sm text-text-3">
+              01.
+            </span>
+            <h2 id="editions-h" className="text-h1">
+              Choose your edition
+            </h2>
+            <p className="max-w-sm text-[15px] text-text-2 md:col-start-2 lg:col-start-3 lg:self-end">Each country has its own catalog, prices and languages.</p>
+          </div>
+
+          <ul className="grid gap-3 md:gap-4">
+            {live.map((e) => (
+              <li key={e.code}>
+                <Link
+                  href={e.routes.home}
+                  className="group relative block rounded-hero border border-hairline-strong bg-surface p-6 transition-colors duration-200 hover:border-white/30 hover:bg-surface-2 md:p-10"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="tag !border-available/40 !text-available">
+                      <span aria-hidden="true" className="size-1.5 rounded-full bg-available" />
+                      Live
+                    </span>
+                    <span className="tnum text-sm text-text-3">{e.country}</span>
+                  </span>
+                  <span aria-hidden="true" className="absolute top-5 right-5 flex size-12 items-center justify-center rounded-full bg-white text-ink transition-transform duration-200 ease-out group-hover:scale-105 md:top-9 md:right-9 md:size-14">
+                    <ArrowUpRightIcon className="size-5 md:size-6" />
+                  </span>
+                  <span className="mt-8 grid gap-6 md:mt-14 md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:gap-12">
+                    <span className="block min-w-0">
+                      <span className="text-display block">{e.countryName}</span>
+                      <span className="mt-3 block text-[15px] text-text-2 md:text-base">
+                        {localLangName(e.contentLang)} · English — {e.coreServices.length} services checked daily
+                      </span>
+                    </span>
+                    <span className="flex flex-wrap gap-1.5" aria-hidden="true">
+                      {serviceOptions(e.coreServices).map((s) => (
+                        <ServiceLogo key={s.slug} slug={s.slug} name="" size={32} />
+                      ))}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <p lang="en" className="overline mt-10 mb-4 text-text-3 md:mt-14">
+            On the way · {PLANNED.length} editions
+          </p>
+          <ul className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3 lg:grid-cols-4">
+            {PLANNED.map((p) => (
+              <li key={p.code} className="flex min-w-0 flex-col justify-between gap-6 rounded-card border border-hairline p-4 md:gap-8 md:p-5">
+                <span className="flex items-center justify-between gap-2">
+                  <span aria-hidden="true" className="tnum text-sm text-text-3">
+                    {p.code}
+                  </span>
+                  <span className="tag !h-6 !px-2.5 !text-[11px] !text-text-3">
+                    Soon<span className="sr-only"> — not available yet</span>
+                  </span>
+                </span>
+                <span className="block min-w-0">
+                  <span className="block truncate text-[17px] leading-tight font-medium tracking-[-0.02em] text-text md:text-xl">{p.name}</span>
+                  <span className="mt-1 block truncate text-xs text-text-3 md:text-[13px]">{p.langs}</span>
+                </span>
+              </li>
+            ))}
+            {first ? (
+              <li className="min-w-0">
+                <Link
+                  href={`${first.routes.about}#contact`}
+                  className="group flex h-full flex-col justify-between gap-6 rounded-card border border-dashed border-hairline-strong p-4 transition-colors duration-200 hover:border-white/30 md:gap-8 md:p-5"
+                >
+                  <ArrowRightIcon className="size-4 self-end text-text-3 transition duration-200 group-hover:translate-x-0.5 group-hover:text-text" />
+                  <span className="block min-w-0">
+                    <span className="block truncate text-[17px] leading-tight font-medium tracking-[-0.02em] md:text-xl">Your country?</span>
+                    <span className="mt-1 block truncate text-xs text-text-3 md:text-[13px]">Tell us where to go next</span>
+                  </span>
+                </Link>
+              </li>
+            ) : null}
+          </ul>
+        </section>
+
+        {/* 02 — what we promise */}
+        <section aria-labelledby="promise-h" className="wrap pb-16 md:pb-28">
+          <div className="rule" />
+          <div className="grid gap-x-10 gap-y-3 pt-6 pb-8 md:grid-cols-[160px_minmax(0,1fr)] md:pt-8 md:pb-12 lg:grid-cols-[240px_minmax(0,1fr)]">
+            <span aria-hidden="true" className="tnum text-sm text-text-3">
+              02.
+            </span>
+            <h2 id="promise-h" className="text-h1 max-w-[18ch]">
+              A guide, not a streaming site
+            </h2>
+          </div>
+          <ol className="grid gap-3 md:grid-cols-3 md:gap-4">
+            {PROMISES.map((p, i) => (
+              <li key={p.title} className="panel flex flex-col p-6 md:min-h-[280px] md:p-8">
+                <span aria-hidden="true" className="numeral text-text-3">
+                  {pad(i + 1)}
+                </span>
+                <span className="mt-8 block md:mt-auto">
+                  <span className="text-h3 block">{p.title}</span>
+                  <span className="mt-2 block text-sm leading-relaxed text-text-2 md:text-[15px]">{p.body}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
       </main>
 
       {first ? (
-        <footer className="border-t border-line-soft">
-          <div className="mx-auto flex max-w-site flex-wrap gap-x-5 gap-y-2 px-4 py-5 text-xs text-text-3 md:px-7">
+        <footer className="wrap">
+          <div className="rule" />
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 py-6 text-[13px] text-text-3 md:py-8">
             <Link href={first.routes.about} className="text-text-2">
               About
             </Link>
@@ -104,18 +223,10 @@ export default function EditionPicker() {
             <Link href={`${first.routes.privacy}#terms`} className="text-text-2">
               Terms
             </Link>
-            <span className="md:ml-auto">Metadata &amp; images: TMDB · availability checked daily</span>
+            <span className="max-md:basis-full md:ml-auto">Metadata &amp; images: TMDB · availability checked daily</span>
           </div>
         </footer>
       ) : null}
     </div>
-  );
-}
-
-function CodeBadge({ code }: { code: string }) {
-  return (
-    <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-2 text-xs font-extrabold md:size-11">
-      {code}
-    </span>
   );
 }

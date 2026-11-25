@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { StarIcon } from "@/components/icons";
 import { paths, type Edition } from "@/lib/editions";
 import { formatDate } from "@/lib/format";
 import { dubTerm } from "@/lib/lang";
@@ -17,17 +18,17 @@ export function Seasons({ data, edition }: { data: TitlePageData; edition: Editi
 
   return (
     <div>
-      <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0">
+      <ul className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:px-0">
         {seasons.map((s) => {
           const d = dubStatus(s);
           return (
             <li key={s.id}>
               <Link
                 href={paths.season(edition, data.local.slug, s.number)}
-                className="flex h-auto flex-col rounded-card border border-line bg-surface px-4 py-2.5 hover:border-orange hover:text-text"
+                className="card card-hover flex h-auto min-w-[132px] flex-col px-4 py-3"
               >
-                <span className="text-sm font-extrabold">Season {s.number}</span>
-                <span className={`text-xs ${d === "yes" ? "text-dub" : d === "no" ? "text-text-3" : "text-leaving"}`}>
+                <span className="text-sm font-bold whitespace-nowrap">Season {s.number}</span>
+                <span className={`mt-0.5 text-xs whitespace-nowrap ${d === "yes" ? "text-[#8ab4ff]" : d === "no" ? "text-text-3" : "text-leaving"}`}>
                   {d === "yes" ? dubTerm(lang) : d === "no" ? "no dub" : "dub not confirmed"}
                 </span>
               </Link>
@@ -37,25 +38,25 @@ export function Seasons({ data, edition }: { data: TitlePageData; edition: Editi
       </ul>
       {shown ? (
         <div className="mt-4">
-          <p className="mb-2 text-sm text-text-2">
+          <p className="mb-3 text-sm text-text-3">
             Season {shown.number} · {shown.episodes.length} episodes
           </p>
-          <ol className="grid gap-2 md:grid-cols-2">
+          <ol className="divide-y divide-hairline overflow-hidden rounded-panel border border-hairline bg-surface">
             {shown.episodes.slice(0, 6).map((ep) => (
-              <li key={ep.id} className="flex items-center gap-3 rounded-card bg-surface px-4 py-3">
-                <span className="w-10 shrink-0 text-xs font-bold text-text-3">E{ep.number}</span>
+              <li key={ep.id} className="flex items-center gap-4 px-5 py-3">
+                <span className="tnum w-7 shrink-0 text-sm font-bold text-text-3">{ep.number}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-bold">{ep.name}</span>
+                  <span className="block truncate text-sm font-semibold">{ep.name}</span>
                   <span className="text-xs text-text-3">
                     {ep.airDate ? formatDate(ep.airDate) : ""} {ep.runtimeMin ? `· ${ep.runtimeMin}m` : ""}
                   </span>
                 </span>
-                {ep.tmdbScore ? <span className="text-xs font-bold text-available">{Number(ep.tmdbScore).toFixed(1)}</span> : null}
+                {ep.tmdbScore ? <span className="tnum inline-flex items-center gap-1 text-xs font-medium text-text-2"><StarIcon className="size-3 text-leaving" />{Number(ep.tmdbScore).toFixed(1)}</span> : null}
               </li>
             ))}
           </ol>
-          <Link href={paths.season(edition, data.local.slug, shown.number)} className="mt-3 inline-block text-sm font-bold text-text-2">
-            All episodes of season {shown.number} →
+          <Link href={paths.season(edition, data.local.slug, shown.number)} className="link mt-4 inline-block text-sm">
+            All episodes of season {shown.number}
           </Link>
         </div>
       ) : null}

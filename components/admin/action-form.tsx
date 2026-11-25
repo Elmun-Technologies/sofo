@@ -22,7 +22,7 @@ export function ActionForm({
     <form action={formAction} className={className}>
       {children}
       {state?.message ? (
-        <p role="status" className={`text-xs font-semibold ${state.ok ? "text-available" : "text-leaving"} ${messageClassName}`}>
+        <p role="status" className={`text-xs font-medium ${state.ok ? "text-available" : "text-leaving"} ${messageClassName}`}>
           {state.message}
         </p>
       ) : null}
@@ -31,10 +31,11 @@ export function ActionForm({
 }
 
 const VARIANT = {
-  primary: "bg-orange text-ink hover:bg-orange-hover active:bg-orange-press",
-  secondary: "bg-surface-2 text-text hover:bg-line",
-  ghost: "border border-line text-text-2 hover:border-text-3 hover:text-text",
-  danger: "border border-line text-text-2 hover:border-red-400 hover:text-red-300",
+  // White pill = the main action of a form (DS3: orange is reserved for outbound "Watch on …" links).
+  primary: "bg-white text-ink hover:bg-white/85",
+  secondary: "bg-white/10 text-text hover:bg-white/16",
+  ghost: "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text hover:ring-white/30",
+  danger: "text-text-2 ring-1 ring-inset ring-hairline-strong hover:text-red-300 hover:ring-red-400/60",
 } as const;
 
 export function SubmitButton({
@@ -61,7 +62,7 @@ export function SubmitButton({
       title={title}
       aria-label={title}
       disabled={pending}
-      className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-button px-3 text-[13px] font-extrabold whitespace-nowrap transition disabled:opacity-50 ${VARIANT[variant]} ${className}`}
+      className={`inline-flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full px-4 text-[13px] font-medium whitespace-nowrap transition duration-200 ease-out active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45 ${VARIANT[variant]} ${className}`}
     >
       {children}
     </button>

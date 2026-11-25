@@ -1,63 +1,48 @@
 import Link from "next/link";
-import { LeavingBadge } from "@/components/ui/badges";
-import { PosterCard } from "@/components/ui/poster-card";
 import { PosterImage } from "@/components/ui/poster-image";
+import { SectionHeader } from "@/components/ui/section-header";
 import type { TitleCard } from "@/lib/catalog";
 import { paths, type Edition } from "@/lib/editions";
-import { formatDate } from "@/lib/format";
+import { daysUntil, formatDate } from "@/lib/format";
 
 type Item = { leavingAt: Date; card: TitleCard };
 
 const day = (d: Date) => formatDate(d, { day: "numeric", month: "short" });
 
-/** "Leaving soon" — amber panel with posters (desktop) / list (mobile). */
+/** "Leaving soon": one compact row per title with its last day — reads the same with one title or six. */
 export function ServiceLeaving({ edition: e, serviceName, items }: { edition: Edition; serviceName: string; items: Item[] }) {
   if (items.length === 0) return null;
   return (
-    <section className="mx-auto max-w-site px-4 py-5 md:px-7 md:py-7" aria-labelledby="leaving-title">
-      <div className="md:rounded-panel md:border md:border-leaving/25 md:bg-[linear-gradient(180deg,#1f1a0e_0%,#15140f_100%)] md:p-6">
-        <div className="mb-3.5 flex items-baseline gap-3 md:mb-4">
-          <h2 id="leaving-title" className="text-xl font-extrabold tracking-[-0.02em] md:text-2xl">
-            Leaving soon
-          </h2>
-          <span className="hidden text-sm text-text-2 sm:inline">
-            From {serviceName} in {e.countryName} — watch before it goes
-          </span>
-          <Link href={e.routes.newLeaving} className="ml-auto shrink-0 text-sm font-bold text-text-2">
-            All leaving →
-          </Link>
-        </div>
-        <ul className="hidden grid-cols-5 gap-4 md:grid lg:grid-cols-6">
-          {items.slice(0, 6).map(({ card, leavingAt }, i) => (
-            <li key={card.id} className={i === 5 ? "hidden lg:block" : undefined}>
-              <PosterCard
-                card={card}
-                edition={e}
-                badge={<LeavingBadge>LEAVING {day(leavingAt).toUpperCase()}</LeavingBadge>}
-                meta={`Leaves ${serviceName} ${day(leavingAt)}`}
-              />
-            </li>
-          ))}
-        </ul>
-        <ul className="space-y-2.5 md:hidden">
-          {items.slice(0, 5).map(({ card, leavingAt }) => (
+    <section className="wrap py-6 md:py-10" aria-labelledby="leaving-title">
+      <div className="rule mb-6 md:mb-8" />
+      <SectionHeader id="leaving-title" title="Leaving soon" sub={`From ${serviceName} in ${e.countryName} — watch before it goes`} href={e.routes.newLeaving} linkLabel="All leaving" />
+      <ul className="grid grid-cols-[minmax(0,1fr)] gap-2.5 md:grid-cols-2 md:gap-3 xl:grid-cols-3">
+        {items.slice(0, 6).map(({ card, leavingAt }) => {
+          const left = Math.max(0, daysUntil(leavingAt));
+          return (
             <li key={card.id}>
-              <Link href={paths.title(e, card.type, card.slug)} className="flex items-center gap-3.5 rounded-card border border-line bg-surface p-2.5 hover:text-text">
-                <span className="w-14 shrink-0">
-                  <PosterImage path={card.posterPath} alt="" sizes="56px" />
+              <Link href={paths.title(e, card.type, card.slug)} className="card card-hover flex items-center gap-4 p-3 pr-5 md:p-3.5 md:pr-6">
+                <span className="w-[60px] shrink-0 md:w-[68px]">
+                  <PosterImage path={card.posterPath} alt="" sizes="68px" />
                 </span>
-                <span className="min-w-0">
-                  <span className="block truncate text-[17px] font-extrabold">{card.name}</span>
-                  <span className="block text-[13px] text-text-2">
-                    Leaves {serviceName} {day(leavingAt)}
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[15px] font-semibold md:text-base">{card.name}</span>
+                  <span className="tnum mt-1 flex items-center gap-2 text-[13px] text-text-2">
+                    <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-leaving" />
+                    <span className="truncate">
+                      Leaves {serviceName} {day(leavingAt)}
+                    </span>
                   </span>
-                  <LeavingBadge className="mt-1.5">LEAVING {day(leavingAt).toUpperCase()}</LeavingBadge>
+                </span>
+                <span className="shrink-0 text-right">
+                  <span className="block text-[32px] leading-[0.9] font-normal tracking-[-0.05em] text-leaving md:text-[40px]">{left}</span>
+                  <span className="mt-1 block text-[11px] text-text-3">{left === 1 ? "day left" : "days left"}</span>
                 </span>
               </Link>
             </li>
-          ))}
-        </ul>
-      </div>
+          );
+        })}
+      </ul>
     </section>
   );
 }

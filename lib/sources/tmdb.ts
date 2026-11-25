@@ -76,12 +76,22 @@ export function isTmdbConfigured(): boolean {
   return Boolean(process.env.TMDB_API_KEY?.trim());
 }
 
+/**
+ * TMDB accepts two credentials: the short v3 "API key" (sent as `?api_key=`) and the long
+ * "API Read Access Token" (a JWT, sent as `Authorization: Bearer`). The token form keeps the secret
+ * out of URLs and lets a proxy inject it as a header.
+ */
+export function tmdbAuth(key: string): { query?: string; headers?: Record<string, string> } {
+  return key.startsWith("eyJ") ? { headers: { Authorization: `Bearer ${key}` } } : { query: key };
+}
+
 async function get<T>(path: string, params: Record<string, string | number | undefined> = {}): Promise<T> {
   const qs = new URLSearchParams();
   for (const [name, value] of Object.entries(params)) if (value !== undefined) qs.set(name, String(value));
-  qs.set("api_key", apiKey());
+  const auth = tmdbAuth(apiKey());
+  if (auth.query) qs.set("api_key", auth.query);
   try {
-    return await fetchJson<T>(`${BASE}${path}?${qs}`, { minIntervalMs: 60 });
+    return await fetchJson<T>(`${BASE}${path}?${qs}`, { headers: auth.headers, minIntervalMs: 60 });
   } catch (err) {
     // The URL carries the API key: report the path only.
     if (err instanceof HttpError) throw new HttpError(err.status, path);

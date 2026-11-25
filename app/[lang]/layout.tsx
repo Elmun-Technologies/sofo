@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { DemoBanner } from "@/components/demo-banner";
 import { SiteFooter } from "@/components/site-footer";
@@ -18,6 +18,11 @@ import "../globals.css";
 export function generateStaticParams() {
   return [];
 }
+
+export const viewport: Viewport = {
+  themeColor: "#09090b",
+  colorScheme: "dark",
+};
 
 export const metadata: Metadata = {
   metadataBase: siteUrl(),

@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { LeavingBadge, NewBadge } from "@/components/ui/badges";
-import { ChipLink, ChipRow } from "@/components/ui/chip";
+import { ArrowRightIcon, BellIcon } from "@/components/icons";
+import { ButtonLink, iconButtonClass } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PosterImage } from "@/components/ui/poster-image";
 import { ServiceLogo } from "@/components/ui/service-logo";
 import { AlertButton } from "@/components/value/alert-button";
-import { hrefWith, one, ServiceChips } from "@/components/value/filters";
+import { hrefWith, one, Segmented, ServiceChips, ToggleChip } from "@/components/value/filters";
+import { SectionHead, Stat, Stats, ValueHero } from "@/components/value/layout";
+import { CardLang } from "@/components/value/watch";
 import { getServices } from "@/lib/catalog";
 import { getEdition, paths, type Edition } from "@/lib/editions";
 import { daysUntil, formatDate } from "@/lib/format";
@@ -42,6 +44,8 @@ function rangeLabel(days: string[]) {
     : `${dayLabel(a, { day: "numeric", month: "short" })} – ${dayLabel(b, { day: "numeric", month: "short" })}`;
 }
 
+const KIND_DOT = { new_dub: "bg-dub", new: "bg-white", leaving: "bg-leaving" } as const;
+
 export default async function NewLeavingPage({ params, searchParams }: PageProps<"/[lang]/yeni-ve-ayrilanlar">) {
   const { lang } = await params;
   const e = getEdition(lang);
@@ -64,163 +68,190 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
   // New dubs first, then new, then leaving.
   const ORDER = { new_dub: 0, new: 1, leaving: 2 } as const;
   for (const list of byDay.values()) list.sort((a, b) => ORDER[a.kind] - ORDER[b.kind]);
-  const weekTotal = [...byDay.values()].reduce((n, l) => n + l.length, 0);
+  const weekItems = [...byDay.values()].flat();
+  const weekTotal = weekItems.length;
   const term = dubTerm(e.contentLang);
   const langLabel = langName(e.contentLang);
+  const count = (k: CalendarItem["kind"]) => weekItems.filter((i) => i.kind === k).length;
+  const weekName = week === "onceki" ? "Last week" : week === "sonraki" ? "Next week" : "This week";
 
   return (
     <>
-      <header className="mx-auto max-w-site px-4 pt-5 md:px-7 md:pt-8">
-        <h1 className="text-[30px] leading-tight font-extrabold tracking-[-0.03em] md:text-[48px]">
-          New &amp; leaving<span className="hidden md:inline"> in {e.countryName}</span>
-        </h1>
-        <p className="mt-1 text-[15px] text-text-2 md:hidden">
-          Week of {rangeLabel(days)} · {e.countryName}
-        </p>
-
-        <div className="mt-4 flex flex-col gap-3 md:mt-5 lg:flex-row lg:items-center">
-          <ChipRow className="md:flex-nowrap">
-            <ChipLink href={hrefWith(base, current, { hafta: "onceki" })} active={week === "onceki"} scroll={false}>
-              Last week
-            </ChipLink>
-            <ChipLink href={hrefWith(base, current, { hafta: null })} active={!week} scroll={false}>
-              This week<span className="hidden sm:inline"> · {rangeLabel(weekOf(data.today))}</span>
-            </ChipLink>
-            <ChipLink href={hrefWith(base, current, { hafta: "sonraki" })} active={week === "sonraki"} scroll={false}>
-              Next week
-            </ChipLink>
-          </ChipRow>
-          <span className="hidden h-7 w-px bg-line lg:block" aria-hidden="true" />
-          <div className="-mx-4 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:px-0">
-            <ServiceChips services={services} active={service} hrefFor={(slug) => hrefWith(base, current, { servis: slug })} />
-          </div>
-          <div className="lg:ml-auto">
-            <ChipLink href={hrefWith(base, current, { dublaj: dubOnly ? null : "1" })} active={dubOnly} scroll={false}>
-              {dubOnly ? "✓ " : ""}Only {langLabel} dub
-            </ChipLink>
+      <ValueHero
+        tags={
+          <>
+            <span className="tag tnum">
+              {weekName} · {rangeLabel(days)}
+            </span>
+            <span className="tag">Checked daily</span>
+          </>
+        }
+        title={
+          <>
+            New &amp; leaving <span className="text-text-3">in {e.countryName}</span>
+          </>
+        }
+        intro={
+          <>
+            What landed on legal services, what just got <span lang={e.hreflang}>{term}</span>, and the last day for everything about to leave.
+          </>
+        }
+        aside={
+          <Stats>
+            <Stat value={count("new")} label="New" dot="bg-white" />
+            <Stat value={count("new_dub")} label="New dubs" dot="bg-dub" />
+            <Stat value={count("leaving")} label="Leaving" dot="bg-leaving" />
+          </Stats>
+        }
+      >
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
+          <Segmented
+            label="Week"
+            className="max-lg:flex max-lg:w-full"
+            options={[
+              { href: hrefWith(base, current, { hafta: "onceki" }), label: "Last week", active: week === "onceki" },
+              { href: hrefWith(base, current, { hafta: null }), label: "This week", active: !week },
+              { href: hrefWith(base, current, { hafta: "sonraki" }), label: "Next week", active: week === "sonraki" },
+            ]}
+          />
+          <ServiceChips services={services} active={service} hrefFor={(slug) => hrefWith(base, current, { servis: slug })} className="min-w-0 lg:flex-1" />
+          <div className="shrink-0">
+            <ToggleChip href={hrefWith(base, current, { dublaj: dubOnly ? null : "1" })} active={dubOnly} dot="bg-dub">
+              Only {langLabel} dub
+            </ToggleChip>
           </div>
         </div>
-      </header>
+      </ValueHero>
 
-      {/* ── Week calendar ── */}
-      <section aria-label={`Week of ${rangeLabel(days)}`} className="mx-auto max-w-site px-4 pt-5 md:px-7 md:pt-8">
-        {/* Mobile/tablet: day strip (anchors) + stacked days */}
-        <nav aria-label="Days" className="grid grid-cols-7 gap-1.5 lg:hidden">
-          {days.map((d) => {
-            const today = d === data.today;
-            const count = byDay.get(d)!.length;
-            return (
-              <a
-                key={d}
-                href={`#d-${d}`}
-                className={`flex flex-col items-center rounded-[12px] py-2 ${today ? "bg-orange text-ink hover:text-ink" : "bg-surface text-text hover:text-text"} ${count === 0 && !today ? "opacity-60" : ""}`}
-              >
-                <span className="text-[12px] font-bold">{dayLabel(d, { weekday: "short" })}</span>
-                <span className="text-[20px] leading-tight font-extrabold">{Number(d.slice(8))}</span>
-              </a>
-            );
-          })}
+      {/* ── Week schedule ── */}
+      <section aria-label={`Week of ${rangeLabel(days)}`} className="wrap pt-6 md:pt-8">
+        {/* Day strip: the week at a glance, each day jumps to its rows */}
+        <nav aria-label="Days">
+          <ul className="grid grid-cols-7 gap-1.5 md:gap-2">
+            {days.map((d) => {
+              const today = d === data.today;
+              const items = byDay.get(d)!;
+              const cell = `flex h-full flex-col items-center gap-0.5 rounded-[14px] px-1 py-2.5 md:items-start md:gap-1 md:rounded-card md:px-4 md:py-3.5 ${
+                today ? "bg-white text-ink hover:text-ink" : items.length ? "bg-surface text-text ring-1 ring-hairline ring-inset hover:bg-surface-2 hover:text-text" : "text-text-3 ring-1 ring-hairline ring-inset"
+              }`;
+              const inner = (
+                <>
+                  <span className={`text-[11px] leading-4 md:text-[13px] ${today ? "text-ink/70" : "text-text-3"}`}>{dayLabel(d, { weekday: "short" })}</span>
+                  <span className="tnum text-xl leading-none font-normal tracking-[-0.04em] md:text-[32px]">{Number(d.slice(8))}</span>
+                  <span className="mt-1 flex h-1.5 items-center gap-1 md:mt-2" aria-hidden="true">
+                    {items.slice(0, 4).map((it) => (
+                      <span key={it.key} className={`size-1.5 rounded-full ${today && it.kind === "new" ? "bg-ink" : KIND_DOT[it.kind]}`} />
+                    ))}
+                  </span>
+                  <span className="sr-only">
+                    {today ? " (today)" : ""}, {items.length} {items.length === 1 ? "title" : "titles"}
+                  </span>
+                </>
+              );
+              return (
+                <li key={d}>
+                  {items.length ? (
+                    <a href={`#d-${d}`} className={cell}>
+                      {inner}
+                    </a>
+                  ) : (
+                    <span className={cell}>{inner}</span>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-3" aria-hidden="true">
+            <Legend dot="bg-white" label="New on a service" />
+            <Legend dot="bg-dub" label={`New ${langLabel} dub`} />
+            <Legend dot="bg-leaving" label="Last day" />
+          </p>
         </nav>
 
         {weekTotal === 0 ? (
-          <div className="mt-5">
+          <div className="mt-6 md:mt-8">
             <EmptyState title="Nothing on the calendar this week">
               {service || dubOnly ? "Try another service or remove the filter." : "We record every change the moment our daily check sees it."}
             </EmptyState>
           </div>
-        ) : null}
-
-        <div className="mt-4 flex flex-col gap-5 lg:hidden">
-          {days.map((d) => {
-            const items = byDay.get(d)!;
-            if (items.length === 0) return null;
-            return (
-              <div key={d} id={`d-${d}`} className="scroll-mt-20">
-                <h2 lang="en" className="mb-2.5 text-xs font-extrabold tracking-[0.08em] text-text-2 uppercase">
-                  {dayLabel(d, { weekday: "long", month: "short", day: "numeric" })}
-                  {d === data.today ? " · Today" : ""}
-                </h2>
-                <ul className="flex flex-col gap-2.5">
-                  {items.map((it) => (
-                    <li key={it.key}>
-                      <RowCard item={it} edition={e} today={data.today} />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Desktop: 7 columns */}
-        {weekTotal > 0 ? (
-          <div className="hidden grid-cols-7 gap-3 lg:grid">
+        ) : (
+          <div className="mt-8 md:mt-12">
             {days.map((d) => {
+              const items = byDay.get(d)!;
+              if (items.length === 0) return null;
               const today = d === data.today;
               return (
-                <div key={d} className="flex min-w-0 flex-col gap-2.5">
-                  <div className={`flex items-baseline gap-1.5 rounded-card px-3 py-3 ${today ? "bg-orange text-ink" : "bg-surface"}`}>
-                    <span className="text-sm font-bold">{dayLabel(d, { weekday: "short" })}</span>
-                    <span className="text-xl leading-none font-extrabold">{Number(d.slice(8))}</span>
+                <section key={d} id={`d-${d}`} aria-labelledby={`h-${d}`} className="scroll-mt-24 border-t border-hairline-strong pt-4 pb-6 md:pt-6 md:pb-10 lg:grid lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-x-8 xl:grid-cols-[220px_minmax(0,1fr)]">
+                  <h2 id={`h-${d}`} className="mb-2 flex items-center gap-3 lg:mb-0 lg:flex-col lg:items-start lg:gap-2">
+                    <span className="sr-only">
+                      {dayLabel(d, { weekday: "long", month: "short", day: "numeric" })}
+                      {today ? " · Today" : ""}
+                    </span>
+                    <span aria-hidden="true" className="text-[40px] leading-none font-normal tracking-[-0.05em] md:text-[48px] lg:text-[64px]">
+                      {Number(d.slice(8))}
+                    </span>
+                    <span aria-hidden="true" className="text-sm leading-5 text-text-2 md:text-[15px]">
+                      {dayLabel(d, { weekday: "long" })}
+                      <span className="text-text-3">, {dayLabel(d, { month: "short" })}</span>
+                    </span>
                     {today ? (
-                      <span lang="en" className="ml-auto text-[11px] font-extrabold tracking-wide uppercase">
+                      <span aria-hidden="true" className="tag ml-auto border-white/40 text-text lg:mt-1 lg:ml-0">
                         Today
                       </span>
                     ) : null}
-                  </div>
-                  {byDay.get(d)!.map((it) => (
-                    <CalendarCard key={it.key} item={it} edition={e} />
-                  ))}
-                </div>
+                  </h2>
+                  <ul className="divide-y divide-hairline">
+                    {items.map((it) => (
+                      <li key={it.key}>
+                        <ScheduleRow item={it} edition={e} today={data.today} />
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               );
             })}
           </div>
-        ) : null}
+        )}
       </section>
 
       {/* ── Leaving soon + digest ── */}
-      <div className="mx-auto grid max-w-site grid-cols-1 gap-6 px-4 pt-10 pb-12 md:px-7 md:pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,580px)] lg:gap-7">
+      <div className="wrap grid grid-cols-1 gap-x-8 gap-y-10 pt-10 pb-14 md:pt-16 md:pb-24 lg:grid-cols-[minmax(0,1fr)_380px] xl:gap-x-14">
         <section aria-labelledby="leaving" className="min-w-0">
-          <div className="mb-3.5 flex items-baseline gap-3">
-            <h2 id="leaving" className="text-xl font-extrabold tracking-[-0.02em] md:text-2xl">
-              Leaving soon
-            </h2>
-            <span className="text-sm text-text-2">Next 30 days · sorted by date</span>
-          </div>
+          <SectionHead id="leaving" title="Leaving soon" sub="Next 30 days · sorted by date" />
           {data.leavingSoon.length === 0 ? (
-            <p className="rounded-card border border-dashed border-line px-5 py-8 text-sm text-text-2">Nothing announced to leave in the next 30 days.</p>
+            <p className="rounded-card border border-dashed border-hairline-strong px-5 py-8 text-sm text-text-2">Nothing announced to leave in the next 30 days.</p>
           ) : (
-            <ul className="flex flex-col gap-2.5">
+            <ul className="divide-y divide-hairline">
               {data.leavingSoon.map((it) => {
                 const left = Math.max(0, daysUntil(`${it.day}T23:59:59+03:00`));
+                const href = paths.title(e, it.card.type, it.card.slug);
+                const saved = { id: it.card.id, type: it.card.type, slug: it.card.slug, name: it.card.name, posterPath: it.card.posterPath, year: it.card.year };
                 return (
-                  <li key={it.key} className="flex items-center gap-3 rounded-card bg-surface p-3 md:gap-4 md:px-3.5">
-                    <Link href={paths.title(e, it.card.type, it.card.slug)} className="w-11 shrink-0">
-                      <PosterImage path={it.card.posterPath} alt={it.card.name} sizes="44px" className="rounded-[8px]!" />
+                  <li key={it.key} className="flex items-center gap-3 py-3.5 md:gap-5 md:py-4">
+                    <p className="w-12 shrink-0 md:w-[72px]" title={left === 0 ? "Last day" : `${left} ${left === 1 ? "day" : "days"} left`}>
+                      <span className="tnum block text-[28px] leading-none font-normal tracking-[-0.05em] text-leaving md:text-[40px]">{left}</span>
+                      <span className="mt-1 block text-[11px] leading-4 text-text-3">{left === 0 ? "last day" : left === 1 ? "day left" : "days left"}</span>
+                    </p>
+                    <Link href={href} className="w-11 shrink-0 md:w-12" tabIndex={-1} aria-hidden="true">
+                      <PosterImage path={it.card.posterPath} alt="" sizes="48px" className="rounded-[8px]" />
                     </Link>
-                    <div className="min-w-0 grow">
-                      <Link href={paths.title(e, it.card.type, it.card.slug)} className="block truncate text-base font-extrabold md:text-[17px]">
+                    <div className="min-w-0 flex-1">
+                      <Link href={href} className="block truncate text-[15px] leading-6 font-medium md:text-[17px]">
                         {it.card.name}
                       </Link>
-                      <p className="mt-0.5 flex items-center gap-1.5 truncate text-[13px] text-text-2">
-                        <ServiceLogo {...it.service} size={16} />
+                      <p className="mt-0.5 flex min-w-0 items-center gap-2 text-[13px] leading-5 text-text-2">
+                        <ServiceLogo {...it.service} size={18} />
                         <span className="truncate">
-                          {it.service.name} · leaves {formatDate(it.date, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })}
-                          <span className="text-leaving sm:hidden"> · {left === 0 ? "last day" : `${left}d left`}</span>
+                          {it.service.name}
+                          <span className="tnum text-text-3"> · last day {formatDate(it.date, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })}</span>
                         </span>
                       </p>
                     </div>
-                    <span className="hidden shrink-0 sm:block">
-                      <LeavingBadge>{left <= 1 ? (left === 0 ? "last day" : "1 day left") : `${left} days left`}</LeavingBadge>
-                    </span>
-                    <AlertButton
-                      title={{ id: it.card.id, type: it.card.type, slug: it.card.slug, name: it.card.name, posterPath: it.card.posterPath, year: it.card.year }}
-                      alert="leaving"
-                      label="Remind me"
-                      activeLabel="✓ Reminding"
-                      size="sm"
-                      className="shrink-0"
-                    />
+                    <div className="w-[220px] shrink-0 max-xl:hidden">
+                      <CardLang dub={it.card.dub} sub={it.card.sub} edition={e} />
+                    </div>
+                    <AlertButton title={saved} alert="leaving" label="Remind me" activeLabel="Reminding" variant="ghost" size="sm" className="max-sm:hidden" />
+                    <AlertButton title={saved} alert="leaving" label="Remind me" activeLabel="Reminding" iconOnly className="sm:hidden" />
                   </li>
                 );
               })}
@@ -228,91 +259,120 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
           )}
         </section>
 
-        <aside className="self-start rounded-panel bg-orange-deep p-5 md:p-6">
-          <h2 className="text-xl font-extrabold">Get this every Friday</h2>
-          <p className="mt-2 text-[15px] text-text-2">
-            New {term} releases and what&apos;s leaving your services — one short Telegram message or weekly email (Friday 18:00).
+        <aside className="panel self-start p-6 md:p-8 lg:sticky lg:top-24">
+          <span aria-hidden="true" className="inline-flex size-11 items-center justify-center rounded-full ring-1 ring-hairline-strong ring-inset">
+            <BellIcon className="size-5" />
+          </span>
+          <h2 className="text-h2 mt-6">Get this every Friday</h2>
+          <p className="mt-3 text-[15px] leading-relaxed text-text-2">
+            New <span lang={e.hreflang}>{term}</span> releases and what&apos;s leaving your services — one short Telegram message or weekly email (Friday 18:00).
           </p>
-          <Link
-            href={`${e.routes.myList}#alerts`}
-            className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-button bg-orange text-base font-extrabold text-ink hover:bg-orange-hover hover:text-ink"
-          >
+          <ButtonLink href={`${e.routes.myList}#alerts`} size="lg" className="mt-6 w-full">
             Set up alerts
-          </Link>
-          <p className="mt-3 text-xs text-text-3">Max 3 Telegram messages a day. Unsubscribe any time.</p>
+          </ButtonLink>
+          <p className="mt-4 text-xs text-text-3">Max 3 Telegram messages a day. Unsubscribe any time.</p>
         </aside>
       </div>
     </>
   );
 }
 
-function kindBadge(item: CalendarItem) {
-  if (item.kind === "new_dub") return <NewBadge>NEW DUB</NewBadge>;
-  if (item.kind === "new") return <NewBadge className="bg-available!">NEW</NewBadge>;
-  return <LeavingBadge>LEAVING</LeavingBadge>;
-}
-
-/** Desktop calendar cell. New dubs get a dub-blue outline (the wedge). */
-function CalendarCard({ item, edition }: { item: CalendarItem; edition: Edition }) {
-  const border = item.kind === "new_dub" ? "border-dub/70" : item.kind === "leaving" ? "border-leaving/35" : "border-line-soft";
+function Legend({ dot, label }: { dot: string; label: string }) {
   return (
-    <Link
-      href={paths.title(edition, item.card.type, item.card.slug)}
-      className={`flex gap-2.5 rounded-card border bg-surface p-2 hover:text-text ${border}`}
-    >
-      <PosterImage path={item.card.posterPath} alt="" sizes="56px" className="w-[54px] shrink-0 self-start rounded-[8px]!" />
-      <div className="min-w-0 py-0.5">
-        {kindBadge(item)}
-        <p className="mt-1 line-clamp-3 text-sm leading-tight font-extrabold">{item.card.name}</p>
-        <p className="mt-1 flex items-center gap-1 truncate text-xs text-text-2">
-          <ServiceLogo {...item.service} size={14} />
-          <span className="truncate">{item.service.name}</span>
-        </p>
-      </div>
-    </Link>
+    <span className="inline-flex items-center gap-1.5">
+      <span className={`size-1.5 rounded-full ${dot}`} />
+      {label}
+    </span>
   );
 }
 
-/** Mobile row. */
-function RowCard({ item, edition, today }: { item: CalendarItem; edition: Edition; today: string }) {
-  const href = paths.title(edition, item.card.type, item.card.slug);
+/** One schedule entry: poster, name, what happened on which service, language status, the date that matters, one action. */
+function ScheduleRow({ item, edition, today }: { item: CalendarItem; edition: Edition; today: string }) {
+  const { card, service, kind } = item;
+  const href = paths.title(edition, card.type, card.slug);
   const left = daysUntil(`${item.day}T23:59:59+03:00`);
-  const sub =
-    item.kind === "leaving"
-      ? `leaves ${formatDate(item.date, { day: "numeric", month: "short", timeZone: "UTC" })}`
-      : item.kind === "new_dub"
-        ? `new ${dubTerm(edition.contentLang)}`
-        : "new";
+  const gone = kind === "leaving" && item.day < today;
+  const upcoming = kind === "leaving" && !gone;
+  const date = formatDate(item.date, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+  const meta = [card.type === "tv" ? "Series" : "Movie", card.year, card.genres[0]].filter(Boolean).join(" · ");
+  const saved = { id: card.id, type: card.type, slug: card.slug, name: card.name, posterPath: card.posterPath, year: card.year };
+
+  const what =
+    kind === "new_dub" ? (
+      <>
+        New <span lang={edition.hreflang}>{dubTerm(edition.contentLang)}</span>
+      </>
+    ) : kind === "new" ? (
+      "New"
+    ) : gone ? (
+      "Left"
+    ) : (
+      "Leaving"
+    );
+  const when = kind === "leaving" ? (gone ? `left ${date}` : `last day ${date}`) : `added ${date}`;
+  const countdown = left <= 0 ? "Last day" : left === 1 ? "Tomorrow" : `${left} days left`;
+
   return (
-    <div className={`flex items-center gap-3 rounded-card border bg-surface p-2.5 ${item.kind === "new_dub" ? "border-dub/70" : "border-transparent"}`}>
-      <Link href={href} className="w-[52px] shrink-0">
-        <PosterImage path={item.card.posterPath} alt={item.card.name} sizes="52px" className="rounded-[8px]!" />
+    <div className="grid grid-cols-[52px_minmax(0,1fr)_auto] items-center gap-x-3.5 py-3.5 md:grid-cols-[56px_minmax(0,1.5fr)_minmax(0,1.2fr)_auto] md:gap-x-5 md:py-4 xl:grid-cols-[56px_minmax(0,1.4fr)_minmax(0,1.1fr)_minmax(0,1fr)_160px]">
+      <Link href={href} tabIndex={-1} aria-hidden="true">
+        <PosterImage path={card.posterPath} alt="" sizes="56px" className="rounded-[8px]" />
       </Link>
-      <div className="min-w-0 grow">
-        <Link href={href} className="block truncate text-base font-extrabold">
-          {item.card.name}
+
+      <div className="min-w-0">
+        <Link href={href} className="block truncate text-[15px] leading-6 font-medium md:text-[17px]">
+          {card.name}
         </Link>
-        <p className="mt-0.5 truncate text-[13px] text-text-2">
-          {item.service.name} · {sub}
+        <p className="tnum truncate text-[13px] leading-5 text-text-3 max-xl:hidden">{meta}</p>
+        {/* Phones: the event collapses under the name (the day heading already carries the date) */}
+        <p className="mt-0.5 flex min-w-0 items-center gap-1.5 text-[13px] leading-5 text-text-2 md:hidden">
+          <span aria-hidden="true" className={`size-1.5 shrink-0 rounded-full ${gone ? "bg-text-3" : KIND_DOT[kind]}`} />
+          <span className={`shrink-0 ${upcoming ? "text-leaving" : "text-text"}`}>{what}</span>
+          <span className="tnum truncate text-text-3">
+            · {service.name}
+            {upcoming ? ` · ${countdown.toLowerCase()}` : ""}
+          </span>
         </p>
-        <div className="mt-1.5">
-          {item.kind === "leaving" ? (
-            <LeavingBadge>{item.day < today ? "LEFT" : left <= 0 ? "LAST DAY" : left === 1 ? "LEAVING TOMORROW" : `LEAVING IN ${left} DAYS`}</LeavingBadge>
-          ) : (
-            kindBadge(item)
-          )}
+        <CardLang dub={card.dub} sub={card.sub} edition={edition} className="mt-1 xl:hidden" />
+      </div>
+
+      <div className="flex min-w-0 items-center gap-3 max-md:hidden">
+        <ServiceLogo {...service} size={32} />
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-sm leading-5 font-medium">
+            <span aria-hidden="true" className={`size-1.5 shrink-0 rounded-full ${gone ? "bg-text-3" : KIND_DOT[kind]}`} />
+            <span className={`truncate ${upcoming ? "text-leaving" : gone ? "text-text-2" : ""}`}>
+              {what}
+              {upcoming ? <span className="tnum font-normal"> · {countdown.toLowerCase()}</span> : null}
+            </span>
+          </p>
+          <p className="tnum truncate text-[13px] leading-5 text-text-3">
+            {service.name} · {when}
+          </p>
         </div>
       </div>
-      {item.kind === "leaving" && item.day >= today ? (
-        <AlertButton
-          title={{ id: item.card.id, type: item.card.type, slug: item.card.slug, name: item.card.name, posterPath: item.card.posterPath, year: item.card.year }}
-          alert="leaving"
-          label="Remind"
-          activeLabel="✓ Set"
-          variant="link"
-          className="shrink-0 px-1"
-        />
-      ) : null}
+
+      <div className="min-w-0 max-xl:hidden">
+        <CardLang dub={card.dub} sub={card.sub} edition={edition} />
+      </div>
+
+      <div className="flex items-center justify-end gap-3">
+        {upcoming ? (
+          <>
+            <AlertButton title={saved} alert="leaving" label="Remind me" activeLabel="Reminding" variant="ghost" size="sm" className="max-md:hidden" />
+            <AlertButton title={saved} alert="leaving" label="Remind me" activeLabel="Reminding" iconOnly className="md:hidden" />
+          </>
+        ) : (
+          <>
+            <Link href={href} className="inline-flex h-9 items-center gap-1.5 rounded-full px-4 text-[13px] font-medium whitespace-nowrap text-text ring-1 ring-hairline-strong ring-inset transition duration-200 ease-out hover:bg-white/6 hover:ring-white/30 max-md:hidden">
+              Where to watch
+              <ArrowRightIcon className="size-3.5" />
+            </Link>
+            <Link href={href} aria-label={`Where to watch ${card.name}`} className={`${iconButtonClass("md", "outline")} md:hidden`}>
+              <ArrowRightIcon className="size-4" />
+            </Link>
+          </>
+        )}
+      </div>
     </div>
   );
 }

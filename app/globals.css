@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
-/* Design tokens — source: design/tokens.css (DS2, 2026-11-04). Keep in sync. */
+/*
+ * Design tokens — source: design/tokens.css (DS2, 2026-11-04). Keep in sync.
+ * DS3 (2026-11-24): clean cinema — near-black neutrals, light large type, bento radii, one accent.
+ */
 @theme {
   --color-orange: #ff5a1f;
   --color-orange-hover: #ff7a47;
@@ -8,28 +11,41 @@
   --color-orange-tint: #ffd5c7;
   --color-orange-deep: #2a150d;
 
-  --color-ink: #0a0a0d;
-  --color-surface: #15151b;
-  --color-surface-2: #1c1c24;
-  --color-line: #26262f;
-  --color-line-soft: #18181e;
+  /* DS3 neutrals: near-black, no tint — the artwork supplies the colour. */
+  --color-ink: #09090b;
+  --color-ink-2: #0d0d0f;
+  --color-surface: #131316;
+  --color-surface-2: #1b1b1f;
+  --color-surface-3: #26262b;
+  --color-line: #26262b;
+  --color-line-soft: #18181b;
+  /* Alpha hairline: reads correctly on any surface and over imagery. */
+  --color-hairline: rgb(255 255 255 / 0.07);
+  --color-hairline-strong: rgb(255 255 255 / 0.14);
 
   --color-text: #ffffff;
-  --color-text-2: #a1a1ad;
-  --color-text-3: #6e6e7a;
+  --color-text-2: #a3a3ad;
+  --color-text-3: #70707a;
 
   --color-dub: #3b82f6;
   --color-available: #4ade80;
   --color-leaving: #fbbf24;
   --color-free: #a78bfa;
 
+  /* DS3 radii: soft bento surfaces, pill controls. */
   --radius-chip: 999px;
-  --radius-input: 12px;
-  --radius-button: 12px;
+  --radius-button: 999px;
+  --radius-input: 14px;
   --radius-poster: 12px;
-  --radius-card: 16px;
-  --radius-panel: 20px;
-  --radius-hero: 24px;
+  --radius-card: 20px;
+  --radius-panel: 24px;
+  --radius-hero: 28px;
+
+  /* DS3 weights: light, large type. Names are remapped one-to-two steps down (800 = logo only). */
+  --font-weight-medium: 500;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 600;
 
   --font-ui: var(--font-manrope), system-ui, sans-serif;
   --font-logo: var(--font-nunito), var(--font-manrope), sans-serif;
@@ -42,20 +58,360 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
+
+  --shadow-card: 0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px -16px rgb(0 0 0 / 0.7);
+  --shadow-pop: 0 1px 0 0 rgb(255 255 255 / 0.06) inset, 0 24px 64px -12px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(0 0 0 / 0.4);
+  --shadow-poster: 0 18px 40px -18px rgb(0 0 0 / 0.9);
+  --shadow-cta: 0 6px 20px -10px rgb(255 90 31 / 0.6);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --animate-fade-up: fade-up 0.5s var(--ease-out) both;
+  --animate-fade-in: fade-in 0.4s var(--ease-out) both;
+  --animate-sheet-up: sheet-up 0.32s var(--ease-out) both;
+  --animate-pop-in: pop-in 0.22s var(--ease-out) both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes sheet-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 @layer base {
   html {
     color-scheme: dark;
+    background: var(--color-ink);
+    scroll-padding-top: 88px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
   body {
     @apply bg-ink font-ui text-text antialiased;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.55;
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+  p,
+  li,
+  dd,
+  figcaption {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: #fff;
+    color: #09090b;
+  }
+  a {
+    transition: color 0.15s var(--ease-out);
   }
   a:hover {
-    color: var(--color-orange-tint);
+    color: #fff;
   }
   :focus-visible {
-    outline: 2px solid var(--color-orange);
+    outline: 2px solid #fff;
     outline-offset: 2px;
+  }
+  button,
+  [role="button"],
+  summary,
+  select,
+  label[for] {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  /* Thin, quiet scrollbars for the few scrollable panels (tables, sheets, suggestion lists). */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-surface-3) transparent;
+  }
+  img {
+    -webkit-user-drag: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ── Layout ───────────────────────────────────────────────────────────── */
+
+/** Page container: 16 px gutters on phones, 28 px from md, 40 px from xl; max 1360. */
+@utility wrap {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--container-site);
+  padding-inline: 16px;
+  @media (width >= 768px) {
+    padding-inline: 28px;
+  }
+}
+
+/** Vertical rhythm between page sections. */
+@utility section-y {
+  padding-block: 28px;
+  @media (width >= 768px) {
+    padding-block: 48px;
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Type scale ───────────────────────────────────────────────────────── */
+
+@utility text-display {
+  font-size: clamp(2.25rem, 1.1rem + 4.6vw, 4.75rem);
+  line-height: 1.02;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+@utility text-h1 {
+  font-size: clamp(1.875rem, 1.2rem + 2.7vw, 3.25rem);
+  line-height: 1.06;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+@utility text-h2 {
+  font-size: clamp(1.375rem, 1.1rem + 1.1vw, 1.875rem);
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+@utility text-h3 {
+  font-size: 1.125rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+/** Small caps label. Always pair with lang="en" inside <html lang="tr"> (dotless-i rule). */
+@utility overline {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* Tailwind's built-in `overline` utility is a text-decoration — neutralise it. */
+  text-decoration-line: none !important;
+}
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Surfaces ─────────────────────────────────────────────────────────── */
+
+/** Raised panel: surface fill, alpha hairline, soft top highlight. */
+@utility panel {
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+}
+@utility card {
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+}
+/** Interactive card hover: brighter hairline + lift. */
+@utility card-hover {
+  transition:
+    border-color 0.2s var(--ease-out),
+    background-color 0.2s var(--ease-out),
+    transform 0.2s var(--ease-out),
+    box-shadow 0.2s var(--ease-out);
+  &:hover {
+    border-color: var(--color-hairline-strong);
+    background-color: var(--color-surface-2);
+    color: var(--color-text);
+  }
+}
+/** Frosted glass for bars and overlays that sit on imagery. */
+@utility glass {
+  background: rgb(9 9 11 / 0.94);
+  backdrop-filter: saturate(160%) blur(20px);
+  -webkit-backdrop-filter: saturate(160%) blur(20px);
+}
+/** Thin horizontal rule used between editorial blocks. */
+@utility rule {
+  height: 1px;
+  width: 100%;
+  background: var(--color-hairline-strong);
+}
+/** Oversized light numeral ("01.") for section counters and stats. */
+@utility numeral {
+  font-size: clamp(2.5rem, 1.6rem + 3.4vw, 4.5rem);
+  line-height: 0.95;
+  font-weight: 400;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+/** Outlined pill tag (non-interactive label). */
+@utility tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding-inline: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--color-hairline-strong);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-2);
+  white-space: nowrap;
+}
+/** Fades the left/right edges of a horizontal scroller. */
+@utility mask-x {
+  mask-image: linear-gradient(to right, transparent 0, #000 var(--mask-inset, 24px), #000 calc(100% - var(--mask-inset, 24px)), transparent 100%);
+}
+/** Inline text link. */
+@utility link {
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-color: var(--color-hairline-strong);
+  text-underline-offset: 3px;
+  &:hover {
+    color: #fff;
+    text-decoration-color: currentColor;
+  }
+}
+/** Form control: one look for inputs, selects and textareas. */
+@utility field {
+  height: 46px;
+  width: 100%;
+  min-width: 0;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--color-hairline-strong);
+  background: rgb(255 255 255 / 0.03);
+  padding-inline: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text);
+  outline: none;
+  transition:
+    border-color 0.15s var(--ease-out),
+    box-shadow 0.15s var(--ease-out);
+  &::placeholder {
+    color: var(--color-text-3);
+    font-weight: 400;
+  }
+  &:hover {
+    border-color: rgb(255 255 255 / 0.22);
+  }
+  &:focus,
+  &:focus-visible {
+    border-color: rgb(255 255 255 / 0.6);
+    box-shadow: 0 0 0 4px rgb(255 255 255 / 0.08);
+    outline: none;
+  }
+}
+
+/* ── Long-form copy (about, privacy, SEO text) ────────────────────────── */
+
+@utility prose-sofo {
+  color: var(--color-text-2);
+  font-size: 15px;
+  line-height: 1.7;
+  & :where(h2) {
+    color: var(--color-text);
+    font-size: 1.625rem;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin-top: 2.25em;
+    margin-bottom: 0.6em;
+  }
+  & :where(h3) {
+    color: var(--color-text);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-top: 1.6em;
+    margin-bottom: 0.4em;
+  }
+  & :where(p, ul, ol) {
+    margin-block: 0.8em;
+  }
+  & :where(ul) {
+    list-style: disc;
+    padding-left: 1.2em;
+  }
+  & :where(ol) {
+    list-style: decimal;
+    padding-left: 1.2em;
+  }
+  & :where(li) {
+    margin-block: 0.3em;
+  }
+  & :where(strong) {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  & :where(a) {
+    color: var(--color-text);
+    font-weight: 500;
+    text-decoration: underline;
+    text-decoration-color: var(--color-hairline-strong);
+    text-underline-offset: 3px;
   }
 }

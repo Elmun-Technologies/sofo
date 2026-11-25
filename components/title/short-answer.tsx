@@ -1,3 +1,4 @@
+import { ArrowUpRightIcon, CheckIcon } from "@/components/icons";
 import { OutboundLink } from "@/components/outbound-link";
 import { buttonClass } from "@/components/ui/button";
 import { CheckedAt } from "@/components/ui/checked-at";
@@ -9,12 +10,12 @@ import { AlertButton } from "./alert-button";
 import { ReportButton } from "./report-button";
 
 /** V2 short answer — deterministic sentence + cheapest way + dub services + "not on". */
-export function ShortAnswerBlock({ data, edition }: { data: TitlePageData; edition: Edition }) {
+export function ShortAnswerBlock({ data, edition, idPrefix }: { data: TitlePageData; edition: Edition; idPrefix?: string }) {
   const { shortAnswer: a, local, offers, title } = data;
   const lang = edition.contentLang;
   const langLabel = langName(lang);
   const where = edition.countryName;
-  const name = <span className="text-orange">{local.name}</span>;
+  const name = <span className="text-white">{local.name}</span>;
 
   const yes = a.kind !== "none" && a.kind !== "rent_only";
   const sentence = (() => {
@@ -35,6 +36,58 @@ export function ShortAnswerBlock({ data, edition }: { data: TitlePageData; editi
     }
   })();
 
+  const dubOn = [...new Set(offers.filter((o) => o.audio[lang] === "confirmed_yes").map((o) => o.service.name))];
+
+  return (
+    <section aria-labelledby={idPrefix ? `${idPrefix}-heading` : "short-answer"}>
+      <p lang="en" id={idPrefix ? `${idPrefix}-heading` : "short-answer"} className="overline flex items-center gap-2 text-text-3">
+        <span aria-hidden="true" className={`inline-flex size-[18px] items-center justify-center rounded-full ring-1 ring-inset ${yes ? "text-available ring-available/60" : "text-text-2 ring-white/25"}`}>
+          {yes ? <CheckIcon className="size-3 stroke-[3]" /> : <span className="h-0.5 w-2 rounded-full bg-current" />}
+        </span>
+        The short answer
+      </p>
+      <p className="mt-2.5 max-w-[34ch] text-[21px] leading-[1.3] font-extrabold tracking-[-0.02em] sm:max-w-none md:text-[26px]">{sentence}</p>
+
+      <div className="mt-5 flex flex-wrap items-center gap-2.5" id={idPrefix ? `${idPrefix}-cta` : undefined}>
+        {a.kind !== "none" ? (
+          <OutboundLink
+            href={a.offer.url}
+            service={a.offer.serviceSlug}
+            title={local.name}
+            country={edition.country}
+            lang={a.kind === "yes_audio" ? lang : undefined}
+            offerType={a.offer.type}
+            className={`${buttonClass("accent", "lg")} max-sm:w-full`}
+          >
+            {a.offer.type === "rent" ? "Rent" : a.offer.type === "buy" ? "Buy" : "Watch"} on {a.offer.serviceName}
+            <ArrowUpRightIcon className="size-[18px]" />
+          </OutboundLink>
+        ) : null}
+        <AlertButton
+          title={{ id: title.id, type: title.type, slug: local.slug, name: local.name, posterPath: title.posterPath, year: title.year }}
+          kinds={a.kind === "none" ? ["dub_available", "on_my_services"] : dubOn.length ? ["leaving", "price_drop"] : ["dub_available", "leaving"]}
+          label={a.kind === "none" ? "Notify me when it's available" : dubOn.length ? `Alert me if it leaves` : `Alert me when ${langLabel} dub arrives`}
+        />
+      </div>
+      <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-text-3">
+        {data.checkedAt ? (
+          <>
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-available" />
+            <CheckedAt at={data.checkedAt} source={`${edition.countryName} catalogue`} className="!text-text-2" />
+            <span aria-hidden="true">·</span>
+          </>
+        ) : null}
+        <ReportButton titleId={title.id} titleName={local.name} offers={offers.map((o) => ({ id: o.id, label: `${o.service.name} · ${o.type}` }))} />
+      </div>
+    </section>
+  );
+}
+
+/** Three facts under the hero: cheapest way · dub services · where it is not. */
+export function ShortAnswerFacts({ data, edition }: { data: TitlePageData; edition: Edition }) {
+  const { offers } = data;
+  const lang = edition.contentLang;
+  const langLabel = langName(lang);
   const included = offers.filter((o) => o.type === "subscription" || o.type === "free" || o.type === "ads");
   const paid = offers.filter((o) => o.type === "rent" || o.type === "buy").sort((x, y) => (x.price ?? 0) - (y.price ?? 0))[0];
   const cheapest =
@@ -45,7 +98,6 @@ export function ShortAnswerBlock({ data, edition }: { data: TitlePageData; editi
         : paid
           ? { main: `${paid.type === "rent" ? "Rent" : "Buy"} from ${formatPrice(paid.price, paid.currency)}`, sub: `on ${paid.service.name}` }
           : { main: "No legal option", sub: "We’ll tell you when it arrives" };
-
   const dubOn = [...new Set(offers.filter((o) => o.audio[lang] === "confirmed_yes").map((o) => o.service.name))];
   const subOnly = [...new Set(offers.filter((o) => o.audio[lang] !== "confirmed_yes" && o.subtitle[lang] === "confirmed_yes").map((o) => o.service.name))];
   const unconfirmed = offers.some((o) => !o.audio[lang] || o.audio[lang] === "unknown");
@@ -53,68 +105,32 @@ export function ShortAnswerBlock({ data, edition }: { data: TitlePageData; editi
   const left = data.notOn.find((s) => s.leftAt);
 
   return (
-    <section
-      aria-labelledby="short-answer"
-      className={`relative overflow-hidden rounded-hero border p-5 md:p-7 ${yes ? "border-orange/35 bg-gradient-to-br from-orange-deep via-surface to-surface" : "border-line bg-surface"}`}
-    >
-      <p lang="en" id="short-answer" className="text-xs font-extrabold tracking-[0.12em] text-orange uppercase">
-        The short answer
-      </p>
-      <p className="mt-3 flex gap-3 text-[21px] leading-snug font-extrabold tracking-[-0.02em] md:text-[30px]">
-        <span aria-hidden="true" className={`mt-1 inline-flex size-7 shrink-0 items-center justify-center rounded-full text-sm md:mt-1.5 ${yes ? "bg-available text-ink" : "bg-surface-2 text-text-2"}`}>
-          {yes ? "✓" : "–"}
-        </span>
-        <span>{sentence}</span>
-      </p>
-
-      <dl className="mt-5 grid gap-2.5 sm:grid-cols-3">
-        <Fact label="Cheapest way" main={cheapest.main} sub={cheapest.sub} />
-        <Fact
-          label={`${langLabel} dub`}
-          main={dubOn.length ? dubOn.join(" · ") : unconfirmed ? "Not confirmed by the service" : "Not available"}
-          sub={subOnly.length ? `${subOnly.join(", ")}: subtitles only` : null}
-        />
-        <Fact
-          label="Not on"
-          main={notOn.length ? notOn.map((s) => s.name).join(", ") + (data.notOn.length > 3 ? ` +${data.notOn.length - 3}` : "") : "On every major service"}
-          sub={left?.leftAt ? `left ${left.name} ${formatDate(left.leftAt)}` : null}
-        />
-      </dl>
-
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        {a.kind !== "none" ? (
-          <OutboundLink
-            href={a.offer.url}
-            service={a.offer.serviceSlug}
-            title={local.name}
-            country={edition.country}
-            lang={a.kind === "yes_audio" ? lang : undefined}
-            offerType={a.offer.type}
-            className={`${buttonClass("primary")} max-sm:w-full`}
-          >
-            Watch on {a.offer.serviceName} ↗
-          </OutboundLink>
-        ) : null}
-        <AlertButton
-          title={{ id: title.id, type: title.type, slug: local.slug, name: local.name, posterPath: title.posterPath, year: title.year }}
-          kinds={a.kind === "none" ? ["dub_available", "on_my_services"] : dubOn.length ? ["leaving", "price_drop"] : ["dub_available", "leaving"]}
-          label={a.kind === "none" ? "Notify me when it's available" : dubOn.length ? `Alert me if it leaves` : `Alert me when ${langLabel} dub arrives`}
-        />
-        <div className="flex flex-col items-start gap-0.5 text-xs text-text-3 sm:ml-auto sm:items-end">
-          {data.checkedAt ? <CheckedAt at={data.checkedAt} source={`${edition.countryName} catalogue`} /> : null}
-          <ReportButton titleId={title.id} titleName={local.name} offers={offers.map((o) => ({ id: o.id, label: `${o.service.name} · ${o.type}` }))} />
-        </div>
-      </div>
-    </section>
+    <dl className="grid overflow-hidden rounded-panel border border-hairline bg-surface/80 backdrop-blur-xl sm:grid-cols-3 sm:divide-x sm:divide-hairline max-sm:divide-y max-sm:divide-hairline">
+      <Fact label="Cheapest way" main={cheapest.main} sub={cheapest.sub} />
+      <Fact
+        label={`${langLabel} dub`}
+        tone={dubOn.length ? "dub" : undefined}
+        main={dubOn.length ? dubOn.join(" · ") : unconfirmed ? "Not confirmed by the service" : "Not available"}
+        sub={subOnly.length ? `${subOnly.join(", ")}: subtitles only` : null}
+      />
+      <Fact
+        label="Not on"
+        main={notOn.length ? notOn.map((s) => s.name).join(", ") + (data.notOn.length > 3 ? ` +${data.notOn.length - 3}` : "") : "On every major service"}
+        sub={left?.leftAt ? `left ${left.name} ${formatDate(left.leftAt)}` : null}
+      />
+    </dl>
   );
 }
 
-function Fact({ label, main, sub }: { label: string; main: string; sub: string | null }) {
+function Fact({ label, main, sub, tone }: { label: string; main: string; sub: string | null; tone?: "dub" }) {
   return (
-    <div className="rounded-card bg-ink/55 p-3.5">
-      <dt lang="en" className="text-[11px] font-extrabold tracking-[0.08em] text-text-3 uppercase">{label}</dt>
-      <dd className="mt-1 text-[15px] font-extrabold">{main}</dd>
-      {sub ? <dd className="mt-0.5 text-xs text-text-2">{sub}</dd> : null}
+    <div className="px-5 py-4">
+      <dt lang="en" className="overline flex items-center gap-1.5 text-text-3">
+        {tone === "dub" ? <span aria-hidden="true" className="size-1.5 rounded-full bg-dub" /> : null}
+        {label}
+      </dt>
+      <dd className="mt-1.5 text-[15px] leading-snug font-bold">{main}</dd>
+      {sub ? <dd className="mt-0.5 text-xs text-text-3">{sub}</dd> : null}
     </div>
   );
 }

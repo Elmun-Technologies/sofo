@@ -44,16 +44,16 @@ export default async function ServicePage({ params }: PageProps<"/[lang]/[servic
   if (!r) notFound();
   const { e, data } = r;
   const s = data.service;
+  const code = e.contentLang.toUpperCase();
   const newBadge = (dub: boolean) => (
     <span className="flex gap-1">
-      <NewBadge>NEW</NewBadge>
-      {dub ? <DubBadge>TR dub</DubBadge> : null}
+      <NewBadge>New</NewBadge>
+      {dub ? <DubBadge>{code} dub</DubBadge> : null}
     </span>
   );
-  const newRange =
-    data.newItems.length > 0
-      ? `${formatDate(data.newItems[data.newItems.length - 1]!.firstSeenAt, { day: "numeric", month: "short" })} – ${formatDate(data.newItems[0]!.firstSeenAt, { day: "numeric", month: "short" })}`
-      : undefined;
+  const dayMonth = (d: Date) => formatDate(d, { day: "numeric", month: "short" });
+  const [newFrom, newTo] = data.newItems.length > 0 ? [dayMonth(data.newItems[data.newItems.length - 1]!.firstSeenAt), dayMonth(data.newItems[0]!.firstSeenAt)] : [];
+  const newRange = newFrom ? (newFrom === newTo ? newFrom : `${newFrom} – ${newTo}`) : undefined;
   const dubbedIds = new Set(data.newItems.filter((n) => n.card.dub).map((n) => n.card.id));
 
   return (
@@ -75,11 +75,15 @@ export default async function ServicePage({ params }: PageProps<"/[lang]/[servic
         cards={data.top}
         edition={e}
         ranked
-        badge={(c) => (c.dub ? <DubBadge>TR dub</DubBadge> : c.sub ? <SubBadge>TR sub</SubBadge> : "none")}
+        badge={(c) => (c.dub ? <DubBadge>{code} dub</DubBadge> : c.sub ? <SubBadge>{code} sub</SubBadge> : "none")}
       />
       <PosterRow
-        title={`${cap(dubTerm(e.contentLang))} on ${s.name}`}
-        sub={`${data.stats.dub} titles with ${langName(e.contentLang)} audio`}
+        title={
+          <>
+            <span lang={e.hreflang}>{cap(dubTerm(e.contentLang))}</span> on {s.name}
+          </>
+        }
+        sub={`${data.stats.dub} title${data.stats.dub === 1 ? "" : "s"} with ${langName(e.contentLang)} audio`}
         cards={data.dubbed}
         edition={e}
         href={catalogHref(e.routes.movies, { service: s.slug, audio: "dub" })}

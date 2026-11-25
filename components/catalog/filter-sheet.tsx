@@ -1,7 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { createPortal } from "react-dom";
+import { CheckIcon, FilterIcon } from "@/components/icons";
+import { CloseButton, Dialog } from "@/components/retention/dialog";
+import { buttonClass } from "@/components/ui/button";
 import { ServiceLogo } from "@/components/ui/service-logo";
 import type { AudioFilter, CatalogFilters, OfferFilter } from "@/lib/queries/catalog-pages";
 import { cap, catalogHref, DECADES, decadeLabel, OFFER_LABELS } from "./catalog-url";
@@ -11,41 +15,36 @@ type Props = {
   filters: CatalogFilters;
   dubLabel: string;
   subLabel: string;
-  services: { slug: string; name: string; logoPath: string | null }[];
+  /** hreflang of the edition — the dub/sub terms are in the local language. */
+  localLang?: string;
+  services: { slug: string; name: string; logoPath: string | null; count?: number }[];
   genres: { slug: string; name: string }[];
   activeCount: number;
+  className?: string;
 };
 
 const pill = (active: boolean) =>
-  `inline-flex h-10 items-center rounded-chip px-4 text-sm font-bold ${active ? "bg-white text-ink" : "border border-line bg-surface-2 text-text"}`;
+  `inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-medium transition duration-200 ease-out active:scale-[0.97] ${
+    active ? "bg-white text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-white/6 hover:text-text"
+  }`;
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <fieldset className="mt-5">
-      <legend lang="en" className="mb-2.5 text-xs font-extrabold tracking-[0.08em] text-text-2 uppercase">{title}</legend>
-      {children}
+    <fieldset className="border-t border-hairline py-5 first:border-t-0 first:pt-1">
+      <legend lang="en" className="overline float-left mb-3 w-full text-text-3">
+        {title}
+      </legend>
+      <div className="clear-both">{children}</div>
     </fieldset>
   );
 }
 
 /** Mobile/tablet filters: bottom sheet with local draft state, applied to the URL on "Show results". */
-export function FilterSheet({ base, filters, dubLabel, subLabel, services, genres, activeCount }: Props) {
+export function FilterSheet({ base, filters, dubLabel, subLabel, localLang, services, genres, activeCount, className = "" }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(filters);
   const [allGenres, setAllGenres] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
 
   const toggle = <K extends keyof CatalogFilters>(key: K, value: CatalogFilters[K]) =>
     setDraft((d) => ({ ...d, [key]: d[key] === value ? undefined : value }));
@@ -55,7 +54,8 @@ export function FilterSheet({ base, filters, dubLabel, subLabel, services, genre
     router.push(catalogHref(base, { ...draft, page: 1 }), { scroll: false });
   };
 
-  const shownGenres = allGenres ? genres : genres.slice(0, 3);
+  const shownGenres = allGenres ? genres : genres.slice(0, 6);
+  const picked = [draft.audio, draft.service, draft.offer, draft.genre, draft.decade != null ? "d" : undefined].filter(Boolean).length;
 
   return (
     <>
@@ -65,37 +65,41 @@ export function FilterSheet({ base, filters, dubLabel, subLabel, services, genre
           setDraft(filters);
           setOpen(true);
         }}
-        className={`flex h-11 grow items-center justify-center gap-2 rounded-button border bg-surface px-4 text-sm font-extrabold ${activeCount ? "border-orange" : "border-line"}`}
+        className={`${buttonClass(activeCount ? "primary" : "ghost")} ${className}`}
       >
-        Filters{activeCount ? ` · ${activeCount}` : ""}
+        <FilterIcon className="size-4" />
+        Filters
+        {activeCount ? (
+          <span className="tnum -mr-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1.5 text-[11px] font-semibold text-white">{activeCount}</span>
+        ) : null}
       </button>
 
-      {open ? (
-        <div className="fixed inset-0 z-50 flex items-end bg-black/60" onClick={() => setOpen(false)}>
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="filters-title"
-            onClick={(e) => e.stopPropagation()}
-            className="flex max-h-[88dvh] w-full flex-col rounded-t-hero border-t border-line bg-surface"
-          >
-            <div className="mx-auto mt-2.5 h-1 w-10 rounded-chip bg-line" aria-hidden="true" />
-            <div className="flex items-center justify-between px-5 pt-3">
-              <h2 id="filters-title" className="text-xl font-extrabold">
+      {/* Portalled: the sticky filter bar is a glass layer (backdrop-filter), which would trap a fixed dialog inside it. */}
+      {open
+        ? createPortal(
+          <Dialog open={open} onClose={() => setOpen(false)} labelledBy="filters-title" className="md:max-w-[520px]">
+            <div className="flex items-center gap-3 px-5 pt-4 pb-2 md:pt-5">
+              <h2 id="filters-title" className="text-h3 flex-1">
                 Filters
               </h2>
-              <button type="button" className="text-sm font-bold text-text-2" onClick={() => setDraft({ sort: draft.sort, page: 1 })}>
+              <button type="button" className={buttonClass("quiet", "sm")} disabled={picked === 0} onClick={() => setDraft({ sort: draft.sort, page: 1 })}>
                 Reset
               </button>
+              <CloseButton onClick={() => setOpen(false)} />
             </div>
-            <div className="overflow-y-auto px-5 pb-5">
+
+            <div className="px-5 pb-2">
               <Group title="Audio">
                 <div className="flex flex-wrap gap-2">
-                  {(["dub", "sub"] as AudioFilter[]).map((a) => (
-                    <button key={a} type="button" aria-pressed={draft.audio === a} className={pill(draft.audio === a)} onClick={() => toggle("audio", a)}>
-                      {cap(a === "dub" ? dubLabel : subLabel)}
-                    </button>
-                  ))}
+                  {(["dub", "sub"] as AudioFilter[]).map((a) => {
+                    const on = draft.audio === a;
+                    return (
+                      <button key={a} type="button" aria-pressed={on} className={pill(on)} onClick={() => toggle("audio", a)}>
+                        <span aria-hidden="true" className={`size-1.5 rounded-full ${a === "dub" ? "bg-dub" : on ? "bg-ink/50" : "bg-white/70"}`} />
+                        <span lang={localLang}>{cap(a === "dub" ? dubLabel : subLabel)}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </Group>
               <Group title="Services">
@@ -108,10 +112,17 @@ export function FilterSheet({ base, filters, dubLabel, subLabel, services, genre
                         type="button"
                         aria-pressed={on}
                         onClick={() => toggle("service", s.slug)}
-                        className={`flex flex-col items-center gap-1.5 rounded-card border px-1 py-2.5 text-[11px] font-bold ${on ? "border-orange bg-orange-deep" : "border-line bg-surface-2"}`}
+                        className={`relative flex flex-col items-center gap-2 rounded-card px-1 pt-3.5 pb-3 text-[11px] leading-tight font-medium transition duration-200 ease-out active:scale-95 ${
+                          on ? "bg-white/10 text-text ring-2 ring-white ring-inset" : "text-text-2 ring-1 ring-hairline ring-inset hover:bg-white/6"
+                        }`}
                       >
-                        <ServiceLogo slug={s.slug} name="" logoPath={s.logoPath} size={32} />
+                        <ServiceLogo slug={s.slug} name="" logoPath={s.logoPath} size={36} />
                         <span className="w-full truncate">{s.name}</span>
+                        {on ? (
+                          <span aria-hidden="true" className="absolute top-1.5 right-1.5 flex size-4 items-center justify-center rounded-full bg-white text-ink">
+                            <CheckIcon className="size-3 stroke-[3.5]" />
+                          </span>
+                        ) : null}
                       </button>
                     );
                   })}
@@ -134,9 +145,9 @@ export function FilterSheet({ base, filters, dubLabel, subLabel, services, genre
                         {g.name}
                       </button>
                     ))}
-                    {!allGenres && genres.length > 3 ? (
-                      <button type="button" className={pill(false)} onClick={() => setAllGenres(true)}>
-                        + {genres.length - 3}
+                    {!allGenres && genres.length > 6 ? (
+                      <button type="button" className={`${pill(false)} tnum`} onClick={() => setAllGenres(true)} aria-label={`Show ${genres.length - 6} more genres`}>
+                        +{genres.length - 6} more
                       </button>
                     ) : null}
                   </div>
@@ -145,21 +156,23 @@ export function FilterSheet({ base, filters, dubLabel, subLabel, services, genre
               <Group title="Year">
                 <div className="flex flex-wrap gap-2">
                   {DECADES.map((d) => (
-                    <button key={d} type="button" aria-pressed={draft.decade === d} className={pill(draft.decade === d)} onClick={() => toggle("decade", d)}>
+                    <button key={d} type="button" aria-pressed={draft.decade === d} className={`${pill(draft.decade === d)} tnum`} onClick={() => toggle("decade", d)}>
                       {decadeLabel(d)}
                     </button>
                   ))}
                 </div>
               </Group>
             </div>
-            <div className="border-t border-line px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-              <button type="button" onClick={apply} className="h-14 w-full rounded-button bg-orange text-[17px] font-extrabold text-ink hover:bg-orange-hover">
+
+            <div className="sticky bottom-0 -mb-[env(safe-area-inset-bottom)] border-t border-hairline bg-surface px-5 pt-3.5 pb-[calc(0.875rem+env(safe-area-inset-bottom))]">
+              <button type="button" onClick={apply} className={`${buttonClass("primary", "lg")} w-full`}>
                 Show results
               </button>
             </div>
-          </div>
-        </div>
-      ) : null}
+          </Dialog>,
+            document.body,
+          )
+        : null}
     </>
   );
 }

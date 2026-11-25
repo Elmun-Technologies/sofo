@@ -47,14 +47,16 @@ export function buildFaq(data: TitlePageData, edition: Edition): FaqItem[] {
 
 export function Faq({ items }: { items: FaqItem[] }) {
   return (
-    <div className="space-y-2.5">
+    <div className="divide-y divide-hairline overflow-hidden rounded-panel border border-hairline bg-surface">
       {items.map((f, i) => (
-        <details key={f.q} open={i === 0} className="group rounded-card border border-line bg-surface px-4 py-3.5">
-          <summary className="cursor-pointer list-none text-[15px] font-extrabold marker:hidden">
-            <span className="mr-2 inline-block transition group-open:rotate-90">▸</span>
-            {f.q}
+        <details key={f.q} open={i === 0} className="group">
+          <summary className="flex items-center gap-4 px-5 py-4 text-[15px] font-semibold transition-colors hover:bg-white/[0.03]">
+            <span className="flex-1">{f.q}</span>
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-text-3 transition-transform duration-200 group-open:rotate-180">
+              <path d="m5 9 7 7 7-7" />
+            </svg>
           </summary>
-          <p className="mt-2 text-sm text-text-2">{f.a}</p>
+          <p className="px-5 pb-5 text-sm leading-relaxed text-text-2">{f.a}</p>
         </details>
       ))}
     </div>

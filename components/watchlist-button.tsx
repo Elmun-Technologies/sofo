@@ -2,6 +2,7 @@
 
 import { track } from "@/lib/client/analytics";
 import { useWatchlist, type SavedTitle } from "@/lib/client/watchlist";
+import { BookmarkIcon, CheckIcon } from "./icons";
 import { buttonClass } from "./ui/button";
 
 export function WatchlistButton({ title, variant = "secondary", compact }: { title: Omit<SavedTitle, "addedAt">; variant?: "secondary" | "ghost"; compact?: boolean }) {
@@ -20,7 +21,8 @@ export function WatchlistButton({ title, variant = "secondary", compact }: { tit
         }
       }}
     >
-      {saved ? "✓ In my list" : "+ My list"}
+      {saved ? <CheckIcon className="size-4 text-available" /> : <BookmarkIcon className="size-4" />}
+      {saved ? "In my list" : "My list"}
     </button>
   );
 }
