@@ -21,7 +21,7 @@
     "seo:sync-pages": "dotenv -e .env.local -- tsx scripts/seo/sync-pages.ts",
     "alerts:dispatch": "dotenv -e .env.local -- tsx scripts/alerts/dispatch.ts",
     "db:migrate": "wrangler d1 migrations apply DB --local --config freebuff.wrangler.jsonc",
-    "selfhost:refresh": "pnpm ingest:catalog -- --pages=15 --kids-pages=3 && pnpm ingest:metadata && pnpm ingest:availability -- --from-cache=latest && tsx scripts/selfhost/revalidate.ts"
+    "selfhost:refresh": "pnpm ingest:catalog -- --pages=20 --kids-pages=3 && pnpm ingest:metadata && pnpm ingest:availability -- --from-cache=latest --stale=5 && tsx scripts/selfhost/revalidate.ts"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "6.19.3",
