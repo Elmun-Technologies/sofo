@@ -71,20 +71,20 @@ Qaror va sabablar: `docs/adr/0001-tech-stack.md`, `docs/adr/0002-cloudflare-d1.m
 - Har bir title sahifasida `hreflang` (tr, en, x-default).
 - Slug: lotin, kichik harf, defis; TR harflari transliteratsiya (ç→c, ğ→g, ı→i, ö→o, ş→s, ü→u).
 
-## Design (DS3 "clean", 2026-11-24 — DS2 o'rniga)
+## Design (DS4 "Sofo Market", 2026-11-25 — DS3 o'rniga)
 
-Founder qarori (2026-11-24): DS2 UI "multfilm/detskiy" ko'rindi. Yangi yo'nalish — toza, tipografiyaga tayangan, IVI (imagery-led dark katalog) + QClay agentlik deki (havodor, yirik yengil shrift, pill kontrollar, bento bloklar). To'liq qoidalar: **`docs/design-system.md`**. Eski canvas (https://claude.ai/artifact/QjjfE8kYPKjasiVwjSFEUS) tarixiy.
-- Rang: neytral qora (`#09090B`, surface `#131316`), tint yo'q. Oq = asosiy tugma (pill). Sofo Orange `#FF5A1F` faqat tashqi "Watch on <service>" tugmasi (`buttonClass("accent")`) va logo. Semantik ranglar (dub #3B82F6, available #4ADE80, leaving #FBBF24, free #A78BFA) — faqat 6 px nuqta/kontur/matn, to'ldirilgan blok emas.
-- Shrift: Manrope 400/500/600 (og'irligi remap qilingan: `font-bold`=600, `font-extrabold`=600), Nunito Black — faqat logo. Yirik yengil sarlavhalar (`text-display/h1/h2`, 500, manfiy tracking).
-- Radius: chip/button/tag — to'liq pill; input 14, card 20, panel 24, hero 28, poster 12. Soyalar yo'q (panel), glow/gradient-matn yo'q.
-- Layout: `wrap` konteyner, `section-y` ritm, bento bloklar, nozik `rule`, `numeral` hisoblagichlar. Responsivlik (xs 360 → xl 1280+) va mobil tab bar/bottom sheet/sticky CTA o'zgarmadi.
-- Kontrast: CTA'da qora matn orange/oq ustida. Oq matn orange'da faqat ≥18 px yoki logo.
-- Eslatmalar: Telegram — asosiy, email — haftalik dayjest (juma 18:00), kuniga max 3 Telegram xabar.
-- Admin (AdminDash, AdminQA, AdminLists): ingest holati va KPI, "Something wrong?" navbati (SLA 24 soat), TMDB bog'lash, to'plam muharriri — shu tizimda, zich va sokin.
+Founder qarori (2026-11-25): DS3 "Netflix shabloni"dek ko'rindi. Yangi yo'nalish — **santehnika-online.ru tuzilishi** (katta katalog-do'kon: "kino = mahsulot") + **ivi.ru aksentlari** (til belgilari, kino-qora bloklar). To'liq qoidalar: **`docs/design-system.md`** (DS4).
+- Yorug' tema: oq sahifa, `surface #F3F5F9`, grafit matn. Qora "kino orollari" faqat title hero va bosh sahifadagi Top 10 (`theme-dark` utility tokenlarni blok ichida almashtiradi).
+- Header: utility qator → logo + to'q sariq **Catalogue** mega-menyu (`components/catalog-menu.tsx`, `lib/queries/mega-menu.ts`) + to'ldirilgan qidiruv (to'q sariq tugma) + ikonkalar → kategoriya qatori. Qidiruv takliflarida "Category / Platform" qatorlari.
+- Katalog: breadcrumbs, H1 + son, rasmli janr plitkalari, chap filtr paneli (`filter-sidebar.tsx`, checkbox-linklar sonlar bilan), inline saralash. Mobil — filter sheet.
+- Title sahifa: qora hero (poster, faktlar, qisqa javob, "Where to watch" bloki) + sticky tablar (`title-tabs.tsx`).
+- Poster belgilari: to'ldirilgan pill — türkçe dublaj ko'k, altyazı kulrang, New yashil, Leaving to'q sariq, Free binafsha.
+- Sofo Orange `#FF5A1F` = harakat (Catalogue, qidiruv, hero CTA, "Watch on …"), to'q sariq ustida qora matn. Primary neutral = grafit tugma.
+- Shrift: Manrope 700/800 sarlavhalar (qalin, ixcham), Nunito Black — faqat logo. Radius: tugma/input 12, card 16, panel/hero 20.
 
 ## Key documents
 
-- `docs/design-system.md` — DS3 dizayn tizimi (tokenlar, utility, komponentlar, sahifa andozalari).
+- `docs/design-system.md` — DS4 dizayn tizimi (tokenlar, theme-dark, komponentlar); DS3 arxivi pastda.
 - `docs/HANDOFF.md` — founder tomonidan ulanadigan narsalar ro'yxati.
 - `docs/PRD.md` — PRD v2 (Sofo, 20 sahifa turi, qiymatlar, bosqichlar, acceptance criteria).
 - `docs/data-model.md` — ma'lumotlar modeli, ingest diff → event, qisqa javob algoritmi, sifat darvozasi.

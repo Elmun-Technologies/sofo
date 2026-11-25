@@ -1,4 +1,45 @@
-# Sofo design system — DS3 "cinema" (2026-11-24)
+# Sofo design system — DS4 "Sofo Market" (2026-11-25, current)
+
+Founder brief (2026-11-25): DS3 read as "a Netflix template". References: **santehnika-online.ru** (structure
+and mechanics of a big catalogue store — "a movie is the product") and **ivi.ru** (cinema accents, language
+badges). Screens studied: santehnika home, Каталог mega-menu, search suggestions, Акции grid, Black Friday
+and design-solution pages; ivi home, Movies catalogue (filter panel), title pages, Bloggers.
+
+## Principles
+
+1. **Light store, cinema islands.** White page, soft grey surfaces (`#F3F5F9`), graphite text. Dark
+   "cinema" blocks only where imagery leads: the title hero and the home Top 10 shelf (`theme-dark`
+   utility re-points the colour tokens inside the block).
+2. **Catalogue mechanics first** (santehnika): utility strip → main bar (logo, orange **Catalogue**
+   mega-menu, filled search with an orange button, icon actions) → category row. Catalogue pages have
+   breadcrumbs, H1 + count, picture genre tiles, a **left filter panel** (checkbox links with counts) and an
+   inline sort bar. Search suggestions add **Category / Platform** rows.
+3. **A title is a product.** Hero = poster, facts, the short answer and the "Where to watch" box (the
+   buy box); below, sticky **tabs** (Description · Audio & subtitles · Seasons · Trailers · History · Questions).
+4. **Language is the badge** (ivi). Poster badges are small solid pills: `türkçe dublaj` blue `#2563EB`,
+   `altyazı` grey `#4B5563`, New green `#16A34A`, Leaving orange `#EA580C`, Free violet `#7C3AED`.
+5. **Orange = action.** Sofo Orange `#FF5A1F` for Catalogue, search submit, hero CTA and the outbound
+   "Watch on <service>"; dark text on orange (AA). Primary neutral button = graphite fill, white text.
+6. **Bold, compact type.** Manrope 700/800 headings (`text-display/h1/h2` 800, tracking −0.03em),
+   400/500 body. Real weights (no remap).
+7. **Never guess** (unchanged): unknown language = "not confirmed"; every availability shows `checked_at`.
+
+## Tokens (app/globals.css)
+
+- Light: `ink #FFFFFF` (page) · `ink-2 #F8F9FC` · `surface #F3F5F9` · `surface-2 #EAEDF3` · `surface-3 #DDE1EA`
+  · `hairline` rgb(21 23 28 / .08) · `text #15171C` · `text-2 #586070` · `text-3 #8A909D`.
+- `theme-dark` scope: `ink #0F1013`, `surface #1C1D22`, text white — for cinema islands only.
+- Radii: button/input 12 · poster 10 · card 16 · panel 20 · hero 20 · chips/badges full pill.
+- Header heights: utility 36 (md+) · main bar 64/76 · category row 44 → sticky offset 120 px (md).
+
+## Components added in DS4
+
+`components/catalog-menu.tsx` (mega-menu, data `lib/queries/mega-menu.ts`), `components/catalog/filter-sidebar.tsx`,
+`components/title/title-tabs.tsx`, `components/home/{category-tiles,leaving-card,dark-shelf,feature-bento}.tsx`.
+
+---
+
+# (Archive) DS3 "cinema" (2026-11-24) — superseded by DS4 above
 
 Founder brief (2026-11-24): the DS2 build read as "cartoonish and simple". Brand stays (Sofo Orange, Manrope, Nunito Black logo). Tokens live in `app/globals.css` (`@theme`).
 
