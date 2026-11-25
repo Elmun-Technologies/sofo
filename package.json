@@ -17,6 +17,7 @@
     "ingest:metadata": "dotenv -e .env.local -- tsx scripts/ingest/metadata.ts",
     "ingest:availability": "dotenv -e .env.local -- tsx scripts/ingest/availability.ts",
     "ingest:catalog": "dotenv -e .env.local -- tsx scripts/ingest/catalog.ts",
+    "ingest:push": "dotenv -e .env.local -- tsx scripts/ingest/push.ts",
     "seo:sync-pages": "dotenv -e .env.local -- tsx scripts/seo/sync-pages.ts",
     "alerts:dispatch": "dotenv -e .env.local -- tsx scripts/alerts/dispatch.ts",
     "db:migrate": "wrangler d1 migrations apply DB --local --config freebuff.wrangler.jsonc"

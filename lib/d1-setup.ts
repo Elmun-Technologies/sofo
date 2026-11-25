@@ -47,3 +47,14 @@ export async function loadDemoData(db: D1Database, now = new Date()): Promise<{ 
   );
   return { rows: DEMO_SEED.length, shiftedSeconds: shift };
 }
+
+/**
+ * Removes the demo rows before the first real import, then restores the base reference data
+ * (country + services) that the demo wipe deletes. Refuses once ingested offers exist.
+ */
+export async function clearDemoData(db: D1Database): Promise<{ wiped: number; restored: number }> {
+  await execAll(db, DEMO_WIPE);
+  const base = MIGRATIONS.find((m) => m.name.startsWith("0002_"));
+  if (base) await execAll(db, base.statements);
+  return { wiped: DEMO_WIPE.length, restored: base?.statements.length ?? 0 };
+}

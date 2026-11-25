@@ -35,7 +35,7 @@ Qaror va sabablar: `docs/adr/0001-tech-stack.md`, **`docs/adr/0002-cloudflare-d1
 - Next.js (App Router, ISR), TypeScript
 - **Cloudflare D1 (SQLite) + Prisma 6 (`@prisma/adapter-d1`)** — ADR 0002
 - Hosting: **Freebuff Sites** (Cloudflare Workers, OpenNext) — `deploy/freebuff-site.json`
-- Ingest: Node/TypeScript skriptlar (hozircha lokal D1; production ingest endpoint — keyingi task)
+- Ingest: Node/TypeScript skriptlar; production'ga `pnpm ingest:push` → `POST /api/ingest` (Bearer `INGEST_TOKEN`), GitHub Actions har kuni (`.github/workflows/ingest.yml`)
 - Qidiruv: TypeScript trigram reyting (`lib/search.ts`), alohida dvigatelsiz
 - Analytics: GA4 + Google Search Console
 
@@ -101,6 +101,8 @@ Founder qarori (2026-11-24): DS2 UI "multfilm/detskiy" ko'rindi. Yangi yo'nalish
 
 ```
 SETUP_TOKEN=            # Sites secret — /api/setup (D1 has no URL)
+INGEST_TOKEN=           # Sites secret — /api/ingest; same value in GitHub Actions (+ INGEST_URL)
+SOFO_DEMO_DATA=         # Sites var — 0 once real data is loaded
 STREAMING_AVAILABILITY_API_KEY=
 TMDB_API_KEY=
 NEXT_PUBLIC_SITE_URL=
@@ -191,7 +193,9 @@ pnpm ingest:availability    # 04-ingest
 - `patches/@prisma__adapter-d1@6.19.3.patch`: relation loads chunk at 80 bind values (D1 caps at 100; Prisma adds relation filters on top of the adapter's 98 → "too many SQL variables" once the DB has a few hundred titles).
 - Demo mode is an env switch: `SOFO_DEMO_DATA=0` turns off the banner/noindex/empty sitemap (default on). Local dev with real data: `SOFO_DEMO_DATA=0` in `.env.local`; `SOFO_IMAGES_UNOPTIMIZED=1` only in the sandbox (Next's image optimizer ignores HTTPS_PROXY).
 - Base reference data (country TR + the 5 services, no plan prices) comes from `migrations/0002_base_services.sql`, not the demo seed.
-- Title list: `data/titles.csv` (`tmdb_id,type`, `#` comments, duplicates ignored). Commands: `pnpm ingest:metadata [-- --limit=50 --dry-run --file=…]` and `pnpm ingest:availability [-- --edition=tr --limit=50 --dry-run --file=…]` (default list = every title in the DB). Cron: `.github/workflows/ingest.yml` — availability daily, metadata dispatch-only.
+- **Production write path (2026-11-25):** the Worker holds no API keys. A runner crawls (`pnpm ingest:catalog`), then `pnpm ingest:push -- --target=<site>` (needs `INGEST_TOKEN` + `TMDB_API_KEY`): asks `/api/ingest` which titles exist (`kind: known`), fetches TMDB metadata only for new ones, posts `metadata` (≤10/request) then `availability` (≤25/request). The endpoint (`app/api/ingest/route.ts`, payload parser `lib/ingest/payload.ts`, unit-tested) runs the same `apply.ts` diff, so a re-push is idempotent (0 events). Verified locally: demo → `clear-demo` → push = 314 titles / 421 offers, second push 421 unchanged.
+- First production import: deploy → `/api/setup {"action":"migrate"}` → `{"action":"clear-demo"}` (deletes sample rows, restores base services; refuses once real offers exist) → push → set `SOFO_DEMO_DATA=0`.
+- Title list: `data/titles.csv` (`tmdb_id,type`, `#` comments, duplicates ignored). Commands: `pnpm ingest:metadata [-- --limit=50 --dry-run --file=…]` and `pnpm ingest:availability [-- --edition=tr --limit=50 --dry-run --file=…]` (default list = every title in the DB). Cron: `.github/workflows/ingest.yml` — daily catalogue crawl + push (needs repo secrets `STREAMING_AVAILABILITY_API_KEY`, `TMDB_API_KEY`, `INGEST_TOKEN`, `INGEST_URL`; skips with a notice otherwise).
 - Metadata → `Title`, `TitleLocalization` (tr/en, `altNames` from TMDB alternative titles, slug = `slugify(name)` + tmdb id suffix on collision), `Season` (specials skipped), official YouTube `Video` (fan uploads/other sites dropped), `Franchise`/`FranchiseItem` (release order by year, recomputed after each upsert). Credits/persons are not ingested yet. `isKids` = TMDB genre Family/Kids (section placement heuristic, not an availability claim).
 - Availability → title-level `Offer` (`seasonId` null) + `OfferLanguage` + `AvailabilityEvent`. Offer key = service × offer type × quality; a quality change is `removed` + `added`. Service map: netflix, prime→prime-video, disney→disney-plus, hbo→hbo-max, crunchyroll (tod, tabii, exxen, gain kept for later); `addon` options and unmapped services are skipped. Prices only come from `rent`/`buy` options (never plan prices).
 - Language rule: languages the API lists become `confirmed_yes`; every other language gets **no row** (= `unknown`), never `confirmed_no`. The API's list is not treated as proof that a dub does not exist.
@@ -205,7 +209,7 @@ pnpm ingest:availability    # 04-ingest
 - Schema change: edit `prisma/schema.prisma` → new `migrations/000N_*.sql` (`prisma migrate diff --from-schema-datamodel … --script`) → `pnpm db:migrate` → rebuild bundle → deploy → `/api/setup migrate`.
 - No DB at build time: `[lang]` layout `generateStaticParams() → []`; pages reading `searchParams` must be `force-dynamic` (else `DYNAMIC_SERVER_USAGE` 500).
 - Workers limits: no fs (use ASSETS — `readPublic` in `app/og/_lib/share.tsx`), no interactive transactions, CPU budget too small for resvg PNG (`SHARE_CARD_RENDER = false`). `patches/next@16.4.5.patch` drops next/og's bundled fallback font (Sites rejects data modules) — always pass `fonts`.
-- `/admin` is 404 in production until `ADMIN_USER` / `ADMIN_PASSWORD` secrets are set.
+- `/admin` is 404 in production until `ADMIN_USER` / `ADMIN_PASSWORD` secrets are set. `/api/ingest` is 404 until `INGEST_TOKEN` is set.
 
 ## Glossary
 

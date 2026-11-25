@@ -1,18 +1,28 @@
-# Ingest (manual). ADR 0002: the database is Cloudflare D1, which GitHub Actions cannot reach without
-# Cloudflare credentials — the daily schedule is disabled until a protected in-Worker ingest endpoint exists.
-# This job only validates that the ingest scripts run (dry-run against an ephemeral local D1).
-# Secrets: TMDB_API_KEY, STREAMING_AVAILABILITY_API_KEY (GitHub Actions secrets only).
+# Production ingest: crawl the TR catalogue (Streaming Availability) and push it to the deployed site.
+# The Worker never holds API keys: this job calls the APIs, normalizes, and POSTs small batches to
+# /api/ingest (Bearer INGEST_TOKEN). See CLAUDE.md "Ingest" and scripts/ingest/push.ts.
+#
+# Secrets (repository → Settings → Secrets and variables → Actions):
+#   STREAMING_AVAILABILITY_API_KEY, TMDB_API_KEY, INGEST_TOKEN (same value as the site's secret),
+#   INGEST_URL (e.g. https://sofo.tv). Without all four the job only prints a notice.
+# Quota: the current Streaming Availability plan allows 1 000 requests / month; one run of the
+# default crawl costs 18 (15 popular pages + 3 animation pages) → ~540 a month when run daily.
 name: ingest
 
 on:
+  schedule:
+    - cron: "17 3 * * *" # daily, 06:17 Türkiye time
   workflow_dispatch:
     inputs:
-      stage:
-        description: "metadata | availability | both"
-        default: "availability"
-      limit:
-        description: "Max titles (empty = all)"
-        default: ""
+      pages:
+        description: "Popular catalogue pages (20 titles each, 1 request each)"
+        default: "15"
+      kids_pages:
+        description: "Animation pages (20 titles each, 1 request each)"
+        default: "3"
+      refresh_metadata:
+        description: "Re-fetch TMDB metadata for every title (true/false)"
+        default: "false"
 
 concurrency:
   group: ingest
@@ -21,27 +31,45 @@ concurrency:
 jobs:
   ingest:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 60
     env:
       TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
       STREAMING_AVAILABILITY_API_KEY: ${{ secrets.STREAMING_AVAILABILITY_API_KEY }}
+      INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+      INGEST_URL: ${{ secrets.INGEST_URL }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - name: Check configuration
+        id: config
+        run: |
+          missing=""
+          for name in TMDB_API_KEY STREAMING_AVAILABILITY_API_KEY INGEST_TOKEN INGEST_URL; do
+            [ -z "${!name}" ] && missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::notice::Ingest skipped — missing secrets:$missing"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.config.outputs.ready == 'true'
+        uses: actions/checkout@v4
+      - if: steps.config.outputs.ready == 'true'
+        uses: pnpm/action-setup@v4
         with:
           version: 9
-      - uses: actions/setup-node@v4
+      - if: steps.config.outputs.ready == 'true'
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: Local D1 (ephemeral)
-        run: pnpm db:migrate
+      - if: steps.config.outputs.ready == 'true'
+        run: pnpm install --frozen-lockfile
 
-      - name: Metadata (TMDB)
-        if: github.event_name == 'workflow_dispatch' && (inputs.stage == 'metadata' || inputs.stage == 'both')
-        run: pnpm ingest:metadata --dry-run ${{ inputs.limit != '' && format('--limit={0}', inputs.limit) || '' }}
+      - name: Crawl the TR catalogue (Streaming Availability)
+        if: steps.config.outputs.ready == 'true'
+        run: pnpm ingest:catalog -- --pages=${{ inputs.pages || '15' }} --kids-pages=${{ inputs.kids_pages || '3' }}
 
-      - name: Availability (Streaming Availability)
-        if: inputs.stage == 'availability' || inputs.stage == 'both'
-        run: pnpm ingest:availability --dry-run ${{ inputs.limit != '' && format('--limit={0}', inputs.limit) || '' }}
+      - name: Push to the site (TMDB metadata for new titles + availability)
+        if: steps.config.outputs.ready == 'true'
+        run: pnpm ingest:push -- --target="$INGEST_URL" ${{ inputs.refresh_metadata == 'true' && '--refresh-metadata' || '' }}

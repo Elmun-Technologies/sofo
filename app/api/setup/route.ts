@@ -1,7 +1,7 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { safeEqual } from "@/lib/admin/auth";
-import { applyMigrations, hasRealData, loadDemoData } from "@/lib/d1-setup";
+import { applyMigrations, clearDemoData, hasRealData, loadDemoData } from "@/lib/d1-setup";
 import { DEMO_DATA } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
  * POST /api/setup  (Authorization: Bearer $SETUP_TOKEN)
  *   {"action":"migrate"}  apply pending D1 migrations
  *   {"action":"demo"}     migrate + load sample data (demo mode only, refuses if real data exists)
+ *   {"action":"clear-demo"} migrate + delete the sample rows, keep base services (before the first real import)
  * 404 when SETUP_TOKEN is not configured.
  */
 export async function POST(req: Request) {
@@ -30,5 +31,9 @@ export async function POST(req: Request) {
     if (await hasRealData(db)) return Response.json({ error: "database has ingested data; refusing to overwrite" }, { status: 409 });
     return Response.json({ migrated, demo: await loadDemoData(db) });
   }
-  return Response.json({ error: 'action must be "migrate" or "demo"' }, { status: 400 });
+  if (body.action === "clear-demo") {
+    if (await hasRealData(db)) return Response.json({ error: "database has ingested data; nothing to clear" }, { status: 409 });
+    return Response.json({ migrated, cleared: await clearDemoData(db) });
+  }
+  return Response.json({ error: 'action must be "migrate", "demo" or "clear-demo"' }, { status: 400 });
 }
