@@ -9,6 +9,9 @@ import { fetchJson, HttpError, SourceConfigError } from "./http";
 
 const BASE = "https://api.themoviedb.org/3";
 const APPEND = "videos,alternative_titles,external_ids,credits";
+/** Age ratings ride on the same request: movies carry them per release, series per country. */
+const APPEND_MOVIE = `${APPEND},release_dates`;
+const APPEND_TV = `${APPEND},content_ratings`;
 
 export type TmdbLanguage = "tr-TR" | "en-US";
 
@@ -49,6 +52,7 @@ export type TmdbMovieDetails = TmdbBase & {
   release_date?: string;
   runtime?: number | null;
   belongs_to_collection?: { id: number; name: string; poster_path?: string | null } | null;
+  release_dates?: { results?: { iso_3166_1: string; release_dates?: { certification?: string; type?: number }[] }[] };
 };
 
 export type TmdbSeason = {
@@ -69,7 +73,20 @@ export type TmdbTvDetails = TmdbBase & {
   number_of_seasons?: number;
   seasons?: TmdbSeason[];
   created_by?: { id: number; name: string }[];
+  content_ratings?: { results?: { iso_3166_1: string; rating?: string }[] };
 };
+
+export type TmdbEpisode = {
+  episode_number: number;
+  name?: string | null;
+  overview?: string | null;
+  air_date?: string | null;
+  runtime?: number | null;
+  vote_average?: number;
+  still_path?: string | null;
+};
+
+export type TmdbSeasonDetails = { season_number: number; episodes?: TmdbEpisode[] };
 
 function apiKey(): string {
   const key = process.env.TMDB_API_KEY?.trim();
@@ -105,9 +122,14 @@ async function get<T>(path: string, params: Record<string, string | number | und
 }
 
 export function getMovie(id: number, language: TmdbLanguage): Promise<TmdbMovieDetails> {
-  return get<TmdbMovieDetails>(`/movie/${id}`, { language, append_to_response: APPEND });
+  return get<TmdbMovieDetails>(`/movie/${id}`, { language, append_to_response: APPEND_MOVIE });
 }
 
 export function getTv(id: number, language: TmdbLanguage): Promise<TmdbTvDetails> {
-  return get<TmdbTvDetails>(`/tv/${id}`, { language, append_to_response: APPEND });
+  return get<TmdbTvDetails>(`/tv/${id}`, { language, append_to_response: APPEND_TV });
+}
+
+/** One season with its episodes (names, air dates, runtimes). One request per season. */
+export function getTvSeason(id: number, season: number, language: TmdbLanguage): Promise<TmdbSeasonDetails> {
+  return get<TmdbSeasonDetails>(`/tv/${id}/season/${season}`, { language });
 }

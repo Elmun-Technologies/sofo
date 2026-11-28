@@ -34,6 +34,8 @@ export type EditionRoutes = {
   trailers: string;
   releases: string;
   myList: string;
+  /** Category index (mobile "Catalogue" tab — santehnika's mobile catalogue page) */
+  catalog: string;
   about: string;
   privacy: string;
 };
@@ -69,6 +71,7 @@ const tr: Edition = {
     trailers: "/tr/fragmanlar",
     releases: "/tr/yakinda-dijitalde",
     myList: "/tr/listem",
+    catalog: "/tr/katalog",
     about: "/tr/hakkinda",
     privacy: "/tr/gizlilik",
   },

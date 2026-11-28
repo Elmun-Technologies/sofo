@@ -4,7 +4,7 @@ import enMovie from "./fixtures/tmdb-movie-en.json";
 import trMovie from "./fixtures/tmdb-movie-tr.json";
 import enTv from "./fixtures/tmdb-tv-en.json";
 import trTv from "./fixtures/tmdb-tv-tr.json";
-import { creditsOf, isKidsGenres, mapMovie, mapTv, readableName } from "./metadata";
+import { creditsOf, isGenericEpisodeName, isKidsGenres, mapEpisodes, mapMovie, mapTv, readableName } from "./metadata";
 import { parseTitleCsv } from "./title-list";
 
 const movieTr = trMovie as unknown as TmdbMovieDetails;
@@ -121,5 +121,32 @@ describe("creditsOf", () => {
     expect(creditsOf({ created_by: [{ id: 5, name: "Seth MacFarlane" }] }, "tv")).toEqual([
       { tmdbId: 5, name: "Seth MacFarlane", knownFor: "Writing", job: "Creator", character: null, order: -1 },
     ]);
+  });
+});
+
+describe("age rating and episodes", () => {
+  it("reads the movie certification from release_dates (TR first)", () => {
+    const tr = { ...movieTr, release_dates: { results: [{ iso_3166_1: "US", release_dates: [{ certification: "PG", type: 3 }] }, { iso_3166_1: "TR", release_dates: [{ certification: "", type: 1 }, { certification: "7+", type: 3 }] }] } };
+    expect(mapMovie(tr, movieEn).ageRating).toBe("7+");
+  });
+
+  it("falls back to the US series rating and returns null when nothing is published", () => {
+    const tv = { ...tvTr, content_ratings: { results: [{ iso_3166_1: "US", rating: "TV-14" }] } };
+    expect(mapTv(tv, tvEn).ageRating).toBe("14+");
+    expect(mapTv(tvTr, tvEn).ageRating).toBeNull();
+  });
+
+  it("replaces generic Turkish episode names with the English ones", () => {
+    const eps = mapEpisodes(
+      [
+        { episode_number: 2, name: "2. Bölüm", air_date: "2024-06-23", runtime: 58, vote_average: 7.9 },
+        { episode_number: 1, name: "Ejderhanın Mirası", air_date: "2024-06-16", runtime: 0 },
+      ],
+      [{ episode_number: 2, name: "Rhaenyra the Cruel" }],
+    );
+    expect(eps.map((e) => e.number)).toEqual([1, 2]);
+    expect(eps[0]).toMatchObject({ name: "Ejderhanın Mirası", runtimeMin: null });
+    expect(eps[1]).toMatchObject({ name: "Rhaenyra the Cruel", runtimeMin: 58, tmdbScore: 7.9 });
+    expect(isGenericEpisodeName("Episode 4")).toBe(true);
   });
 });

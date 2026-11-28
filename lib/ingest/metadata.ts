@@ -4,7 +4,8 @@
  * canonical filter vocabulary; videos are official YouTube only (trailer policy, CLAUDE.md).
  */
 import type { VideoKind } from "@prisma/client";
-import type { TmdbMovieDetails, TmdbTvDetails, TmdbVideo } from "../sources/tmdb";
+import type { TmdbEpisode, TmdbMovieDetails, TmdbTvDetails, TmdbVideo } from "../sources/tmdb";
+import { pickAgeRating, type CountryRating } from "./age-rating";
 
 export type MetadataLocalization = { lang: string; name: string; altNames: string[]; overview: string | null };
 
@@ -15,6 +16,17 @@ export type MetadataSeason = {
   episodeCount: number | null;
   tmdbScore: number | null;
   posterPath: string | null;
+  /** Absent when the season details were not fetched — then stored episodes are left untouched. */
+  episodes?: MetadataEpisode[];
+};
+
+export type MetadataEpisode = {
+  number: number;
+  name: string | null;
+  airDate: Date | null;
+  runtimeMin: number | null;
+  tmdbScore: number | null;
+  stillPath: string | null;
 };
 
 export type MetadataVideo = {
@@ -50,6 +62,8 @@ export type TitleMetadata = {
   videos: MetadataVideo[];
   /** Absent in payloads from older runners — then existing credits are left untouched. */
   credits?: MetadataCredit[];
+  /** "13+" style (lib/ingest/age-rating.ts); absent = leave the stored value, null = no rating published. */
+  ageRating?: string | null;
 };
 
 type TmdbCommon = {
@@ -185,7 +199,53 @@ function baseMeta(local: TmdbMovieDetails | TmdbTvDetails, en: TmdbMovieDetails 
   };
 }
 
-export function mapMovie(tr: TmdbMovieDetails, en: TmdbMovieDetails): TitleMetadata {
+/** Movie certifications: one per country, theatrical/digital releases first. */
+export function movieRatings(d: TmdbMovieDetails): CountryRating[] {
+  return (d.release_dates?.results ?? []).flatMap((r) => {
+    const sorted = [...(r.release_dates ?? [])].sort((a, b) => rank(a.type) - rank(b.type));
+    const cert = sorted.map((x) => text(x.certification)).find((c): c is string => !!c);
+    return cert ? [{ country: r.iso_3166_1, rating: cert }] : [];
+  });
+}
+const rank = (type: number | undefined) => (type === 3 ? 0 : type === 4 ? 1 : type === 2 ? 2 : 3);
+
+export function tvRatings(d: TmdbTvDetails): CountryRating[] {
+  return (d.content_ratings?.results ?? []).flatMap((r) => {
+    const rating = text(r.rating);
+    return rating ? [{ country: r.iso_3166_1, rating }] : [];
+  });
+}
+
+/** Generic episode names ("3. Bölüm", "Episode 3") carry no information — the English name is used instead. */
+const GENERIC_EPISODE = /^(\d+\.\s*bölüm|bölüm\s*\d+|episode\s*\d+)$/i;
+
+export function isGenericEpisodeName(name: string | null | undefined): boolean {
+  const t = text(name);
+  return !t || GENERIC_EPISODE.test(t);
+}
+
+/** TMDB season episodes (local + optional English) → MetadataEpisode[]. */
+export function mapEpisodes(local: TmdbEpisode[], en: TmdbEpisode[] = []): MetadataEpisode[] {
+  const english = new Map(en.map((e) => [e.episode_number, e]));
+  return local
+    .filter((e) => Number.isInteger(e.episode_number) && e.episode_number > 0)
+    .map((e) => {
+      const localName = text(e.name);
+      const enName = text(english.get(e.episode_number)?.name);
+      const name = !isGenericEpisodeName(localName) ? localName : !isGenericEpisodeName(enName) ? enName : localName;
+      return {
+        number: e.episode_number,
+        name,
+        airDate: dateOf(e.air_date ?? null),
+        runtimeMin: typeof e.runtime === "number" && e.runtime > 0 ? e.runtime : null,
+        tmdbScore: scoreOf(e.vote_average),
+        stillPath: text(e.still_path),
+      };
+    })
+    .sort((a, b) => a.number - b.number);
+}
+
+export function mapMovie(tr: TmdbMovieDetails, en: TmdbMovieDetails, country = "TR"): TitleMetadata {
   const base = baseMeta(tr, en, "movie");
   const originalTitle = text(tr.original_title) ?? text(tr.title) ?? "";
   const englishName = text(en.title) ?? originalTitle;
@@ -201,10 +261,11 @@ export function mapMovie(tr: TmdbMovieDetails, en: TmdbMovieDetails): TitleMetad
     ],
     seasons: [],
     credits: creditsOf(en, "movie"),
+    ageRating: pickAgeRating([...movieRatings(tr), ...movieRatings(en)], country),
   };
 }
 
-export function mapTv(tr: TmdbTvDetails, en: TmdbTvDetails): TitleMetadata {
+export function mapTv(tr: TmdbTvDetails, en: TmdbTvDetails, country = "TR"): TitleMetadata {
   const base = baseMeta(tr, en, "tv");
   const originalTitle = text(tr.original_name) ?? text(tr.name) ?? "";
   const englishName = text(en.name) ?? originalTitle;
@@ -233,5 +294,6 @@ export function mapTv(tr: TmdbTvDetails, en: TmdbTvDetails): TitleMetadata {
     ],
     seasons,
     credits: creditsOf(en, "tv"),
+    ageRating: pickAgeRating([...tvRatings(tr), ...tvRatings(en)], country),
   };
 }

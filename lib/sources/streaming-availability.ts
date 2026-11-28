@@ -176,6 +176,8 @@ export async function getShow(opts: {
   }
 }
 
+export type SaOrderBy = "popularity_1year" | "popularity_1month" | "popularity_1week" | "popularity_alltime" | "rating" | "release_date" | "original_title";
+
 export type SaCatalogPage = {
   shows: SaShow[];
   /** The raw page items, for caching: replay them later through parseShow without spending quota. */
@@ -196,8 +198,14 @@ export async function searchCatalog(opts: {
   /** API service ids, e.g. ["netflix", "prime", "disney", "hbo", "crunchyroll"] */
   catalogs: string[];
   cursor?: string | null;
-  orderBy?: "popularity_1year" | "popularity_1month" | "popularity_alltime" | "rating";
+  orderBy?: SaOrderBy;
+  orderDirection?: "asc" | "desc";
   showType?: "movie" | "series";
+  /** ISO 639-1 original language, e.g. "tr" (local originals) */
+  originalLanguage?: string;
+  /** 0–100 */
+  ratingMin?: number;
+  yearMin?: number;
   /** API genre ids, e.g. ["animation"] */
   genres?: string[];
   language?: string;
@@ -214,6 +222,10 @@ export async function searchCatalog(opts: {
   if (opts.cursor) qs.set("cursor", opts.cursor);
   if (opts.showType) qs.set("show_type", opts.showType);
   if (opts.genres?.length) qs.set("genres", opts.genres.join(","));
+  if (opts.orderDirection) qs.set("order_direction", opts.orderDirection);
+  if (opts.originalLanguage) qs.set("show_original_language", opts.originalLanguage);
+  if (opts.ratingMin !== undefined) qs.set("rating_min", String(opts.ratingMin));
+  if (opts.yearMin !== undefined) qs.set("year_min", String(opts.yearMin));
 
   const raw = await fetchJson<unknown>(`${baseUrl()}/shows/search/filters?${qs}`, { headers: authHeaders(), minIntervalMs: 600 });
   if (!isRecord(raw) || !Array.isArray(raw.shows)) throw new SourceValidationError("search: missing shows");

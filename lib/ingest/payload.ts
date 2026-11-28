@@ -6,7 +6,7 @@
  * and posts small batches. The Worker only persists them through lib/ingest/apply.ts.
  * JSON has no Date type, so date fields are revived here; anything malformed is rejected whole.
  */
-import type { MetadataSeason, MetadataVideo, TitleMetadata } from "./metadata";
+import type { MetadataEpisode, MetadataSeason, MetadataVideo, TitleMetadata } from "./metadata";
 import type { SnapshotOffer, SnapshotTitle } from "./normalize";
 
 /** Max items per request: keeps one Worker invocation well inside its time and CPU budget. */
@@ -53,9 +53,19 @@ function reviveMetadata(v: unknown, i: number): TitleMetadata {
   if (!Array.isArray(m.localizations) || m.localizations.length === 0) fail(`${where}: missing localizations`);
   if (!Array.isArray(m.seasons) || !Array.isArray(m.videos) || !Array.isArray(m.genres)) fail(`${where}: seasons, videos and genres must be arrays`);
   if (m.credits !== undefined && !Array.isArray(m.credits)) fail(`${where}: credits must be an array`);
+  if (m.ageRating !== undefined && m.ageRating !== null && typeof m.ageRating !== "string") fail(`${where}: ageRating must be a string or null`);
   return {
     ...m,
-    seasons: m.seasons.map((s: MetadataSeason, j: number) => ({ ...s, airDate: dateOrNull(s.airDate, `${where}.seasons[${j}].airDate`) })),
+    seasons: m.seasons.map((s: MetadataSeason, j: number) => {
+      if (s.episodes !== undefined && !Array.isArray(s.episodes)) fail(`${where}.seasons[${j}]: episodes must be an array`);
+      return {
+        ...s,
+        airDate: dateOrNull(s.airDate, `${where}.seasons[${j}].airDate`),
+        ...(s.episodes
+          ? { episodes: s.episodes.map((ep: MetadataEpisode, k: number) => ({ ...ep, airDate: dateOrNull(ep.airDate, `${where}.seasons[${j}].episodes[${k}].airDate`) })) }
+          : {}),
+      };
+    }),
     videos: m.videos.map((x: MetadataVideo, j: number) => ({ ...x, publishedAt: dateOrNull(x.publishedAt, `${where}.videos[${j}].publishedAt`) })),
   };
 }
