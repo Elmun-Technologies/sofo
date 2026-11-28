@@ -16,12 +16,12 @@ export function SubBadge({ children = "türkçe altyazı", className = "" }: { c
 }
 
 export function NewBadge({ children = "New dub", className = "" }: { children?: React.ReactNode; className?: string }) {
-  return <span className={`${base} bg-[#16a34a] ${className}`}>{children}</span>;
+  return <span className={`${base} bg-[#15803d] ${className}`}>{children}</span>;
 }
 
 export function LeavingBadge({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
-    <span className={`${base} bg-[#ea580c] ${className}`}>{children}</span>
+    <span className={`${base} bg-[#c2410c] ${className}`}>{children}</span>
   );
 }
 

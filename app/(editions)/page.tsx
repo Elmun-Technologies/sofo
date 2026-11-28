@@ -49,7 +49,7 @@ export default function EditionPicker() {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="wrap flex h-16 items-center justify-between md:h-20">
-        <Link href="/" aria-label="sofo — home">
+        <Link href="/">
           <Logo className="text-[26px] md:text-[28px]" />
         </Link>
         <span className="tag">

@@ -59,7 +59,7 @@ export function SiteHeader({ edition, menu = EMPTY_MENU, services = [] }: { edit
       <header className="sticky top-0 z-40 border-b border-hairline bg-ink/95 backdrop-blur-xl">
         {/* CatalogMenu panel is positioned against this header (absolute, top-full). */}
         <div className="wrap flex h-16 items-center gap-3 md:h-[76px] md:gap-4">
-          <Link href={r.home} aria-label="sofo — home" className="shrink-0 text-[24px] hover:text-text md:text-[28px]">
+          <Link href={r.home} className="shrink-0 text-[24px] hover:text-text md:text-[28px]">
             <Logo className="" />
           </Link>
           <CatalogMenu

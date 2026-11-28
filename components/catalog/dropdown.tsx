@@ -47,7 +47,7 @@ export function Dropdown({ label, name, active, group, align = "left", className
 
   return (
     <details ref={ref} name={group} className={`group/dd relative ${className}`}>
-      <summary aria-label={name} className={`${pillClass(active)} w-full list-none justify-between`}>
+      <summary title={name} className={`${pillClass(active)} w-full list-none justify-between`}>
         <span className="truncate">{label}</span>
         <ChevronDownIcon className="size-3.5 shrink-0 opacity-70 transition-transform duration-200 group-open/dd:rotate-180" />
       </summary>
