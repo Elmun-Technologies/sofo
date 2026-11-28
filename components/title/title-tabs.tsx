@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export type TitleTab = { id: string; label: string; count?: number };
+export type TitleTab = { id: string; label: string };
 
 /**
  * santehnika product-page tabs: a sticky row of anchors under the hero. All sections stay rendered
@@ -38,7 +38,6 @@ export function TitleTabs({ tabs }: { tabs: TitleTab[] }) {
               }`}
             >
               {t.label}
-              {t.count ? <span className="tnum rounded-md bg-surface px-1.5 text-xs font-semibold text-text-2">{t.count}</span> : null}
             </a>
           </li>
         ))}

@@ -15,6 +15,6 @@ export const menuItemClass = (active?: boolean, dim?: boolean) =>
 /** Trailing slot of a menu row: a check when picked, otherwise the count. */
 export function MenuMark({ active, count }: { active?: boolean; count?: number }) {
   if (active) return <CheckIcon className="ml-auto size-4 shrink-0 text-text" />;
-  if (count == null) return null;
-  return <span className="tnum ml-auto shrink-0 text-xs text-text-3">{count.toLocaleString("en-US")}</span>;
+  void count; // counts are intentionally never shown
+  return null;
 }

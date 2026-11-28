@@ -8,7 +8,7 @@ import { PosterImage } from "@/components/ui/poster-image";
 import { ServiceLogo } from "@/components/ui/service-logo";
 import { AlertButton } from "@/components/value/alert-button";
 import { hrefWith, one, Segmented, ServiceChips, ToggleChip } from "@/components/value/filters";
-import { SectionHead, Stat, Stats, ValueHero } from "@/components/value/layout";
+import { SectionHead, ValueHero } from "@/components/value/layout";
 import { CardLang } from "@/components/value/watch";
 import { getServices } from "@/lib/catalog";
 import { getEdition, paths, type Edition } from "@/lib/editions";
@@ -72,7 +72,6 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
   const weekTotal = weekItems.length;
   const term = dubTerm(e.contentLang);
   const langLabel = langName(e.contentLang);
-  const count = (k: CalendarItem["kind"]) => weekItems.filter((i) => i.kind === k).length;
   const weekName = week === "onceki" ? "Last week" : week === "sonraki" ? "Next week" : "This week";
 
   return (
@@ -95,13 +94,6 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
           <>
             What landed on legal services, what just got <span lang={e.hreflang}>{term}</span>, and the last day for everything about to leave.
           </>
-        }
-        aside={
-          <Stats>
-            <Stat value={count("new")} label="New" dot="bg-text" />
-            <Stat value={count("new_dub")} label="New dubs" dot="bg-dub" />
-            <Stat value={count("leaving")} label="Leaving" dot="bg-leaving" />
-          </Stats>
         }
       >
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-4">
@@ -144,7 +136,7 @@ export default async function NewLeavingPage({ params, searchParams }: PageProps
                     ))}
                   </span>
                   <span className="sr-only">
-                    {today ? " (today)" : ""}, {items.length} {items.length === 1 ? "title" : "titles"}
+                    {today ? " (today)" : ""}
                   </span>
                 </>
               );

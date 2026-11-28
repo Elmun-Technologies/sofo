@@ -57,7 +57,7 @@ export async function catalogMetadata(e: Edition, kind: CatalogKind, base: strin
   const canonical = filtered ? base : catalogHref(base, { page: f.page });
   return {
     title,
-    description: `${r.total.toLocaleString("en-US")} ${kind === "movies" ? "movies" : kind === "series" ? "series" : "anime titles"} on ${r.serviceCount} legal services in ${e.countryName}, with ${dubTerm(e.contentLang)} and ${subTerm(e.contentLang)} confirmed by each service. Updated daily.`,
+    description: `${kind === "movies" ? "Movies" : kind === "series" ? "Series" : "Anime"} on legal services in ${e.countryName}, with ${dubTerm(e.contentLang)} and ${subTerm(e.contentLang)} confirmed by each service. Updated daily.`,
     alternates: buildAlternates(canonical, { [e.hreflang]: canonical }),
     robots: filtered ? { index: false, follow: true } : undefined,
   };
@@ -78,16 +78,6 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
   if (f.decade != null) active.push({ label: decadeLabel(f.decade), href: to({ decade: undefined }) });
   const clearHref = catalogHref(base, { sort: f.sort });
 
-  const noun = r.total === 1 ? NOUN[kind].one : kind === "movies" ? "movies" : kind === "series" ? "series" : "anime titles";
-  const n = r.total.toLocaleString("en-US");
-  const serviceName = r.services.find((s) => s.slug === f.service)?.name;
-  const countLine =
-    r.total === 0
-      ? `0 ${noun} in ${e.countryName}`
-      : serviceName
-        ? `${n} ${noun} on ${serviceName} in ${e.countryName}`
-        : `${n} ${noun} on ${r.serviceCount} service${r.serviceCount === 1 ? "" : "s"} in ${e.countryName}`;
-
   const menu = kind === "anime" ? null : await getMegaMenu(e);
   const genreTiles = menu ? (kind === "movies" ? menu.movie : menu.tv).slice(0, 8) : [];
   const listHref = kind === "movies" ? e.routes.movies : kind === "series" ? e.routes.series : e.routes.anime;
@@ -97,9 +87,8 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
       <Breadcrumbs items={[{ name: "Home", href: e.routes.home }, { name: NOUN[kind].plural, href: listHref }, ...(r.genreName ? [{ name: r.genreName }] : [])]} />
       <header className="wrap pt-3 pb-5 md:pt-4 md:pb-6">
         <h1 className="text-h1 max-w-4xl">
-          {h1} <span className="tnum align-middle text-base font-semibold tracking-normal text-text-3 md:text-lg">{n}</span>
+          {h1}
         </h1>
-        <p className="tnum mt-2 text-sm text-text-2">{countLine}</p>
       </header>
 
       {genreTiles.length ? (
@@ -120,7 +109,6 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
                     </span>
                     <span className="min-w-0">
                       <span className="block truncate text-[14px] leading-tight font-bold">{g.name}</span>
-                      <span className={`tnum text-xs ${on ? "text-ink/60" : "text-text-3"}`}>{g.count}</span>
                     </span>
                   </Link>
                 </li>
@@ -166,9 +154,6 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
                 {SORT_LABELS[k]}
               </Link>
             ))}
-            <span className="tnum ml-auto text-text-3">
-              {n} {noun}
-            </span>
           </div>
 
         {!active.length ? <QuickPicks e={e} r={r} to={to} sort={f.sort} /> : null}
@@ -266,7 +251,6 @@ function QuickPicks({ e, r, to, sort }: { e: Edition; r: CatalogResult; to: (pat
             >
               {p.dot ? <span aria-hidden="true" className={`size-1.5 rounded-full ${p.dot}`} /> : null}
               {p.label}
-              {p.count !== undefined ? <span className="tnum font-medium text-text-3">{p.count.toLocaleString("en-US")}</span> : null}
             </Link>
           </li>
         ))}

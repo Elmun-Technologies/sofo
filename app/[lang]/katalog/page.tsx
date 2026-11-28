@@ -66,7 +66,6 @@ export default async function CatalogIndexPage({ params }: PageProps<"/[lang]/ka
               <span lang={s.local ? e.hreflang : undefined} className="min-w-0 flex-1 truncate">
                 {s.label}
               </span>
-              {s.count ? <span className="tnum text-sm font-medium text-text-3">{s.count}</span> : null}
               <ArrowRightIcon className="size-4 text-text-3" />
             </Link>
           </li>
@@ -107,7 +106,6 @@ function GenreGrid({ title, base, genres }: { title: string; base: string; genre
               </span>
               <span className="min-w-0">
                 <span className="block truncate text-[14px] leading-tight font-bold">{g.name}</span>
-                <span className="tnum text-xs text-text-3">{g.count}</span>
               </span>
             </Link>
           </li>

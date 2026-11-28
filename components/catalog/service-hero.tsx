@@ -10,13 +10,10 @@ import { dubTerm, langName } from "@/lib/lang";
 import type { ServicePageData } from "@/lib/queries/catalog-pages";
 import { cap, catalogHref } from "./catalog-url";
 
-const fmt = (n: number) => n.toLocaleString("en-US").replace(/,/g, " ");
-
 /** Service header: identity, outbound "Go to …", the four numbers that matter, quick filters. */
 export function ServiceHero({ edition: e, data }: { edition: Edition; data: ServicePageData }) {
   const s = data.service;
-  const st = data.stats;
-  const lang = langName(e.contentLang);
+    const lang = langName(e.contentLang);
   const price = formatPrice(s.priceFrom, s.currency);
   const chips = [
     { href: paths.service(e, s.slug), label: "All", active: true },
@@ -25,16 +22,13 @@ export function ServiceHero({ edition: e, data }: { edition: Edition; data: Serv
     { href: catalogHref(e.routes.series, { service: s.slug }), label: "Series" },
     { href: catalogHref(e.routes.anime, { service: s.slug }), label: "Anime" },
   ];
-  const stats: { value: string; label: string; note?: string; dot?: string }[] = [
-    { value: fmt(st.titles), label: `Titles in ${e.countryName}` },
-    { value: fmt(st.dub), label: `With ${lang} dub`, note: "confirmed by the service", dot: "bg-dub" },
-    { value: fmt(st.sub), label: `With ${lang} subtitles`, note: "confirmed by the service", dot: "bg-text/70" },
-    price
-      ? s.priceFrom === 0
-        ? { value: "Free", label: "Cheapest plan", note: s.hasAdsTier ? "ad-supported plan" : undefined }
-        : { value: price, label: "From, per month", note: s.hasAdsTier ? "ad-supported plan available" : "cheapest listed plan" }
-      : { value: "—", label: "Plan price", note: s.hasAdsTier ? "ad-supported plan available" : "not listed yet" },
-  ];
+  const planNote = price
+    ? s.priceFrom === 0
+      ? `Free plan${s.hasAdsTier ? " (ad-supported)" : ""}`
+      : `Plans from ${price} per month${s.hasAdsTier ? " · ad-supported plan available" : ""}`
+    : s.hasAdsTier
+      ? "Ad-supported plan available"
+      : null;
 
   return (
     <header className="wrap pt-6 pb-4 md:pt-12 md:pb-6">
@@ -69,20 +63,13 @@ export function ServiceHero({ edition: e, data }: { edition: Edition; data: Serv
         ) : null}
       </div>
 
-      <dl className="mt-7 grid grid-cols-2 gap-2.5 md:mt-12 md:gap-3 lg:grid-cols-4">
-        {stats.map((x) => (
-          <div key={x.label} className="card flex min-h-[132px] flex-col-reverse justify-between gap-5 p-4 md:min-h-[184px] md:p-6">
-            <dt>
-              <span className="flex items-start gap-2 text-sm leading-snug font-semibold md:text-[15px]">
-                {x.dot ? <span aria-hidden="true" className={`mt-[7px] size-1.5 shrink-0 rounded-full ${x.dot}`} /> : null}
-                {x.label}
-              </span>
-              {x.note ? <span className="mt-0.5 block text-xs text-text-3">{x.note}</span> : null}
-            </dt>
-            <dd className={`leading-[0.95] font-normal tracking-[-0.05em] ${x.value.length > 5 ? "text-[32px] md:text-[48px]" : "text-[40px] md:text-[64px]"}`}>{x.value}</dd>
-          </div>
-        ))}
-      </dl>
+      <ul className="mt-6 flex flex-wrap gap-2 md:mt-9">
+        <li className="tag">
+          <span aria-hidden="true" className="mr-1.5 inline-block size-1.5 rounded-full bg-dub" />
+          {lang} dub &amp; subtitles shown only when the service confirms them
+        </li>
+        {planNote ? <li className="tag tnum">{planNote}</li> : null}
+      </ul>
 
       <nav aria-label={`${s.name} shortcuts`} className="mt-5 md:mt-7">
         <ChipRow>

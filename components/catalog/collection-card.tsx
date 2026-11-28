@@ -25,9 +25,11 @@ export function CollectionCard({ edition, list }: Props) {
       <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/5" />
       <div className="absolute inset-x-0 bottom-0 p-4 text-white">
         <h3 className="line-clamp-2 text-[17px] leading-snug font-medium tracking-[-0.01em]">{list.name}</h3>
-        <p lang="en" className="tnum mt-1 text-xs font-semibold text-white/65">
-          {list._count.items} titles{list.author ? ` · by ${list.author}` : ""}
-        </p>
+        {list.author ? (
+          <p lang="en" className="mt-1 text-xs font-semibold text-white/65">
+            by {list.author}
+          </p>
+        ) : null}
       </div>
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 rounded-card ring-1 ring-black/5 transition duration-200 ring-inset group-hover:ring-2 group-hover:ring-orange" />
     </Link>

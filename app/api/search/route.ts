@@ -45,12 +45,12 @@ export async function GET(req: NextRequest) {
     payload.franchises = r.franchises.map((f) => ({
       name: `${f.name} — watch order`,
       href: paths.franchise(edition, f.slug),
-      meta: `Franchise · ${f.count} ${f.count === 1 ? "title" : "titles"}`,
+      meta: "Franchise",
     }));
     payload.collections = r.collections.map((l) => ({
       name: l.name,
       href: paths.list(edition, l.slug),
-      meta: `Collection · ${l.count} titles`,
+      meta: "Collection",
     }));
   }
 

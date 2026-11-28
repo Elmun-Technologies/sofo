@@ -456,5 +456,5 @@ export async function getPersonPage(e: Edition, slug: string) {
       return t ? { ...t, id: c.id, job: c.job, character: c.character, popularity: c.title.popularity ?? 0 } : null;
     })
     .filter((x): x is NonNullable<typeof x> => x !== null);
-  return { id: p.id, name: p.name, slug: p.slug, birthday: p.birthday, knownFor: p.knownFor, credits };
+  return { id: p.id, name: p.name, slug: p.slug, birthday: p.birthday, knownFor: p.knownFor, photoPath: p.photoPath, credits };
 }

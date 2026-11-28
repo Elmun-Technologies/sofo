@@ -205,6 +205,8 @@ model Person {
   slug     String    @unique
   birthday DateTime?
   knownFor String?   @map("known_for")
+  /// TMDB profile image path (e.g. "/abc.jpg"); null → initials avatar.
+  photoPath String?  @map("photo_path")
   credits  Credit[]
 
   @@map("person")

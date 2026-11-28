@@ -43,8 +43,8 @@ type TmdbBase = {
   credits?: { cast?: TmdbCast[]; crew?: TmdbCrew[] };
 };
 
-export type TmdbCast = { id: number; name: string; character?: string | null; order?: number; known_for_department?: string };
-export type TmdbCrew = { id: number; name: string; job?: string; department?: string; known_for_department?: string };
+export type TmdbCast = { id: number; name: string; character?: string | null; order?: number; known_for_department?: string; profile_path?: string | null };
+export type TmdbCrew = { id: number; name: string; job?: string; department?: string; known_for_department?: string; profile_path?: string | null };
 
 export type TmdbMovieDetails = TmdbBase & {
   title: string;

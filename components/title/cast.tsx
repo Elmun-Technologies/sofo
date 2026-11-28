@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { paths, type Edition } from "@/lib/editions";
-import { initials } from "@/lib/format";
+import { PersonAvatar } from "@/components/ui/person-avatar";
 import type { TitlePageData } from "@/lib/queries/title";
 
-/** Cast & crew with initials only — no person photos (licensing). */
+/** Cast & crew: TMDB profile photo when we have one, otherwise an initials avatar. */
 export function Cast({ data, edition }: { data: TitlePageData; edition: Edition }) {
-  const people = new Map<number, { name: string; slug: string; roles: string[] }>();
+  const people = new Map<number, { name: string; slug: string; photoPath: string | null; roles: string[] }>();
   for (const c of data.title.credits) {
-    const p = people.get(c.personId) ?? { name: c.person.name, slug: c.person.slug, roles: [] };
+    const p = people.get(c.personId) ?? { name: c.person.name, slug: c.person.slug, photoPath: c.person.photoPath, roles: [] };
     p.roles.push(c.character ? `${c.character}${c.job === "Voice" ? " (voice)" : ""}` : c.job.toLowerCase());
     people.set(c.personId, p);
   }
@@ -17,9 +17,7 @@ export function Cast({ data, edition }: { data: TitlePageData; edition: Edition 
       {[...people.values()].slice(0, 12).map((p) => (
         <li key={p.slug} className="w-[200px] shrink-0 md:w-auto">
           <Link href={paths.person(edition, p.slug)} className="card card-hover flex items-center gap-3 p-3">
-            <span aria-hidden="true" className="flex size-11 shrink-0 items-center justify-center rounded-full bg-text/8 text-sm font-bold text-text-2">
-              {initials(p.name)}
-            </span>
+            <PersonAvatar name={p.name} photoPath={p.photoPath} size={48} />
             <span className="min-w-0">
               <span className="block truncate text-sm font-semibold">{p.name}</span>
               <span className="block truncate text-xs text-text-3 capitalize">{p.roles.join(", ")}</span>

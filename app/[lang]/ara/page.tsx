@@ -238,12 +238,6 @@ async function Results({ edition, result, audio }: { edition: Edition; result: S
 
   const [top, ...rest] = titles;
   const topOffer = top ? await getTopOffer(edition, top.id) : null;
-  const counts = [
-    titles.length && `${titles.length} ${titles.length === 1 ? "title" : "titles"}`,
-    people.length && `${people.length} ${people.length === 1 ? "person" : "people"}`,
-    franchises.length && `${franchises.length} ${franchises.length === 1 ? "franchise" : "franchises"}`,
-    collections.length && `${collections.length} ${collections.length === 1 ? "collection" : "collections"}`,
-  ].filter(Boolean);
   const hasAside = franchises.length + collections.length + people.length > 0;
 
   return (
@@ -253,7 +247,7 @@ async function Results({ edition, result, audio }: { edition: Edition; result: S
           <span className="sr-only">
             Results for “{shown}”{audioLabel ? ` with ${audioLabel}` : ""} ·{" "}
           </span>
-          {counts.join(" · ")} in {edition.countryName}
+          Results in {edition.countryName}
           {audioLabel ? (
             <>
               {" "}
@@ -298,7 +292,7 @@ async function Results({ edition, result, audio }: { edition: Edition; result: S
                 <ul>
                   {franchises.map((f) => (
                     <li key={f.id}>
-                      <RowLink href={paths.franchise(edition, f.slug)} icon={<LayersIcon className="size-[18px]" />} name={f.name} meta={`Watch order · ${f.count} ${f.count === 1 ? "title" : "titles"}`} />
+                      <RowLink href={paths.franchise(edition, f.slug)} icon={<LayersIcon className="size-[18px]" />} name={f.name} meta="Watch order" />
                     </li>
                   ))}
                 </ul>
@@ -311,7 +305,7 @@ async function Results({ edition, result, audio }: { edition: Edition; result: S
                 <ul>
                   {collections.map((c) => (
                     <li key={c.id}>
-                      <RowLink href={paths.list(edition, c.slug)} icon={<ListIcon className="size-[18px]" />} name={c.name} meta={`${c.count} titles · sofo editors`} localLang={edition.hreflang} />
+                      <RowLink href={paths.list(edition, c.slug)} icon={<ListIcon className="size-[18px]" />} name={c.name} meta="Collection · sofo editors" localLang={edition.hreflang} />
                     </li>
                   ))}
                 </ul>
@@ -329,7 +323,7 @@ async function Results({ edition, result, audio }: { edition: Edition; result: S
                         href={paths.person(edition, p.slug)}
                         icon={<span className="text-xs font-semibold">{initials(p.name)}</span>}
                         name={p.name}
-                        meta={[p.knownFor, p.credits ? `${p.credits} ${p.credits === 1 ? "title" : "titles"} on sofo` : null].filter(Boolean).join(" · ")}
+                        meta={p.knownFor ?? undefined}
                       />
                     </li>
                   ))}

@@ -117,9 +117,13 @@ describe("creditsOf", () => {
     expect(credits.map((c) => `${c.job}:${c.name}`)).toEqual(["Director:Denis Villeneuve", "Actor:Timothée Chalamet", "Actor:Zendaya"]);
     expect(credits[1]?.character).toBe("Paul Atreides");
   });
+  it("carries the TMDB profile image (null when missing)", () => {
+    const credits = creditsOf({ credits: { cast: [{ id: 3, name: "Zendaya", order: 0, profile_path: "/z.jpg" }, { id: 4, name: "No Photo", order: 1 }] } }, "movie");
+    expect(credits.map((c) => c.photoPath)).toEqual(["/z.jpg", null]);
+  });
   it("uses created_by as creators for series", () => {
     expect(creditsOf({ created_by: [{ id: 5, name: "Seth MacFarlane" }] }, "tv")).toEqual([
-      { tmdbId: 5, name: "Seth MacFarlane", knownFor: "Writing", job: "Creator", character: null, order: -1 },
+      { tmdbId: 5, name: "Seth MacFarlane", knownFor: "Writing", photoPath: null, job: "Creator", character: null, order: -1 },
     ]);
   });
 });
