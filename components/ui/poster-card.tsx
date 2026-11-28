@@ -34,7 +34,7 @@ export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }
 
   return (
     <div className="group relative min-w-0">
-      <Link href={href} className="block rounded-poster hover:text-text" aria-label={`${card.name}${card.year ? ` (${card.year})` : ""}`}>
+      <Link href={href} className="block rounded-poster hover:text-text">
         <div className="relative overflow-hidden rounded-poster">
           <PosterImage path={card.posterPath} alt={card.name} priority={priority} sizes={sizes} imgClassName="transition duration-500 ease-out group-hover:scale-[1.05]" />
 

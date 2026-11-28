@@ -28,7 +28,7 @@ export function SiteFooter({ edition }: { edition: Edition }) {
       </div>
       <div className="wrap grid gap-10 py-12 md:py-14 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
         <div className="max-w-sm">
-          <Link href={r.home} aria-label="sofo — home" className="inline-block hover:text-text">
+          <Link href={r.home} className="inline-block hover:text-text">
             <Logo className="text-[28px]" />
           </Link>
           <p className="mt-4 text-sm leading-relaxed text-text-2">

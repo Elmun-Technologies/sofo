@@ -128,7 +128,7 @@ export function PromoSlider({ slides, localLang, contained = false }: { slides: 
             aria-selected={i === active}
             aria-label={`${i + 1}. ${s.name}`}
             onClick={() => go(i)}
-            className="group/dot flex h-5 items-center px-0.5"
+            className="group/dot flex h-6 min-w-6 items-center justify-center"
           >
             <span className={`block h-1 rounded-full transition-all duration-300 ${i === active ? "w-7 bg-text" : "w-1.5 bg-text/25 group-hover/dot:bg-text/50"}`} />
           </button>

@@ -15,7 +15,7 @@ export function DarkShelf({ title, sub, cta, href, cards, edition, ranked }: { t
       <div className="relative overflow-hidden rounded-hero bg-[#0f1013] p-4 text-white md:grid md:grid-cols-[260px_1fr] md:items-center md:gap-6 md:p-6">
         <div aria-hidden="true" className="pointer-events-none absolute -top-24 -left-24 size-72 rounded-full bg-orange/25 blur-3xl" />
         <div className="relative mb-4 md:mb-0 md:pl-2">
-          <p lang="en" className="overline text-orange">
+          <p lang="en" className="overline text-orange-hover">
             This week
           </p>
           <h2 className="mt-2 text-[26px] leading-tight font-extrabold tracking-[-0.03em] md:text-[30px]">{title}</h2>

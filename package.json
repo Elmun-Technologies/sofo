@@ -22,6 +22,7 @@
     "alerts:dispatch": "dotenv -e .env.local -- tsx scripts/alerts/dispatch.ts",
     "db:migrate": "wrangler d1 migrations apply DB --local --config freebuff.wrangler.jsonc",
     "selfhost:refresh": "pnpm ingest:catalog -- --pages=12 --kids-pages=3 --rotate=8 && pnpm ingest:metadata -- --refresh-days=7 && pnpm ingest:availability -- --from-cache=latest --stale=5 --stale-days=9 && tsx scripts/selfhost/revalidate.ts",
+    "selfhost:backup": "tsx scripts/selfhost/backup.ts",
     "smoke": "tsx scripts/e2e/smoke.ts"
   },
   "dependencies": {
