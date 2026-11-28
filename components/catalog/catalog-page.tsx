@@ -171,6 +171,8 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
             </span>
           </div>
 
+        {!active.length ? <QuickPicks e={e} r={r} to={to} sort={f.sort} /> : null}
+
         {active.length ? (
           <ul aria-label="Active filters" className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 pt-4 md:mx-0 md:flex-wrap md:px-0">
             {active.map((a) => (
@@ -232,5 +234,43 @@ export async function CatalogPage({ edition: e, kind, base, searchParams }: { ed
         </section>
       </div>
     </div>
+  );
+}
+
+/**
+ * santehnika "Популярные подборки": one-tap combinations above the grid (they are ordinary filter
+ * links, so the pages they open stay noindex like any filtered view). Shown only while no filter is set.
+ */
+function QuickPicks({ e, r, to, sort }: { e: Edition; r: CatalogResult; to: (patch: Partial<CatalogFilters>) => string; sort: CatalogFilters["sort"] }) {
+  const dub = cap(dubTerm(e.contentLang));
+  const top = [...r.services].sort((a, b) => b.count - a.count)[0];
+  const picks: { href: string; label: string; count?: number; local?: boolean; dot?: string }[] = [
+    { href: to({ audio: "dub" }), label: dub, count: r.audioCounts.dub, local: true, dot: "bg-dub" },
+    { href: to({ audio: "sub" }), label: cap(subTerm(e.contentLang)), count: r.audioCounts.sub, local: true },
+    ...(top && top.count > 0 ? [{ href: to({ service: top.slug, audio: "dub" }), label: `${top.name} · ${dub}`, local: true }] : []),
+    { href: to({ offer: "free" }), label: "Free to watch", dot: "bg-available" },
+    ...(sort !== "top" ? [{ href: to({ sort: "top" }), label: "Top rated" }] : []),
+    { href: to({ decade: 2020, sort: "newest" }), label: "New releases" },
+  ].filter((p) => p.count === undefined || p.count > 0);
+  return (
+    <nav aria-label="Quick picks" className="pt-4">
+      <ul className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:px-0">
+        <li className="shrink-0 pr-1 text-[13px] font-semibold text-text-3 max-md:hidden">Quick picks</li>
+        {picks.map((p) => (
+          <li key={p.href} className="shrink-0">
+            <Link
+              href={p.href}
+              scroll={false}
+              lang={p.local ? e.hreflang : undefined}
+              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-surface px-3.5 text-[13px] font-semibold whitespace-nowrap text-text transition-colors hover:bg-surface-2 hover:text-text"
+            >
+              {p.dot ? <span aria-hidden="true" className={`size-1.5 rounded-full ${p.dot}`} /> : null}
+              {p.label}
+              {p.count !== undefined ? <span className="tnum font-medium text-text-3">{p.count.toLocaleString("en-US")}</span> : null}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }

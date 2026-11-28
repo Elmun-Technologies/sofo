@@ -21,8 +21,8 @@ type Props = {
 };
 
 /**
- * Poster tile. Resting state stays quiet (art, one language badge, service logos);
- * hover on pointer devices reveals the facts: score, year, genres and confirmed languages.
+ * Poster tile. Resting state stays quiet (art, one language badge, service logos) with the score in the
+ * meta line; hover on pointer devices reveals the facts: score, year, genres and confirmed languages.
  */
 export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }: Props) {
   const href = paths.title(edition, card.type, card.slug);
@@ -87,7 +87,27 @@ export function PosterCard({ card, edition, badge, meta, rank, priority, sizes }
           ) : null}
         </div>
         <div className="mt-2.5 truncate text-sm leading-5 font-semibold text-text transition-colors group-hover:text-orange-press">{card.name}</div>
-        {metaLine ? <div className="tnum truncate text-xs leading-[18px] text-text-3">{metaLine}</div> : null}
+        {metaLine || card.score ? (
+          <div className="tnum flex min-w-0 items-center gap-1 text-xs leading-[18px] text-text-3">
+            {/* Score stays visible at rest (touch has no hover) — ivi/santehnika show it on every card. */}
+            {card.score ? (
+              <span className="inline-flex shrink-0 items-center gap-0.5 font-semibold text-text-2" title="TMDB score">
+                <StarIcon className="size-3 text-leaving" />
+                {card.score.toFixed(1)}
+              </span>
+            ) : null}
+            {card.score && metaLine ? <span aria-hidden="true">·</span> : null}
+            {meta === undefined && card.services[0] && card.year ? (
+              // Default line on narrow grids: the service logo is already on the poster, keep the year readable.
+              <span className="truncate">
+                <span className="max-sm:hidden">{card.services[0].name} · </span>
+                {card.year}
+              </span>
+            ) : metaLine ? (
+              <span className="truncate">{metaLine}</span>
+            ) : null}
+          </div>
+        ) : null}
       </Link>
       <QuickSave title={{ id: card.id, type: card.type, slug: card.slug, name: card.name, posterPath: card.posterPath, year: card.year }} />
     </div>

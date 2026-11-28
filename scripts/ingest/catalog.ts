@@ -1,7 +1,9 @@
 /**
  * Catalogue crawl — Streaming Availability API v4 `/shows/search/filters` → title list + cached snapshots.
  *
- *   pnpm ingest:catalog [-- --edition=tr --pages=15 --kids-pages=3 --out=data/titles.csv --cache=.cache/sa --dry-run]
+ *   pnpm ingest:catalog [-- --edition=tr --pages=15 --kids-pages=3 --rotate=8 --out=data/titles.csv --cache=.cache/sa --dry-run]
+ *   --rotate=N        N extra pages from today's rotation slice (lib/ingest/rotation.ts): top rated, local originals…
+ *   --rotate-slice=K  pin slice K (0-based) instead of today's
  *
  * Why: the API quota is per request (1 000 a month on the current plan). /shows/{id} costs one request per
  * title; one catalogue page returns 20 titles with their full streaming options (audios/subtitles included).
@@ -14,6 +16,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { editionCodes, getEdition } from "../../lib/editions";
 import { SERVICE_MAP, tmdbIdFrom } from "../../lib/ingest/normalize";
+import { pickRotationSlice, type RotationSlice } from "../../lib/ingest/rotation";
 import { parseTitleCsv, type TitleListRow } from "../../lib/ingest/title-list";
 import { SourceConfigError } from "../../lib/sources/http";
 import { isStreamingAvailabilityConfigured, searchCatalog } from "../../lib/sources/streaming-availability";
@@ -26,6 +29,8 @@ const dryRun = has("dry-run");
 const editionCode = value("edition") ?? "tr";
 const pages = Math.max(1, Number(value("pages") ?? 15) || 15);
 const kidsPages = Math.max(0, Number(value("kids-pages") ?? 3) || 0);
+const rotatePages = Math.max(0, Number(value("rotate") ?? 0) || 0);
+const rotateSlice = value("rotate-slice") !== undefined ? Number(value("rotate-slice")) : undefined;
 const out = value("out") ?? "data/titles.csv";
 const cacheRoot = value("cache") ?? ".cache/sa";
 
@@ -45,17 +50,34 @@ async function main() {
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const cacheDir = path.join(cacheRoot, `${edition.code}-${stamp}`);
   if (!dryRun) await mkdir(cacheDir, { recursive: true });
-  log(`${edition.code} (${edition.country}) · catalogs ${catalogs.join(", ")} · ${pages} pages + ${kidsPages} animation pages${dryRun ? " · dry run" : ""}`);
+  const rotation = rotatePages > 0 ? pickRotationSlice(edition.contentLang, new Date(), rotateSlice) : null;
+  log(
+    `${edition.code} (${edition.country}) · catalogs ${catalogs.join(", ")} · ${pages} pages + ${kidsPages} animation pages` +
+      (rotation ? ` + ${rotatePages} rotation pages (slice ${rotation.index}: ${rotation.slice.name})` : "") +
+      (dryRun ? " · dry run" : ""),
+  );
 
   const found: TitleListRow[] = [];
   let pageNo = 0;
   let requests = 0;
 
-  const crawl = async (label: string, count: number, genres?: string[]) => {
+  const crawl = async (label: string, count: number, filters: Omit<RotationSlice, "name"> | { genres?: string[] } = {}) => {
+    const f = filters as Partial<RotationSlice>;
     let cursor: string | null = null;
     for (let i = 0; i < count; i++) {
       // Season granularity: series pages also carry per-season options (same request cost).
-      const page = await searchCatalog({ country: edition.country, catalogs, cursor, genres, granularity: "season" });
+      const page = await searchCatalog({
+        country: edition.country,
+        catalogs,
+        cursor,
+        granularity: "season",
+        genres: f.genres,
+        orderBy: f.orderBy,
+        showType: f.showType,
+        originalLanguage: f.originalLanguage,
+        ratingMin: f.ratingMin,
+        yearMin: f.yearsBack !== undefined ? new Date().getUTCFullYear() + f.yearsBack : undefined,
+      });
       requests++;
       pageNo++;
       for (const show of page.shows) {
@@ -70,7 +92,15 @@ async function main() {
   };
 
   await crawl("popular", pages);
-  if (kidsPages > 0) await crawl("animation", kidsPages, ["animation"]);
+  if (kidsPages > 0) await crawl("animation", kidsPages, { genres: ["animation"] });
+  if (rotation) {
+    // The rotation only widens coverage: a rejected slice must not stop the daily refresh.
+    try {
+      await crawl(rotation.slice.name, rotatePages, rotation.slice);
+    } catch (err) {
+      console.error(`[catalog] rotation slice "${rotation.slice.name}" failed, continuing without it: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
 
   // Merge with the existing list (curated rows keep their place), duplicates dropped.
   let existing: TitleListRow[] = [];

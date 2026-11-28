@@ -32,13 +32,13 @@ export function Seasons({ data, edition }: { data: TitlePageData; edition: Editi
                 className="card card-hover flex h-auto min-w-[132px] flex-col px-4 py-3"
               >
                 <span className="text-sm font-bold whitespace-nowrap">Season {s.number}</span>
+                <span className="tnum mt-0.5 text-xs whitespace-nowrap text-text-3">{facts(s) || "\u00a0"}</span>
                 {perSeason ? (
-                  <span className={`mt-0.5 text-xs whitespace-nowrap ${d === "yes" ? "text-dub" : d === "no" ? "text-text-3" : "text-leaving"}`}>
+                  <span lang={d === "yes" ? edition.hreflang : undefined} className={`mt-1 inline-flex items-center gap-1 text-xs font-semibold whitespace-nowrap ${d === "yes" ? "text-dub" : d === "no" ? "text-text-3" : "text-leaving"}`}>
+                    <span aria-hidden="true" className={`size-1.5 rounded-full ${d === "yes" ? "bg-dub" : d === "no" ? "bg-text-3" : "bg-leaving"}`} />
                     {d === "yes" ? dubTerm(lang) : d === "no" ? "no dub" : "dub not confirmed"}
                   </span>
-                ) : (
-                  <span className="mt-0.5 text-xs whitespace-nowrap text-text-3">{facts(s) || "\u00a0"}</span>
-                )}
+                ) : null}
               </Link>
             </li>
           );

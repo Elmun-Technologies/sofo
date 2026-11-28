@@ -316,6 +316,8 @@ export async function upsertTitleMetadata(meta: TitleMetadata, opts: { dryRun?: 
         genres: toList(meta.genres),
         isAnimation: meta.isAnimation,
         isKids: meta.isKids,
+        // Older runners send no ageRating: leave the stored value alone.
+        ...(meta.ageRating !== undefined ? { ageRating: meta.ageRating } : {}),
       };
       const existing = await tx.title.findUnique({
         where: { tmdbId_type: { tmdbId: meta.tmdbId, type: meta.type } },
@@ -343,11 +345,20 @@ export async function upsertTitleMetadata(meta: TitleMetadata, opts: { dryRun?: 
           tmdbScore: season.tmdbScore,
           posterPath: season.posterPath,
         };
-        await tx.season.upsert({
+        const row = await tx.season.upsert({
           where: { titleId_number: { titleId: title.id, number: season.number } },
           create: { titleId: title.id, number: season.number, ...data },
           update: data,
+          select: { id: true },
         });
+        for (const ep of season.episodes ?? []) {
+          const epData = { name: ep.name, airDate: ep.airDate, runtimeMin: ep.runtimeMin, tmdbScore: ep.tmdbScore, stillPath: ep.stillPath };
+          await tx.episode.upsert({
+            where: { seasonId_number: { seasonId: row.id, number: ep.number } },
+            create: { seasonId: row.id, number: ep.number, ...epData },
+            update: epData,
+          });
+        }
       }
 
       for (const video of meta.videos) {

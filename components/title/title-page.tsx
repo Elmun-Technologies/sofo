@@ -85,9 +85,12 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
   const backdrop = imageUrl(title.backdropPath, "w1280");
   const saved = { id: title.id, type: title.type, slug: local.slug, name: local.name, posterPath: title.posterPath, year: title.year };
   const seasonsCount = title.seasons.length;
+  // Last aired season year from TMDB air dates — never derived from the season count.
+  const lastYear = Math.max(0, ...title.seasons.map((s) => (s.airDate ? s.airDate.getUTCFullYear() : 0)));
+  const yearSpan = title.year ? (type === "tv" && lastYear > title.year ? `${title.year}–${lastYear}` : String(title.year)) : null;
   const meta = [
     type === "movie" ? "Movie" : "Series",
-    title.year ? (type === "tv" && seasonsCount > 1 ? `${title.year}–${title.year + seasonsCount - 1}` : String(title.year)) : null,
+    yearSpan,
     type === "movie" ? formatRuntime(title.runtimeMin) : seasonsCount ? `${seasonsCount} season${seasonsCount > 1 ? "s" : ""}` : null,
     title.genres.join(", ") || null,
   ].filter(Boolean);
@@ -113,6 +116,7 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
     ["Type", type === "movie" ? "Movie" : "Series"],
     ...(title.year ? ([["Year", String(title.year)]] as [string, React.ReactNode][]) : []),
     ...(type === "movie" && title.runtimeMin ? ([["Runtime", formatRuntime(title.runtimeMin)]] as [string, React.ReactNode][]) : []),
+    ...(title.ageRating ? ([["Age rating", title.ageRating]] as [string, React.ReactNode][]) : []),
     ...(type === "tv" && seasonsCount ? ([["Seasons", String(seasonsCount)]] as [string, React.ReactNode][]) : []),
     ...(title.genres.length ? ([["Genres", title.genres.join(", ")]] as [string, React.ReactNode][]) : []),
     ["Original language", langName(title.originalLang)],
@@ -164,6 +168,11 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
                     {m}
                   </span>
                 ))}
+                {title.ageRating ? (
+                  <span title="Age rating" className="tnum inline-flex h-[22px] items-center rounded-[6px] px-1.5 text-[12px] font-bold text-text ring-1 ring-text/40 ring-inset">
+                    {title.ageRating}
+                  </span>
+                ) : null}
               </p>
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {hasDub ? (
