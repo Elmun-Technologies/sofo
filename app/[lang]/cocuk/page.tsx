@@ -33,10 +33,10 @@ export default async function KidsPage({ params }: PageProps<"/[lang]/cocuk">) {
   const data = await getKidsPage(e);
   const lang = langName(e.contentLang);
   const tileCopy = [
-    { big: String(data.counts.dub), title: `In ${lang}`, sub: "dub confirmed", dot: "bg-dub" },
-    { big: String(data.counts.short), title: "Short & sweet", sub: "under 100 min", dot: null },
-    { big: String(data.counts.series), title: "Series", sub: "episode by episode", dot: null },
-    { big: String(data.byService.length), title: "Services", sub: "all official", dot: "bg-available" },
+    { title: `In ${lang}`, sub: "dub confirmed", dot: "bg-dub" },
+    { title: "Short & sweet", sub: "under 100 min", dot: null },
+    { title: "Series", sub: "episode by episode", dot: null },
+    { title: "Services", sub: "all official", dot: "bg-available" },
   ];
 
   return (
@@ -70,8 +70,7 @@ export default async function KidsPage({ params }: PageProps<"/[lang]/cocuk">) {
             return (
               <li key={id}>
                 <Link href={`#${id}`} className="card card-hover group flex h-full min-h-[148px] flex-col justify-between gap-6 p-4 md:min-h-[200px] md:p-6">
-                  <span className="flex items-start justify-between gap-3">
-                    <span className="numeral">{t.big}</span>
+                  <span className="flex items-start justify-end gap-3">
                     <span
                       aria-hidden="true"
                       className="flex size-8 shrink-0 items-center justify-center rounded-full text-text-3 ring-1 ring-hairline-strong transition duration-200 ease-out ring-inset group-hover:bg-text group-hover:text-ink group-hover:ring-transparent"

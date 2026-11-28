@@ -18,7 +18,6 @@ import { HeroSearch } from "./hero-search";
 import { PosterStack } from "./poster-stack";
 import { ServiceTile } from "./service-tile";
 
-const fmt = (n: number) => n.toLocaleString("en-US").replace(/,/g, " ");
 
 function copy(e: Edition, k: LangKindKey) {
   const lang = langName(e.contentLang);
@@ -72,9 +71,8 @@ function copy(e: Edition, k: LangKindKey) {
 
 export async function langHubMetadata(e: Edition, k: LangKindKey): Promise<Metadata> {
   const c = copy(e, k);
-  const hub = await getLangHub(e, k);
   return {
-    title: `${cap(c.term)} — ${fmt(hub.total)} movies & series with ${c.what} in ${e.countryName}`,
+    title: `${cap(c.term)} — movies & series with ${c.what} in ${e.countryName}`,
     description: `Every movie and series with ${c.what} confirmed by the service in ${e.countryName}: Netflix, Disney+, Prime Video, HBO Max and Crunchyroll. Checked every day.`,
     alternates: buildAlternates(c.path, { [e.hreflang]: c.path }),
   };
@@ -86,7 +84,6 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
   const audio = k === "dub" ? "dub" : "sub";
   const lang = langName(e.contentLang);
   const heroCards = (hub.recent.length >= 3 ? hub.recent : hub.movies.concat(hub.series)).filter((x) => x.posterPath);
-  const liveServices = hub.services.filter((s) => s.count > 0).length;
   const tab = (active: boolean) =>
     `inline-flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium whitespace-nowrap transition duration-200 ease-out ${
       active ? "bg-text text-ink hover:text-ink" : "text-text-2 ring-1 ring-inset ring-hairline-strong hover:bg-text/6 hover:text-text hover:ring-text/30"
@@ -115,16 +112,13 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
             <h1 className="text-display mt-6 max-w-[15ch] md:mt-8 lg:max-w-[18ch]">
               {c.lead}{" "}
               <span className="text-text-3">
-                <span className="md:hidden">{fmt(hub.total)} titles.</span>
-                <span className="hidden md:inline">
-                  {fmt(hub.total)} movies &amp; series{k === "dub" ? ` with ${c.what}` : ""}.
-                </span>
+                Movies &amp; series{k === "dub" ? ` with ${c.what}` : ""}, confirmed by the service.
               </span>
             </h1>
             <p className="tnum mt-5 flex items-start gap-2 text-[13px] text-text-2 md:mt-6 md:text-sm">
               <span aria-hidden="true" className="mt-[7px] size-1.5 shrink-0 rounded-full bg-available md:mt-2" />
               <span>
-                On {liveServices} services in {e.countryName} · checked every day
+                On legal services in {e.countryName} · checked every day
                 {hub.lastCheckedAt ? ` · ${checkedLabel(hub.lastCheckedAt).replace(/^Checked/, "last check")}` : ""}
               </span>
             </p>
@@ -151,8 +145,9 @@ export async function LangHub({ edition: e, kind: k }: { edition: Edition; kind:
                 slug={s.slug}
                 name={s.name}
                 logoPath={s.logoPath}
-                count={s.count}
-                label={`${k === "dub" ? "dubbed" : "subtitled"} title${s.count === 1 ? "" : "s"}`}
+                dim={s.count === 0}
+                label={s.count === 0 ? "Not confirmed yet" : cap(c.term)}
+                labelLang={s.count === 0 ? undefined : e.hreflang}
               />
             </li>
           ))}

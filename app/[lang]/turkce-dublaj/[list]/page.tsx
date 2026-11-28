@@ -37,7 +37,7 @@ export async function generateMetadata({ params, searchParams }: PageProps<"/[la
   const filtered = !!(await searchParams).f;
   return {
     title: list.name,
-    description: `${list.intro.slice(0, 150)}${list.intro.length > 150 ? "…" : ""} ${list.items.length} titles, with where to watch each one in ${e.countryName}.`,
+    description: `${list.intro.slice(0, 150)}${list.intro.length > 150 ? "…" : ""} With where to watch each one in ${e.countryName}.`,
     alternates: buildAlternates(path, { [e.hreflang]: path }),
     robots: filtered ? { index: false, follow: true } : undefined,
   };
@@ -61,7 +61,6 @@ export default async function CollectionPage({ params, searchParams }: PageProps
   const byService = new Map<string, { slug: string; name: string; logoPath: string | null; n: number }>();
   for (const i of list.items) for (const s of i.card.services) byService.set(s.slug, { ...s, n: (byService.get(s.slug)?.n ?? 0) + 1 });
   const services = [...byService.values()].sort((a, b) => b.n - a.n);
-  const dubCount = list.items.filter((i) => i.audio === "confirmed_yes").length;
   const others = allLists.filter((l) => l.slug !== list.slug);
   const base = siteUrl();
 
@@ -118,14 +117,14 @@ export default async function CollectionPage({ params, searchParams }: PageProps
         <div className="min-w-0">
           <ChipRow className="mb-5 md:mb-7">
             <ChipLink href={path} active={!filter} scroll={false}>
-              All <span className="tnum opacity-60">{list.items.length}</span>
+              All
             </ChipLink>
             <ChipLink href={`${path}?f=free`} active={filter === "free"} scroll={false}>
               <span aria-hidden="true" className="size-1.5 rounded-full bg-free" />
-              Free <span className="tnum opacity-60">{list.items.filter(isFree).length}</span>
+              Free
             </ChipLink>
             <ChipLink href={`${path}?f=short`} active={filter === "short"} scroll={false}>
-              Under 100 min <span className="tnum opacity-60">{list.items.filter(isShort).length}</span>
+              Under 100 min
             </ChipLink>
           </ChipRow>
 
@@ -141,7 +140,7 @@ export default async function CollectionPage({ params, searchParams }: PageProps
               title="No titles match"
               action={
                 <ButtonLink href={path} variant="primary">
-                  Show all {list.items.length}
+                  Show all
                 </ButtonLink>
               }
             >
@@ -152,32 +151,14 @@ export default async function CollectionPage({ params, searchParams }: PageProps
 
         <aside className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 xl:sticky xl:top-36 xl:h-fit xl:grid-cols-[minmax(0,1fr)]">
           <section className="panel p-5 md:p-6">
-            <h2 className="text-h3">This list in numbers</h2>
-            <dl className="mt-5 grid grid-cols-3 gap-3">
-              {[
-                { n: list.items.length, label: "titles" },
-                { n: services.length, label: services.length === 1 ? "service" : "services" },
-                { n: dubCount, label: `confirmed ${dubTerm(e.contentLang)}`, local: true, dot: true },
-              ].map((s) => (
-                <div key={s.label} className="flex flex-col-reverse justify-end gap-2">
-                  <dt className="text-xs leading-snug text-text-3">
-                    {s.dot ? <span aria-hidden="true" className="mr-1.5 inline-block size-1.5 rounded-full bg-dub align-middle" /> : null}
-                    <span lang={s.local ? e.hreflang : undefined}>{s.label}</span>
-                  </dt>
-                  <dd className="text-[40px] leading-[0.9] font-normal tracking-[-0.05em]">{s.n}</dd>
-                </div>
-              ))}
-            </dl>
+            <h2 className="text-h3">Where to watch this list</h2>
             {services.length ? (
-              <ul className="mt-5 divide-y divide-hairline border-t border-hairline">
+              <ul className="mt-4 divide-y divide-hairline border-t border-hairline">
                 {services.map((s) => (
                   <li key={s.slug}>
                     <Link href={paths.service(e, s.slug)} className="flex items-center gap-3 py-2.5 text-sm text-text-2 hover:text-text">
                       <ServiceLogo slug={s.slug} name="" logoPath={s.logoPath} size={24} />
                       <span className="min-w-0 flex-1 truncate font-medium text-text">{s.name}</span>
-                      <span className="tnum text-xs text-text-3">
-                        {s.n} title{s.n === 1 ? "" : "s"}
-                      </span>
                     </Link>
                   </li>
                 ))}

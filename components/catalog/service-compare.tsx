@@ -7,8 +7,6 @@ import { formatPrice } from "@/lib/format";
 import { langName } from "@/lib/lang";
 import type { ServicePageData } from "@/lib/queries/catalog-pages";
 
-const fmt = (n: number) => n.toLocaleString("en-US").replace(/,/g, " ");
-
 /** This service vs the two biggest others + list of every other service. */
 export function ServiceCompare({ edition: e, data }: { edition: Edition; data: ServicePageData }) {
   const s = data.service;
@@ -17,12 +15,11 @@ export function ServiceCompare({ edition: e, data }: { edition: Edition; data: S
   const lang = langName(e.contentLang);
   const price = (c: (typeof cols)[number]) => (c.priceFrom === 0 ? "Free" : (formatPrice(c.priceFrom, c.currency) ?? "—"));
   const rows: { label: string; dot?: string; cell: (c: (typeof cols)[number]) => string }[] = [
-    { label: `Titles in ${e.countryName}`, cell: (c) => fmt(c.stats.titles) },
-    { label: `Titles with ${lang} dub`, dot: "bg-dub", cell: (c) => fmt(c.stats.dub) },
-    { label: `Titles with ${lang} subtitles`, dot: "bg-text/70", cell: (c) => fmt(c.stats.sub) },
+    { label: `${lang} dub confirmed`, dot: "bg-dub", cell: (c) => (c.stats.dub > 0 ? "Yes" : "—") },
+    { label: `${lang} subtitles confirmed`, dot: "bg-text/70", cell: (c) => (c.stats.sub > 0 ? "Yes" : "—") },
     { label: "Cheapest plan", cell: price },
     { label: "Ad-supported plan", cell: (c) => (c.hasAdsTier ? "Yes" : "—") },
-    { label: "Titles in 4K", cell: (c) => fmt(c.stats.uhd) },
+    { label: "4K titles", cell: (c) => (c.stats.uhd > 0 ? "Yes" : "—") },
   ];
   const mine = "bg-text/[0.045]";
 
@@ -87,7 +84,7 @@ export function ServiceCompare({ edition: e, data }: { edition: Edition; data: S
             </table>
           </div>
           <p className="mt-3.5 max-w-2xl text-xs leading-relaxed text-text-3">
-            Language counts include only audio and subtitles confirmed by each service. Prices are the lowest listed plan — check the service before
+            Language rows include only audio and subtitles confirmed by each service. Prices are the lowest listed plan — check the service before
             subscribing.
           </p>
         </div>
@@ -100,9 +97,6 @@ export function ServiceCompare({ edition: e, data }: { edition: Edition; data: S
                 <Link href={paths.service(e, o.slug)} className="group flex items-center gap-3 py-3 text-sm text-text-2 hover:text-text">
                   <ServiceLogo slug={o.slug} name="" logoPath={o.logoPath} size={28} />
                   <span className="min-w-0 flex-1 truncate font-medium text-text">{o.name}</span>
-                  <span className="tnum text-xs text-text-3">
-                    {fmt(o.stats.titles)} title{o.stats.titles === 1 ? "" : "s"}
-                  </span>
                   <ChevronRightIcon className="size-4 shrink-0 text-text-3 transition duration-200 group-hover:translate-x-0.5 group-hover:text-text" />
                 </Link>
               </li>

@@ -9,9 +9,10 @@ import { PosterCard } from "@/components/ui/poster-card";
 import { PosterImage } from "@/components/ui/poster-image";
 import { ServiceLogo } from "@/components/ui/service-logo";
 import { hrefWith, one, ToggleChip } from "@/components/value/filters";
-import { SectionHead, Stat, Stats } from "@/components/value/layout";
+import { SectionHead } from "@/components/value/layout";
 import { FollowPersonButton, ShareButton } from "@/components/value/person-actions";
-import { InitialsAvatar, LangBadges, ServiceLine, WatchButton, WatchIconLink } from "@/components/value/watch";
+import { PersonAvatar } from "@/components/ui/person-avatar";
+import { LangBadges, ServiceLine, WatchButton, WatchIconLink } from "@/components/value/watch";
 import { getEdition, paths } from "@/lib/editions";
 import { formatDate } from "@/lib/format";
 import { langName } from "@/lib/lang";
@@ -83,8 +84,6 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/[
   const current = { is: group, dublaj: dubOnly ? "1" : undefined };
   const filtered = titles.filter((t) => (!group || t.groups.has(group)) && (!dubOnly || t.card.dub));
 
-  const dubCount = titles.filter((t) => t.card.dub).length;
-  const streaming = titles.filter((t) => t.best).length;
   const roles = [...new Set(titles.flatMap((t) => [...t.groups]))].map((g) => ROLE[g] ?? g);
   const knownFor = [...titles].sort((a, b) => b.popularity - a.popularity).slice(0, 6);
   const checkedAt = titles
@@ -95,12 +94,12 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/[
 
   return (
     <>
-      {/* ── Header: initials, name, roles, the numbers that matter here ── */}
+      {/* ── Header: photo (or initials), name, roles ── */}
       <header className="wrap pt-7 md:pt-14">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
           <div className="flex min-w-0 items-start gap-4 md:items-center md:gap-9">
-            <InitialsAvatar name={data.name} size={72} className="md:hidden" />
-            <InitialsAvatar name={data.name} size={168} className="max-md:hidden" />
+            <PersonAvatar name={data.name} photoPath={data.photoPath} size={72} className="md:hidden" />
+            <PersonAvatar name={data.name} photoPath={data.photoPath} size={168} className="max-md:hidden" />
             <div className="min-w-0">
               {roleTags.length ? (
                 <p className="mb-3 flex flex-wrap gap-2 md:mb-5">
@@ -122,11 +121,6 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/[
             </div>
           </div>
 
-          <Stats className="max-md:justify-between">
-            <Stat value={titles.length} label={titles.length === 1 ? "title" : "titles"} />
-            <Stat value={streaming} label={`streaming in ${e.countryName}`} dot="bg-available" />
-            <Stat value={dubCount} label={`with ${dubLabel}`} dot="bg-dub" />
-          </Stats>
         </div>
         <div className="mt-7 grid grid-cols-2 gap-2 md:hidden">
           <FollowPersonButton slug={data.slug} name={data.name} />
@@ -155,11 +149,6 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/[
           id="filmography"
           title="Filmography"
           sub={`Where to watch in ${e.countryName}`}
-          action={
-            <span className="tag tnum">
-              {filtered.length} {filtered.length === 1 ? "title" : "titles"}
-            </span>
-          }
         />
         <div className="mb-3 flex items-center justify-between gap-3 md:mb-5">
           <ChipRow className="min-w-0 max-md:flex-1">
@@ -252,7 +241,7 @@ export default async function PersonPage({ params, searchParams }: PageProps<"/[
               Availability <CheckedAt at={checkedAt} className="lowercase" /> ·{" "}
             </>
           ) : null}
-          We don&apos;t show photos of people — initials only. Credits from TMDB.
+          Credits and photos from TMDB.
         </p>
       </section>
     </>

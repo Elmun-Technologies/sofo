@@ -19,7 +19,6 @@ export function CategoryTiles({ tiles, allHref }: { tiles: CategoryTile[]; allHr
               {t.dot ? <span aria-hidden="true" className={`mt-[5px] size-1.5 shrink-0 rounded-full ${t.dot}`} /> : null}
               {t.label}
             </span>
-            {typeof t.count === "number" ? <span className="tnum relative z-10 mt-0.5 text-xs text-text-3">{t.count} titles</span> : null}
             <span aria-hidden="true" className="absolute -right-2 -bottom-5 flex">
               {t.cards.slice(0, 3).map((c, i) => (
                 <span

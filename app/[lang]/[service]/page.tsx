@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps<"/[lang]/[service]"
   const price = formatPrice(s.priceFrom, s.currency);
   return {
     title: `${s.name} ${e.countryName}: what's on, ${cap(dubTerm(e.contentLang))} & price`,
-    description: `${data.stats.titles} titles on ${s.name} in ${e.countryName}, ${data.stats.dub} with ${langName(e.contentLang)} audio confirmed by the service.${price ? ` Plans from ${price}/month.` : ""} New this week, top 10, leaving soon and a comparison with other services.`,
+    description: `What to watch on ${s.name} in ${e.countryName}, with ${langName(e.contentLang)} audio confirmed by the service.${price ? ` Plans from ${price}/month.` : ""} New this week, top 10, leaving soon and a comparison with other services.`,
     alternates: buildAlternates(path, { [e.hreflang]: path }),
   };
 }
@@ -83,7 +83,7 @@ export default async function ServicePage({ params }: PageProps<"/[lang]/[servic
             <span lang={e.hreflang}>{cap(dubTerm(e.contentLang))}</span> on {s.name}
           </>
         }
-        sub={`${data.stats.dub} title${data.stats.dub === 1 ? "" : "s"} with ${langName(e.contentLang)} audio`}
+        sub={`With ${langName(e.contentLang)} audio confirmed by the service`}
         cards={data.dubbed}
         edition={e}
         href={catalogHref(e.routes.movies, { service: s.slug, audio: "dub" })}

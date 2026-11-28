@@ -28,7 +28,6 @@ export function SiteHeader({ edition, menu = EMPTY_MENU, services = [] }: { edit
     { href: r.releases, label: "Coming to digital" },
     { href: r.trailers, label: "Trailers" },
   ];
-  const serviceCount = edition.coreServices.length;
 
   return (
     <>
@@ -40,7 +39,7 @@ export function SiteHeader({ edition, menu = EMPTY_MENU, services = [] }: { edit
           </Link>
           <span className="inline-flex items-center gap-1.5">
             <ShieldCheckIcon className="size-4 text-available" />
-            {serviceCount} legal services · checked daily
+            Legal services only · checked daily
           </span>
           <span className="ml-auto flex items-center gap-5">
             <Link href={r.about} className="hover:text-text">

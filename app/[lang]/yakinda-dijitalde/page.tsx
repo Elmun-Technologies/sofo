@@ -48,7 +48,6 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
   const { months } = await getReleaseTracker(e, { type, dubOnly });
   const dubLabel = `${langName(e.contentLang)} dub`;
   const site = siteUrl();
-  const total = months.reduce((n, m) => n + m.titles.length, 0);
 
   return (
     <>
@@ -56,9 +55,6 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
         tags={
           <>
             <span className="tag">Release tracker</span>
-            <span className="tag tnum">
-              {total} {total === 1 ? "title" : "titles"} tracked
-            </span>
           </>
         }
         title={
@@ -109,12 +105,9 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
                       <span className="md:hidden">{monthName(m.month, "short")}</span>
                       <span className="max-md:hidden">{monthName(m.month, "long")}</span>
                     </span>
-                    <span className="tnum mt-4 text-[40px] leading-none font-normal tracking-[-0.05em] md:mt-8 md:text-[56px]">{m.titles.length}</span>
-                    <span className="tnum mt-2 flex items-center gap-1.5 text-xs leading-5 text-text-3 md:text-[13px]">
-                      {m.titles.length === 1 ? "arrival" : "arrivals"}
-                      <span aria-hidden="true">·</span>
+                    <span className="mt-4 flex items-center gap-1.5 text-xs leading-5 text-text-3 md:mt-8 md:text-[13px]">
                       {m.dubs > 0 ? <span aria-hidden="true" className="size-1.5 rounded-full bg-dub" /> : null}
-                      {m.dubs} {m.dubs === 1 ? "dub" : "dubs"}
+                      {m.dubs > 0 ? `${dubLabel} expected` : "New arrivals"}
                     </span>
                   </a>
                 </li>
@@ -129,11 +122,6 @@ export default async function ReleasesPage({ params, searchParams }: PageProps<"
                   id={`h-${m.month}`}
                   title={monthName(m.month, "long")}
                   sub="Sorted by next step"
-                  action={
-                    <span className="tag tnum">
-                      {m.titles.length} {m.titles.length === 1 ? "title" : "titles"}
-                    </span>
-                  }
                 />
                 <ul className="flex flex-col gap-2 md:gap-3">
                   {m.titles.map((t) => (

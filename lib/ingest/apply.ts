@@ -257,14 +257,16 @@ async function replaceCredits(tx: Tx, titleId: number, credits: NonNullable<Titl
   const personIds = new Map<number, number>();
   for (const c of credits) {
     if (personIds.has(c.tmdbId)) continue;
-    const found = await tx.person.findUnique({ where: { tmdbId: c.tmdbId }, select: { id: true, name: true } });
+    const found = await tx.person.findUnique({ where: { tmdbId: c.tmdbId }, select: { id: true, name: true, photoPath: true } });
     if (found) {
-      if (found.name !== c.name) await tx.person.update({ where: { id: found.id }, data: { name: c.name } });
+      // A missing photo in a later payload never wipes one we already have.
+      const photoPath = c.photoPath ?? found.photoPath;
+      if (found.name !== c.name || found.photoPath !== photoPath) await tx.person.update({ where: { id: found.id }, data: { name: c.name, photoPath } });
       personIds.set(c.tmdbId, found.id);
       continue;
     }
     const slug = await uniquePersonSlug(tx, slugify(c.name) || `person-${c.tmdbId}`, c.tmdbId);
-    const created = await tx.person.create({ data: { tmdbId: c.tmdbId, name: c.name, slug, knownFor: c.knownFor } });
+    const created = await tx.person.create({ data: { tmdbId: c.tmdbId, name: c.name, slug, knownFor: c.knownFor, photoPath: c.photoPath ?? null } });
     personIds.set(c.tmdbId, created.id);
   }
   await tx.credit.deleteMany({ where: { titleId } });

@@ -9,7 +9,7 @@ import { cap, catalogHref, DECADES, decadeLabel, OFFER_LABELS } from "./catalog-
 type Props = { edition: Edition; base: string; filters: CatalogFilters; result: CatalogResult; activeCount: number; clearHref: string };
 
 /** Checkbox-looking link: every option is a crawlable URL (filtered combinations are noindex). */
-function Option({ href, on, children, count, dim, lang }: { href: string; on: boolean; children: React.ReactNode; count?: number; dim?: boolean; lang?: string }) {
+function Option({ href, on, children, dim, lang }: { href: string; on: boolean; children: React.ReactNode; count?: number; dim?: boolean; lang?: string }) {
   return (
     <Link
       href={href}
@@ -26,7 +26,6 @@ function Option({ href, on, children, count, dim, lang }: { href: string; on: bo
       <span lang={lang} className={`min-w-0 flex-1 truncate ${on ? "font-semibold" : ""}`}>
         {children}
       </span>
-      {count != null ? <span className="tnum shrink-0 text-xs text-text-3">{count.toLocaleString("en-US")}</span> : null}
     </Link>
   );
 }

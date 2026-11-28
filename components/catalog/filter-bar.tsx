@@ -39,7 +39,6 @@ export function FilterBar({ edition: e, base, filters: f, result: r }: Props) {
             <span aria-hidden="true" className="-ml-0.5 text-[15px] leading-none font-bold">{on ? "✓" : "+"}</span>
             <span aria-hidden="true" className={`size-1.5 rounded-full ${on && a.key === "sub" ? "bg-ink/50" : a.dot}`} />
             <span lang={e.hreflang}>{a.label}</span>
-            <span className={`tnum text-xs ${on ? "text-ink/55" : "text-text-3"}`}>{a.count.toLocaleString("en-US")}</span>
           </Link>
         );
       })}

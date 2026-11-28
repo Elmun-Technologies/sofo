@@ -91,7 +91,7 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
     {
       href: r.dubHub,
       title: `${cap(dubTerm(edition.contentLang))} guide`,
-      text: `${data.langCards[0]?.count ?? 0} titles with a confirmed Turkish dub`,
+      text: "Movies and series with a Turkish dub confirmed by the service",
       icon: <VolumeIcon className="size-12 text-dub" />,
       tone: "bg-dub/12",
       lang: edition.hreflang,
@@ -135,7 +135,7 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
 
       <DarkShelf
         title={`Top 10 in ${edition.countryName}`}
-        sub={`The most watched on ${services.length} legal services, with language info on every title.`}
+        sub="The most watched on legal services, with language info on every title."
         cta="Open the catalogue"
         href={r.movies}
         cards={data.top}
@@ -208,7 +208,7 @@ export default async function EditionHome({ params }: PageProps<"/[lang]">) {
             { title: "Only legal services", text: "No piracy, no mirrors — every link opens the official service.", icon: <ShieldCheckIcon className="size-6" /> },
             { title: "Checked every day", text: "Each offer shows when we last checked it.", icon: <ClockIcon className="size-6" /> },
             { title: "Language confirmed", text: "Dub and subtitles only when the service confirms them.", icon: <CaptionsIcon className="size-6" /> },
-            { title: `${services.length} platforms, one search`, text: `Netflix, Prime Video, Disney+ and more in ${edition.countryName}.`, icon: <LayersIcon className="size-6" /> },
+            { title: "All platforms, one search", text: `Netflix, Prime Video, Disney+ and more in ${edition.countryName}.`, icon: <LayersIcon className="size-6" /> },
             { title: "Free, no sign-up", text: "Save titles on this device and get alerts on Telegram.", icon: <HeartIcon className="size-6" /> },
           ]}
         />

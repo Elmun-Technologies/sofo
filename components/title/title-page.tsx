@@ -80,7 +80,6 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
   const hasDub = offers.some((o) => o.audio[lang] === "confirmed_yes");
   const hasSub = offers.some((o) => o.subtitle[lang] === "confirmed_yes");
   const audioLangs = new Set(offers.flatMap((o) => Object.entries(o.audio).filter(([, s]) => s === "confirmed_yes").map(([l]) => l)));
-  const langCount = new Set([...audioLangs, ...offers.flatMap((o) => Object.entries(o.subtitle).filter(([, s]) => s === "confirmed_yes").map(([l]) => l))]).size;
   const uhd = offers.some((o) => o.quality === "uhd");
   const backdrop = imageUrl(title.backdropPath, "w1280");
   const saved = { id: title.id, type: title.type, slug: local.slug, name: local.name, posterPath: title.posterPath, year: title.year };
@@ -233,12 +232,12 @@ export async function TitlePage({ params, type }: { params: Promise<Params>; typ
       <TitleTabs
         tabs={[
           ...(local.overview ? [{ id: "story", label: "Description" }] : []),
-          ...(offers.length ? [{ id: "langs", label: "Audio & subtitles", count: langCount }] : []),
-          ...(type === "tv" && title.seasons.length ? [{ id: "seasons", label: "Seasons", count: title.seasons.length }] : []),
-          ...(title.videos.length ? [{ id: "trailers", label: "Trailers", count: Math.min(title.videos.length, 2) }] : []),
+          ...(offers.length ? [{ id: "langs", label: "Audio & subtitles" }] : []),
+          ...(type === "tv" && title.seasons.length ? [{ id: "seasons", label: "Seasons" }] : []),
+          ...(title.videos.length ? [{ id: "trailers", label: "Trailers" }] : []),
           { id: "history", label: "Availability history" },
-          ...(title.credits.length ? [{ id: "cast", label: "Cast & crew", count: new Set(title.credits.map((c) => c.personId)).size }] : []),
-          { id: "faq", label: "Questions", count: faq.length },
+          ...(title.credits.length ? [{ id: "cast", label: "Cast & crew" }] : []),
+          { id: "faq", label: "Questions" },
         ]}
       />
 

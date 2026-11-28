@@ -81,7 +81,6 @@ export function CatalogMenu({ data, links, services, dubLabel, subLabel, lang }:
             </span>
             <span className="min-w-0">
               <span className="block text-[14px] leading-tight font-semibold group-hover:text-orange-press">{g.name}</span>
-              <span className="tnum text-xs text-text-3">{g.count}</span>
             </span>
           </Link>
         </li>

@@ -67,9 +67,6 @@ export default async function TrailersPage({ params, searchParams }: PageProps<"
         tags={
           <>
             <span className="tag">Official videos only</span>
-            <span className="tag tnum">
-              {items.length} {items.length === 1 ? "video" : "videos"}
-            </span>
           </>
         }
         title="Trailers"
